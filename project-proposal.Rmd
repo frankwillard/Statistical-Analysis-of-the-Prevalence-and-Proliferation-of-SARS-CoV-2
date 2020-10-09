@@ -1,0 +1,14 @@
+---
+title: "Final Project Proposal: COVID-19 Dataset"
+author: 'The Lads: Frankie Willard, Manny Mokel, Alex Katopodis, Parker
+  Dingman'
+subtitle: Due Friday, October 9, 11:59 PM
+output: html_document
+---
+
+```{r glimpse-data, warning=FALSE, message=FALSE}
+library(tidyverse)
+
+covid <- read_csv("data/owid-covid-data.csv")
+glimpse(covid)
+```
