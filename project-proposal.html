@@ -369,11 +369,27 @@ summary {
 </div>
 
 
+<div id="section-1--introduction" class="section level3">
+<h3>Section 1- Introduction</h3>
+<p>Throughout the year 2020, the COVID-19 pandemic took the world by storm, deeply impacting every country on the planet, albeit with differing degrees of severity. As cases continued to rise, families suffered from the loss of family members, jobs, social interactions, disposable income, and more. This public health crisis became severe enough such that many countries took decisive action, shutting down their economies to prioritize the lives of the citizens of their country. Meanwhile, other countries were less strict in their policies, attempting to preserve their economy at the potential expense of their citizen’s lives. The difference in each country’s characteristics, demographics, public health capacities, and the strictness of COVID-19 policies led to vastly different effects of the pandemic on different countries. For our final project, we will be investigating country-level COVID-19 data to determine the relationship between their characteristics and demographics to virus transmission and deaths. By analyzing the effects of different country characteristics, we seek to determine specifically which variables are associated with stringency indexes, cases per capita, and deaths per case.</p>
+<p>Hypotheses:</p>
+<p>We hypothesize that cases per capita will have a strong negative correlation to stringency index.</p>
+<p>We hypothesize that deaths per case will be largely determined by the GDP per capita, the number of citizens aged 65+, hospital beds per thousand, the human development index, and columns concerning pre-existing conditions (i.e. diabetes prevalence, cardiovascular death rate, etc).</p>
+<p>We hypothesize that the stringency index is going to vary the most by continent. We expect Europe, Asia, Oceania, and North America to have higher stringency indexes, while Africa and South America will have lower stringency indexes.</p>
+</div>
+<div id="section-2--data-description" class="section level3">
+<h3>Section 2- Data description</h3>
+<p>We selected a data set from Our World in Data. Each observation in the data set shows relevant COVID-19 data for a particular country on a given date. The COVID-19 data in the data set includes total deaths, total cases, new deaths, new cases, total cases per million, total deaths per million, total tests, new tests, total tests per thousand, positive rate, as well as telling country numbers such as stringency index (composite measure of government strictness policy) and hospital beds per thousand. Additionally, the data set includes country characteristics including population density, median age, GDP per capita, diabetes prevalence, life expectancy, and extreme poverty rate.</p>
+<p>How The Data Was Originally Collected: “Our World In Data” uses data from the European Center for Disease Prevention and Control (ECDC), a world leader for COVID-19 data. The ECDC has a team of epidemiologists that works every day to screen up to 500 sources to get the latest figures. These sources include ministries of health (43%), websites of public health institutes (9%), websites of public health institutes (6%), World Health Organization (WHO) websites, WHO situation reports (2%), and official dashboards and interactive maps from national and international institutions (10%). The EDEC also utilizes social media accounts maintained by national authorities, ministries of health, and official media outlets (30%). These social media sources are screened and validated by the other sources mentioned previously. The data is recorded daily, and we will be using the dataset updated as of October 9, 2020 (10:30, London time).</p>
+<p>Sources: <a href="https://ourworldindata.org/coronavirus-source-data" class="uri">https://ourworldindata.org/coronavirus-source-data</a> <a href="https://www.ecdc.europa.eu/en/covid-19/data-collection" class="uri">https://www.ecdc.europa.eu/en/covid-19/data-collection</a></p>
+</div>
+<div id="section-3--glimpse-of-data" class="section level3">
+<h3>Section 3- Glimpse of data</h3>
 <pre class="r"><code>library(tidyverse)
 
-covid &lt;- read_csv(&quot;data/owid-covid-data.csv&quot;)
+covid &lt;- read_csv(&quot;data/covid-data.csv&quot;)
 glimpse(covid)</code></pre>
-<pre><code>## Rows: 48,169
+<pre><code>## Rows: 49,016
 ## Columns: 41
 ## $ iso_code                        &lt;chr&gt; &quot;ABW&quot;, &quot;ABW&quot;, &quot;ABW&quot;, &quot;ABW&quot;, &quot;ABW&quot;, &quot;A…
 ## $ continent                       &lt;chr&gt; &quot;North America&quot;, &quot;North America&quot;, &quot;No…
@@ -416,6 +432,7 @@ glimpse(covid)</code></pre>
 ## $ hospital_beds_per_thousand      &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
 ## $ life_expectancy                 &lt;dbl&gt; 76.29, 76.29, 76.29, 76.29, 76.29, 76…
 ## $ human_development_index         &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</code></pre>
+</div>
 
 
 
