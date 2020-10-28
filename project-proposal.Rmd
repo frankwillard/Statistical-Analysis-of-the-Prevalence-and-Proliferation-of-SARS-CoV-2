@@ -42,7 +42,7 @@ https://www.ecdc.europa.eu/en/covid-19/data-collection
 library(tidyverse)
 
 covid <- read_csv("data/covid-data.csv")
-glimpse(covid)
+#glimpse(covid)
 ```
 
 
@@ -67,12 +67,13 @@ covid_final_date <- covid %>%
 
 covid_final_date %>% 
   filter(is.na(continent)) %>% 
-  select(location) %>% 
-  print(covid_final_date)
+  select(location)
+
+covid_final_date
 
 
-ggplot(data = covid_final_date, mapping = aes(x = continent , y = total_cases)) + 
-  geom_point()
+# ggplot(data = covid_final_date, mapping = aes(x = continent , y = total_cases)) + 
+#   geom_point()
 
 
 ```
