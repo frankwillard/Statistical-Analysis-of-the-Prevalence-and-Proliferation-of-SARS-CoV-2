@@ -151,6 +151,16 @@ covid_si <- covid %>%
     ((continent == "Africa") | (continent == "South America")) ~ "af_sa",
     ((continent == "Europe") | (continent == "Asia") || (continent == "Oceania") || (continent == "North America")) ~ "eu_as_oc_na"))
  
+covid_af_sa <- covid_si%>% 
+  filter(grouped_continents == "af_sa") %>% 
+  summarise(mean_si = mean(stringency_index)) %>% 
+  print(covid_af_sa)
+
+covid_eu_as_oc_na <- covid_si%>% 
+  filter(grouped_continents == "eu_as_oc_na") %>% 
+  summarise(mean_si = mean(stringency_index)) %>% 
+  print(covid_eu_as_oc_na)
+
 t.test(stringency_index ~ grouped_continents,
        data = covid_si,
        mu = 0,
