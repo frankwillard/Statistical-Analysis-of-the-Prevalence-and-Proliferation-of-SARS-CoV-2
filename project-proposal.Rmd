@@ -151,11 +151,13 @@ covid_si <- covid %>%
     ((continent == "Africa") | (continent == "South America")) ~ "af_sa",
     ((continent == "Europe") | (continent == "Asia") || (continent == "Oceania") || (continent == "North America")) ~ "eu_as_oc_na"))
  
+#Group 1
 covid_af_sa <- covid_si%>% 
   filter(grouped_continents == "af_sa") %>% 
   summarise(mean_si = mean(stringency_index)) %>% 
   print(covid_af_sa)
 
+#Group 2
 covid_eu_as_oc_na <- covid_si%>% 
   filter(grouped_continents == "eu_as_oc_na") %>% 
   summarise(mean_si = mean(stringency_index)) %>% 
@@ -165,10 +167,23 @@ t.test(stringency_index ~ grouped_continents,
        data = covid_si,
        mu = 0,
        var.equal = FALSE,
-       alternative = "greater",
+       alternative = "less",
        conf.level = 0.95)
 
 ```
+
+Using Central Limit Theorem, I have a t distribution with test statistic t = 34.081 and 29017 degrees of freedom.
+
+We have a P-value = 1 > $\alpha$ = 0.05. Thus, we fail to reject $H_0$. We do not have sufficient evidence to suggest that the true mean stringency index of Europe, Asia, Oceania, and North America is greater the true mean stringency index of Africa and South America.
+
+In looking at the summary statistics for the dataset, it becomes clear our perception of global stringency indexes by continent was off, as South America had the highest mean stringency index and Africa had the 3rd highest. Thus, the average stringency index of Africa and South America was 63.46324, much greater than the mere 54.22835 of Europe, Asia, Oceania, and North America.
+
+```{r Further Exploration of Hypothesis 3}
+
+chisq.test(table(covid_final_date$continent, covid_final_date$stringency_index))
+
+```
+
 
 ### Manny
 ``` {r manny}
