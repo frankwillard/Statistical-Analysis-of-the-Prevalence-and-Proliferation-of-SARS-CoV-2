@@ -62,7 +62,8 @@ covid_final_date <- covid %>%
   print(covid_final_date)
 
 
-ggplot(data = covid_final_date, mapping = aes(x = continent , y = total_cases)) + 
+ggplot(data = covid_final_date, mapping = aes(x = continent , 
+                                              y = total_cases)) + 
   geom_boxplot()
 
 
@@ -166,7 +167,10 @@ $H_1$: The true mean stringency index of Europe, Asia, Oceania, and North Americ
 We are performing a CLT-based Hypothesis Test at the $\alpha$ = .05 level.
 
 ``` {r parker}
-# We hypothesize that the stringency index is going to vary the most by continent. We expect Europe, Asia, Oceania, and North America to have higher stringency indexes, while Africa and South America will have lower stringency indexes.
+# We hypothesize that the stringency index is going to vary the most by
+# continent. We expect Europe, Asia, Oceania, and North America to have higher
+# stringency indexes, while Africa and South America will have lower stringency
+# indexes.
 
 #Change from covid to covid final date- shouldnt be using all observations
 #Could be interesting to note how countries stringency indexes change
@@ -195,7 +199,9 @@ covid_si <- covid_final_date %>%
   filter(!is.na(stringency_index)) %>%
   mutate(grouped_continents = case_when(
     ((continent == "Africa") | (continent == "South America")) ~ "af_sa",
-    ((continent == "Europe") | (continent == "Asia") || (continent == "Oceania") || (continent == "North America")) ~ "eu_as_oc_na"))
+    ((continent == "Europe") | (continent == "Asia") ||
+       (continent == "Oceania") || (continent == "North America"))
+    ~ "eu_as_oc_na"))
  
 #Group 1
 covid_af_sa <- covid_si%>% 
@@ -231,8 +237,11 @@ covid_continent_str_i_2 <- covid %>%
   filter(!is.na(stringency_index)) %>%
   mutate(avg_str_index = mean(stringency_index))
   
-ggplot(data = covid_continent_str_i_2, aes(x=date, y=avg_str_index, color = continent)) +
-  geom_line()
+ggplot(data = covid_continent_str_i_2, aes(x=date, y=avg_str_index, 
+                                           color = continent)) +
+  geom_line()+
+  labs(x = "",
+       y = "Mean Stringency Index")
 
 
 ```
