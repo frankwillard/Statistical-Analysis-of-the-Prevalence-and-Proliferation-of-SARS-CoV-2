@@ -125,7 +125,10 @@ We are performing a CLT-based Hypothesis Test at the $\alpha$ = .05 level.
 ``` {r parker}
 # We hypothesize that the stringency index is going to vary the most by continent. We expect Europe, Asia, Oceania, and North America to have higher stringency indexes, while Africa and South America will have lower stringency indexes.
 
-covid_continent_str_i <- covid %>%
+#Change from covid to covid final date- shouldnt be using all observations
+#Could be interesting to note how countries stringency indexes change
+
+covid_continent_str_i <- covid_final %>%
   group_by(continent) %>%
   filter(!is.na(stringency_index)) %>%
   count(total_str_index = sum(stringency_index)) %>%
