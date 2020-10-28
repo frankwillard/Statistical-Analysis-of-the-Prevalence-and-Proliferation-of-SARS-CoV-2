@@ -91,20 +91,24 @@ Manny and Frankie: H_2
 
 Alex and Parker: H_1 and H_3
 
+H_1: We hypothesize that cases per capita will have a strong negative correlation to stringency index.
+
+H_2: We hypothesize that deaths per case will be largely determined by the GDP per capita, the number of citizens aged 65+, hospital beds per thousand, the human development index, and columns concerning pre-existing conditions (i.e. diabetes prevalence, cardiovascular death rate, etc).
+
+H_3: We hypothesize that the stringency index is going to vary the most by continent. We expect Europe, Asia, Oceania, and North America to have higher stringency indexes, while Africa and South America will have lower stringency indexes.
+
+
 ### Alex
 ``` {r alex}
-
-# We hypothesize that cases per capita will have a strong negative correlation to stringency index.
-
-# We hypothesize that deaths per case will be largely determined by the GDP per capita, the number of citizens aged 65+, hospital beds per thousand, the human development index, and columns concerning pre-existing conditions (i.e. diabetes prevalence, cardiovascular death rate, etc).
-
-# We hypothesize that the stringency index is going to vary the most by continent. We expect Europe, Asia, Oceania, and North America to have higher stringency indexes, while Africa and South America will have lower stringency indexes.
 
 covid <- covid %>%
   mutate(cases_per_cap = (total_cases/population),
          deaths_per_cap = (total_deaths/population))
 
-glimpse(covid)
+# Barely any correlation
+covid %>%
+  filter(!is.na(cases_per_cap) & !is.na(stringency_index)) %>%
+  summarize(cor_cases_strin = cor(stringency_index, cases_per_cap))
 
 
 ```
