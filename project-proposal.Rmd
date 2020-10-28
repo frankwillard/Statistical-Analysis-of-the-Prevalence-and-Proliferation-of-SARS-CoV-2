@@ -99,19 +99,62 @@ H_3: We hypothesize that the stringency index is going to vary the most by conti
 
 
 ### Alex
-``` {r alex}
+
+$H_0$: The true correlation of a country's stringency index and total cases per capita is zero. There is no correlation. ($\rho$ = 0)
+
+$H_1$: The true correlation of a country's stringency index and total cases per capita is not zero. There is a negative correlation. ($\rho <$ 0)
+
+$\alpha$: 0.05
+
+
+``` {r general-correlations}
 
 covid <- covid %>%
-  mutate(cases_per_cap = (total_cases/population),
-         deaths_per_cap = (total_deaths/population))
+  mutate(total_cases_per_cap = (total_cases/population),
+         total_deaths_per_cap = (total_deaths/population))
 
-# Barely any correlation
-covid %>%
-  filter(!is.na(cases_per_cap) & !is.na(stringency_index)) %>%
-  summarize(cor_cases_strin = cor(stringency_index, cases_per_cap))
+covid_num <- select_if(covid, is.numeric) # Gets all numeric variables
+covid_cat <- select_if(covid, is.character) # Gets all categorical variables
+covid_cat$stringency_index = covid$stringency_index
 
+col_names <- colnames(covid_num)
+cors <- c(rep(NA, ncol(covid_num)))
+for(i in 1:ncol(covid_num)) {
+  isolated <- covid_num %>%
+    filter(!is.na(stringency_index) & !is.na(covid_num[[i]])) %>%
+    select(stringency_index, col_names[i])
+  
+  cors[i] <- cor(isolated)[2]
+}
+
+correlations <- tibble(cors)
+correlations$other_var = col_names
+correlations <- correlations %>%
+  filter(other_var != "stringency_index")
+
+correlations
+
+# Hypothesis test (H_1)
+cor.test(covid$stringency_index, covid$total_cases_per_cap, alternative="less")
 
 ```
+Using Central Limit Theorem, we have a t distribution with test statistic t = 19.339 and 40315 degrees of freedom. Because our calculated p-value of 1 is greater than my predetermined $\alpha$ of 0.05, we fail to reject the null hypothesis. There is not enough evidence to suggest any negative correlation between stringency index and total cases per capita.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### Parker
 
