@@ -132,16 +132,27 @@ covid_continent_str_i <- covid %>%
   mutate(avg_str_index = total_str_index/n) %>%
   arrange(desc(avg_str_index)) %>%
   select(continent, avg_str_index) %>%
-  print(continent, avg_str_index)
+  print(covid_continent_str_i)
 
-covid <- covid %>%
+
+# covid_continent_str_i_2 <- covid %>%
+#   group_by(continent) %>%
+#   filter(!is.na(stringency_index)) %>%
+#   mutate(avg_str_index = mean(stringency_index)) %>%
+#   select(continent, avg_str_index) %>%
+#   summarise_all(mean) %>%
+#   arrange(desc(avg_str_index))
+#   print(covid_continent_str_i_2)
+
+
+covid_si <- covid %>%
   filter(!is.na(stringency_index)) %>%
   mutate(grouped_continents = case_when(
-    ((continent == "Africa") || (continent == "South America")) ~ "af_sa",
-    ((continent == "Europe") || (continent == "Asia") || (continent == "Oceania") || (continent == "North America")) ~ "eu_as_oc_na"))
+    ((continent == "Africa") | (continent == "South America")) ~ "af_sa",
+    ((continent == "Europe") | (continent == "Asia") || (continent == "Oceania") || (continent == "North America")) ~ "eu_as_oc_na"))
  
-t.test(stringency_index ~ grouped_continents, 
-       data = covid,
+t.test(stringency_index ~ grouped_continents,
+       data = covid_si,
        mu = 0,
        var.equal = FALSE,
        alternative = "greater",
