@@ -142,21 +142,6 @@ cor.test(covid$stringency_index, covid$total_cases_per_cap, alternative="less")
 Using Central Limit Theorem, we have a t distribution with test statistic t = 19.339 and 40315 degrees of freedom. Because our calculated p-value of 1 is greater than my predetermined $\alpha$ of 0.05, we fail to reject the null hypothesis. There is not enough evidence to suggest any negative correlation between stringency index and total cases per capita.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### Parker
 
 
@@ -279,8 +264,44 @@ Our visualization highlights similar growth patterns in stringency index among t
 
 ```
 
+
+Hypothesis 2: We hypothesize that deaths per case will be largely determined by the GDP per capita, the number of citizens aged 65+, hospital beds per thousand, the human development index, and columns concerning pre-existing conditions (i.e. diabetes prevalence, cardiovascular death rate, etc).
+
+
 ### Frankie
 ``` {r frankie}
+
+covid_final_date_deaths <- covid_final_date %>% 
+  filter(!is.na(total_deaths) & !is.na(total_cases)) %>% 
+  mutate(deaths_per_case = total_deaths / total_cases)
+
+covid_num <- select_if(covid_final_date_deaths, is.numeric) # Gets all numeric variables
+covid_cat <- select_if(covid_final_date_deaths, is.character) # Gets all categorical variables
+covid_cat$deaths_per_case = covid_final_date_deaths$deaths_per_case
+
+col_names <- colnames(covid_num)
+
+cors_deaths <- c(rep(NA, ncol(covid_num)))
+for(i in 1:ncol(covid_num)) {
+  isolated <- covid_num %>%
+    filter(!is.na(deaths_per_case) & !is.na(covid_num[[i]])) %>%
+    select(deaths_per_case, col_names[i])
+
+  cors_deaths[i] <- cor(isolated)[2]
+}
+
+correlations_deaths <- tibble(cors_deaths)
+correlations_deaths$other_var = col_names
+correlations <- correlations %>%
+  filter(other_var != "deaths_per_case") %>% 
+  arrange(desc(abs(cors)))
+
+correlations
+
+# Hypothesis test (H_1)
+# cor.test(covid$stringency_index, covid$total_cases_per_cap, alternative="less")
+
+
 
 ```
 
