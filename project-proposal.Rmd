@@ -54,20 +54,11 @@ glimpse(covid)
 
 
 ###Exploratory Data Analysis
-```{r Create Dataset with Final Covid Statistics}
-
-covid_final_date <- covid %>% 
-  filter(date == "2020-10-05") %>% 
-  print(covid_final_date)
-
-
-```
 
 ```{r Scatterplot}
 
-covid_final_date %>% 
-  filter(is.na(continent)) %>% 
-  select(location) %>% 
+covid_final_date <- covid %>% 
+  filter(date == "2020-10-05" & !is.na(continent)) %>% 
   print(covid_final_date)
 
 
@@ -76,6 +67,34 @@ ggplot(data = covid_final_date, mapping = aes(x = continent , y = total_cases)) 
 
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
