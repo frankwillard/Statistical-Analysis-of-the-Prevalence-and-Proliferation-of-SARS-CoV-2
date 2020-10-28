@@ -131,7 +131,9 @@ for(i in 1:ncol(covid_num)) {
 correlations <- tibble(cors)
 correlations$other_var = col_names
 correlations <- correlations %>%
-  filter(other_var != "stringency_index")
+  filter(other_var != "stringency_index")%>% 
+  arrange(desc(abs(cors)))
+
 
 correlations
 
@@ -292,11 +294,13 @@ for(i in 1:ncol(covid_num)) {
 
 correlations_deaths <- tibble(cors_deaths)
 correlations_deaths$other_var = col_names
-correlations <- correlations %>%
-  filter(other_var != "deaths_per_case") %>% 
-  arrange(desc(abs(cors)))
+correlations_deaths <- correlations_deaths %>%
+  filter(!str_detect(other_var,'cases') & !str_detect(other_var,'deaths')) %>% 
+  arrange(desc(abs(cors_deaths))) %>% 
+  print(correlations_deaths)
 
-correlations
+#str_detect from
+#https://stackoverflow.com/questions/22850026/filter-rows-which-contain-a-certain-string
 
 # Hypothesis test (H_1)
 # cor.test(covid$stringency_index, covid$total_cases_per_cap, alternative="less")
@@ -305,8 +309,27 @@ correlations
 
 ```
 
+Variables with strongest correlation: male_smokers, diabetes_prevalence, hospital_beds_per_thousand, aged_70_older, population_density
+
+gdp_per_capita, human_development_index, cardiovasc_death_rate had lower correlations than we expected
+
+```{r Mulitiple Linear Regression}
+
+#Could try running a bunch of lines and then seeing which has maximum adjust R^2
+
+m_main <- lm(deaths_per_case ~  hospital_beds_per_thousand + aged_70_older + population_density, data = covid_final_date_deaths)
+
+# m_main %>%
+#  tidy() %>%
+#  select(term, estimate)
+
+glance(m_main)
+glance(m_main)$r.squared
 
 
+```
+
+In taking the most variables with the largest correlations with the greatest correlations, we can create a linear regression model to attempt to predict a country's deaths per cases based on its data and demographics. 
 
 
 
