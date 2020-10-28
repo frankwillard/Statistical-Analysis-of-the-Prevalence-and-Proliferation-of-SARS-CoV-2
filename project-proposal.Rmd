@@ -229,23 +229,7 @@ Using Central Limit Theorem, I have a t distribution with test statistic t = 34.
 We have a P-value = 1 > $\alpha$ = 0.05. Thus, we fail to reject $H_0$. We do not have sufficient evidence to suggest that the true mean stringency index of Europe, Asia, Oceania, and North America is greater the true mean stringency index of Africa and South America.
 
 In looking at the summary statistics for the dataset, it becomes clear our perception of global stringency indexes by continent was misguided, as South America had the highest mean stringency index and Africa had the 4th highest. Thus, the average stringency index of Africa and South America was 55.231, which is greater than the mere 50.87269 of Europe, Asia, Oceania, and North America.
-
-```{r Visualize Continent Stringency Indexes over Time}
-
-covid_continent_str_i_2 <- covid %>%
-  group_by(continent, date) %>%
-  filter(!is.na(stringency_index)) %>%
-  mutate(avg_str_index = mean(stringency_index))
-  
-ggplot(data = covid_continent_str_i_2, aes(x=date, y=avg_str_index, 
-                                           color = continent)) +
-  geom_line()+
-  labs(x = "",
-       y = "Mean Stringency Index")
-
-
-```
-
+ 
 
 
 ```{r Further Exploration of Hypothesis 3}
@@ -254,7 +238,7 @@ chisq.test(table(covid_final_date$continent, covid_final_date$stringency_index))
 
 ```
 
-While we may have determined that we did not have sufficient evidence to suggest that  true mean stringency index of Europe, Asia, Oceania, and North America is greater the true mean stringency index of Africa and South America, we see from the summary statistics that different continents do have different mean stringency indexes. Thus, we would like to determine if continent has a statistically significant effect on stringency index.
+While we may have determined that we did not have sufficient evidence to suggest that true mean stringency index of Europe, Asia, Oceania, and North America is greater the true mean stringency index of Africa and South America, we see from the summary statistics that different continents do have different mean stringency indexes. Thus, we would like to determine if continent has a statistically significant effect on stringency index.
 
 $H_0$: Stringency index and continent are independent (have no association).
 $H_1$: Stringency index and continent are not independent (have an association).
@@ -264,6 +248,30 @@ We are performing a Chi-Square Test at the $\alpha$ = .05 level.
 We have a chi-square distribution with our test statistic $\chi$^2 = 322.47 and 285 degrees of freedom.
 
 We have a P-value = 0.0624 > $\alpha$ = 0.05. Thus, we fail to reject $H_0$. We do not have convincing evidence to suggest that stringency index and continent are not independent.
+
+```{r Visualize Continent Stringency Indexes over Time}
+
+covid_continent_str_i_2 <- covid %>%
+  group_by(continent, date) %>%
+  filter(!is.na(stringency_index)) %>%
+  mutate(avg_str_index = mean(stringency_index))
+  
+#Make title more informative
+ggplot(data = covid_continent_str_i_2, aes(x=date, y=avg_str_index, 
+                                           color = continent)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Mean Stringency Index",
+       title = "Mean Stringency Index Over Time",
+       subtitle = "Color by Continent")
+
+
+```
+
+While the past hypothesis tests looked at the final stringency index in our dataset, it may be interesting to see how stringency indexes change over time, and how that may affect cases. 
+
+Our visualization highlights similar growth patterns in stringency index among the different continents with a significant rise in March, maximum in April, and slow decline afterward. One can see that Asia and Oceania were quicker to act and increase stringency index, having their stringency indexes around 20 by February (about double the other continents).
+
 
 
 ### Manny
