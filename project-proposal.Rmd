@@ -3,8 +3,8 @@ title: 'Final Project Proposal: COVID-19 Dataset'
 author: 'The Lads: Frankie Willard, Manny Mokel, Alex Katopodis, Parker Dingman'
 subtitle: Due Friday, October 9, 11:59 PM
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ### Section 1- Introduction
@@ -110,7 +110,38 @@ glimpse(covid)
 ```
 
 ### Parker
+
+
+$H_0$: The true mean stringency index of Europe, Asia, Oceania, and North America is equal to the true mean stringency index of Africa and South America
+
+$H_1$: The true mean stringency index of Europe, Asia, Oceania, and North America is greater the true mean stringency index of Africa and South America
+
+We are performing a CLT-based Hypothesis Test at the $\alpha$ = .05 level.
+
 ``` {r parker}
+# We hypothesize that the stringency index is going to vary the most by continent. We expect Europe, Asia, Oceania, and North America to have higher stringency indexes, while Africa and South America will have lower stringency indexes.
+
+covid_continent_str_i <- covid %>%
+  group_by(continent) %>%
+  filter(!is.na(stringency_index)) %>%
+  count(total_str_index = sum(stringency_index)) %>%
+  mutate(avg_str_index = total_str_index/n) %>%
+  arrange(desc(avg_str_index)) %>%
+  select(continent, avg_str_index) %>%
+  print(continent, avg_str_index)
+
+covid <- covid %>%
+  filter(!is.na(stringency_index)) %>%
+  mutate(grouped_continents = case_when(
+    ((continent == "Africa") || (continent == "South America")) ~ "af_sa",
+    ((continent == "Europe") || (continent == "Asia") || (continent == "Oceania") || (continent == "North America")) ~ "eu_as_oc_na"))
+ 
+t.test(stringency_index ~ grouped_continents, 
+       data = covid,
+       mu = 0,
+       var.equal = FALSE,
+       alternative = "greater",
+       conf.level = 0.95)
 
 ```
 
