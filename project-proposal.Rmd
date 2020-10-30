@@ -42,7 +42,7 @@ https://www.ecdc.europa.eu/en/covid-19/data-collection
 library(tidyverse)
 
 covid <- read_csv("data/covid-data.csv")
-#glimpse(covid)
+glimpse(covid)
 ```
 
 
@@ -112,7 +112,9 @@ $\alpha$: 0.05
 
 covid <- covid %>%
   mutate(new_cases_per_cap = (new_cases/population),
-         new_deaths_per_cap = (new_deaths/population))
+         new_deaths_per_cap = (new_deaths/population),
+         total_cases_per_cap = (total_cases/population),
+         total_deaths_per_cap = (total_deaths/population))
 
 covid_num <- select_if(covid, is.numeric) # Gets all numeric variables
 covid_cat <- select_if(covid, is.character) # Gets all categorical variables
@@ -137,11 +139,11 @@ correlations <- correlations %>%
 
 correlations
 
-# Hypothesis test (H_1)
-cor.test(covid$stringency_index, covid$total_cases_per_cap, alternative="less")
+# Exploration of Hypothesis Test 1
+cor.test(covid$stringency_index, covid$new_cases_per_cap, alternative="less")
 
 ```
-Using Central Limit Theorem, we have a t distribution with test statistic t = 19.339 and 40315 degrees of freedom. Because our calculated p-value of 1 is greater than my predetermined $\alpha$ of 0.05, we fail to reject the null hypothesis. There is not enough evidence to suggest any negative correlation between stringency index and total cases per capita.
+Using Central Limit Theorem, we have a t distribution with test statistic t = 29.683 and 40315 degrees of freedom. Because our calculated p-value of 1 is greater than my predetermined $\alpha$ of 0.05, we fail to reject the null hypothesis. There is not enough evidence to suggest any negative correlation between stringency index and total cases per capita.
 
 
 ### Parker
@@ -258,6 +260,49 @@ ggplot(data = covid_continent_str_i_2, aes(x=date, y=avg_str_index,
 While the past hypothesis tests looked at the final stringency index in our dataset, it may be interesting to see how stringency indexes change over time, and how that may affect cases. 
 
 Our visualization highlights similar growth patterns in stringency index among the different continents with a significant rise in March, maximum in April, and slow decline afterward. One can see that Asia and Oceania were quicker to act and increase stringency index, having their stringency indexes around 20 by February (about double the other continents).
+
+We've already observed from our correlation tables above that we don't have enough evidence to suggest there's a correlation between stringency index and the amount of covid cases. However, we now hypothesize that the reasone we failed to reject our first null hypothesis is that once cases exist, there is little you can do to contain the spread. Thus, we want to assess the possibility that stringency index is correlated to new cases per capita only in the early months of spread.
+
+One downfall we see is that countries change their stringency index in reaction ot rising cases. This can give the illusion that they're more positively correlated than they may (not) be. Thus, we will create a new variable that tracks the factor by which new_cases is changing from day to day. We will check this correlation agains stringency index. After all, a high stringency index is designed to SLOW the spread of a virus - not stop it.
+
+``` {r eda-stringency-early-cases}
+
+# Make some sort of variable that tracks a factor by which new cases is growing each day.
+
+n_days <- 90
+
+covid_early <- covid %>%
+  group_by(location) %>%
+  filter(total_cases > 0 & !is.na(stringency_index) & !is.na(new_cases)) %>%
+  slice(1:n_days) %>%
+  select(continent, location, total_cases, new_cases, stringency_index)
+
+covid_early
+
+covid_early %>%
+  summarize(cor_var_string = cor(stringency_index, new_cases))
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
