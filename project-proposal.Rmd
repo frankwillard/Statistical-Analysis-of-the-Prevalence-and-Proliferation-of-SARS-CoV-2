@@ -111,8 +111,8 @@ $\alpha$: 0.05
 ``` {r general-correlations}
 
 covid <- covid %>%
-  mutate(total_cases_per_cap = (total_cases/population),
-         total_deaths_per_cap = (total_deaths/population))
+  mutate(new_cases_per_cap = (new_cases/population),
+         new_deaths_per_cap = (new_deaths/population))
 
 covid_num <- select_if(covid, is.numeric) # Gets all numeric variables
 covid_cat <- select_if(covid, is.character) # Gets all categorical variables
