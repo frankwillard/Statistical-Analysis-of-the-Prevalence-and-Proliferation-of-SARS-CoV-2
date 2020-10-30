@@ -261,11 +261,66 @@ Our visualization highlights similar growth patterns in stringency index among t
 
 
 
+
+
 ### Manny
+
+Hypothesis 2: We hypothesize that deaths per case will be largely determined by the GDP per capita, the number of citizens aged 65+, hospital beds per thousand, the human development index, and columns concerning pre-existing conditions (i.e. diabetes prevalence, cardiovascular death rate, etc).
+
+
 ``` {r manny}
+
+# In order to accurately compare between countries, mutate deaths per case
+covid_final_date <- covid_final_date %>% 
+  mutate(deaths_per_case = total_deaths/total_cases)
+
+# Get rid of null values for numeric variables
+filtered_covid <- covid_final_date %>%
+  filter(gdp_per_capita > 0) %>% 
+  filter(aged_65_older > 0) %>% 
+  filter(hospital_beds_per_thousand > 0) %>% 
+  filter(human_development_index >0)
+  
+ggplot(data = filtered_covid, mapping = aes(x = gdp_per_capita, 
+                                             y = deaths_per_case)) +
+  geom_point()
+r_gdp <- glance(lm(deaths_per_case ~ gdp_per_capita, 
+                   data = filtered_covid))$r.squared
+
+
+
+ggplot(data = filtered_covid, mapping = aes(x = aged_65_older, 
+                                             y = deaths_per_case)) +
+  geom_point()
+r_seniors <- glance(lm(deaths_per_case ~ aged_65_older, 
+                       data = filtered_covid))$r.squared
+
+
+
+ggplot(data = filtered_covid, mapping = aes(x = hospital_beds_per_thousand, 
+                                             y = deaths_per_case)) +
+  geom_point()
+r_hospital <- glance(lm(deaths_per_case ~ hospital_beds_per_thousand, 
+            data = filtered_covid))$r.squared
+
+
+
+ggplot(data = filtered_covid, mapping = aes(x = human_development_index, 
+                                             y = deaths_per_case)) +
+  geom_point()
+r_dev <- glance(lm(deaths_per_case ~ human_development_index, 
+            data = filtered_covid))$r.squared
+
+r_gdp
+r_seniors
+r_hospital
+r_dev
+
 
 ```
 
+
+Given the visualizations between all the continuous numerical variables and deaths per case, as well as the correlations from linear regressions, each of these variables by themselves seems to have little to no impact at all on the deaths per case from COVID. However it very well may be that that the combination between these variables as well as the possibility for interaction terms between them could predict COVID much better.
 
 Hypothesis 2: We hypothesize that deaths per case will be largely determined by the GDP per capita, the number of citizens aged 65+, hospital beds per thousand, the human development index, and columns concerning pre-existing conditions (i.e. diabetes prevalence, cardiovascular death rate, etc).
 
@@ -309,9 +364,7 @@ correlations_deaths <- correlations_deaths %>%
 
 ```
 
-Variables with strongest correlation: male_smokers, diabetes_prevalence, hospital_beds_per_thousand, aged_70_older, population_density
-
-gdp_per_capita, human_development_index, cardiovasc_death_rate had lower correlations than we expected
+Variables with st
 
 ```{r Mulitiple Linear Regression}
 
@@ -328,6 +381,8 @@ glance(m_main)$r.squared
 
 
 ```
+
+
 
 In taking the most variables with the largest correlations with the greatest correlations, we can create a linear regression model to attempt to predict a country's deaths per cases based on its data and demographics. 
 
