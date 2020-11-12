@@ -148,10 +148,14 @@ covid %>%
   filter(!is.na(stringency_index) & !is.na(total_cases_per_cap)) %>% 
   summarize(cor_stringency = cor(stringency_index, total_cases_per_cap))
 
+cor.test(covid$stringency_index, covid$total_cases_per_cap, alternative="less")
 
 ```
 
 In summarizing the correlation between stringency index and total cases per capita, it becomes clear that our hypothesis is likely incorrect.
+
+In performing a correlation test using Central Limit Theorem, we have a t distribution with test statistic t = 29.683 and 40315 degrees of freedom. Because our calculated p-value of 1 is greater than my predetermined $\alpha$ of 0.05, we fail to reject the null hypothesis. There is not enough evidence to suggest any negative correlation between stringency index and total cases per capita.
+
 
 
 ```{r Visualize Total Cases per Capita}
@@ -178,7 +182,7 @@ ggplot(data = covid_continental_stringency, aes(x=date, y= avg_total_cases_cap))
 
 ```
 
-In visualizing a graph of the average global stringency index over time alongside a graph of the average 
+In visualizing a graph of the average global stringency index over time alongside a graph of the average total cases per capita of countries over time, it becomes clear that our hypothesis is incorrect. While governments initially increased their stringency indexes greatly, there reaches a point in mid-April where it begins decreasing, while total cases per capita retains exponential growth until October.
 
 
 ```{r Summarize Correlation Stringency New Cases Per Capita Stringency}
@@ -212,7 +216,6 @@ factors[357]
 
 
 ```
-Using Central Limit Theorem, we have a t distribution with test statistic t = 29.683 and 40315 degrees of freedom. Because our calculated p-value of 1 is greater than my predetermined $\alpha$ of 0.05, we fail to reject the null hypothesis. There is not enough evidence to suggest any negative correlation between stringency index and total cases per capita.
 
 
 ### Parker
