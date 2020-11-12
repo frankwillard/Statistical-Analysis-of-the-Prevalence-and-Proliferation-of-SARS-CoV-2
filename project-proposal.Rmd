@@ -122,6 +122,7 @@ covid_cat$stringency_index = covid$stringency_index
 
 col_names <- colnames(covid_num)
 cors <- c(rep(NA, ncol(covid_num)))
+
 for(i in 1:ncol(covid_num)) {
   isolated <- covid_num %>%
     filter(!is.na(stringency_index) & !is.na(covid_num[[i]])) %>%
@@ -141,6 +142,22 @@ correlations
 
 # Exploration of Hypothesis Test 1
 cor.test(covid$stringency_index, covid$new_cases_per_cap, alternative="less")
+
+
+
+
+
+covid_by_country <- covid %>%
+  group_by(location) %>%
+  filter(!is.na(new_cases))
+
+factors = c(rep(NA, nrow(covid_by_country)))
+
+for (i in 2:nrow(covid_by_country)) {
+  factors[i] = covid_by_country[i, 6] / covid_by_country[i - 1, 6]
+}
+
+factors[357]
 
 ```
 Using Central Limit Theorem, we have a t distribution with test statistic t = 29.683 and 40315 degrees of freedom. Because our calculated p-value of 1 is greater than my predetermined $\alpha$ of 0.05, we fail to reject the null hypothesis. There is not enough evidence to suggest any negative correlation between stringency index and total cases per capita.
@@ -255,7 +272,7 @@ covid_continent_str_i_2 <- covid %>%
   group_by(continent, date) %>%
   filter(!is.na(stringency_index)) %>%
   mutate(avg_str_index = mean(stringency_index))
-  
+
 #Make title more informative
 ggplot(data = covid_continent_str_i_2, aes(x=date, y=avg_str_index, 
                                            color = continent)) +
