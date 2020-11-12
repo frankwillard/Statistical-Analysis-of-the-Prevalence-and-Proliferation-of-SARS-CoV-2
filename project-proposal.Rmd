@@ -211,6 +211,17 @@ t.test(stringency_index ~ grouped_continents,
        alternative = "less",
        conf.level = 0.95)
 
+  
+  
+  
+  isolated <- covid_num %>%
+    filter(!is.na(deaths_per_case) & !is.na(covid_num[[i]])) %>%
+    select(col_names[i], deaths_per_case)
+
+  cors_deaths[i] <- cor(isolated)[2]
+
+  
+  
 ```
 
 Using Central Limit Theorem, I have a t distribution with test statistic t = 34.081 and 29017 degrees of freedom.
@@ -387,7 +398,7 @@ cors_deaths <- c(rep(NA, ncol(covid_num)))
 for(i in 1:ncol(covid_num)) {
   isolated <- covid_num %>%
     filter(!is.na(deaths_per_case) & !is.na(covid_num[[i]])) %>%
-    select(deaths_per_case, col_names[i])
+    select(col_names[i], deaths_per_case)
 
   cors_deaths[i] <- cor(isolated)[2]
 }
@@ -407,6 +418,7 @@ correlations_deaths <- correlations_deaths %>%
 
 
 
+
 ```
 
 Variables with st
@@ -415,14 +427,13 @@ Variables with st
 
 #Could try running a bunch of lines and then seeing which has maximum adjust R^2
 
-m_main <- lm(deaths_per_case ~  hospital_beds_per_thousand + aged_70_older + population_density, data = covid_final_date_deaths)
+m_main <- lm(deaths_per_case ~ male_smokers + diabetes_prevalence + hospital_beds_per_thousand + aged_70_older + population_density + aged_65_older + population + female_smokers + extreme_poverty + stringency_index + human_development_index + gdp_per_capita + life_expectancy + cardiovasc_death_rate + handwashing_facilities + median_age, data = covid_final_date_deaths)
 
-# m_main %>%
-#  tidy() %>%
-#  select(term, estimate)
+m_main %>%
+ tidy()
 
-glance(m_main)
-glance(m_main)$r.squared
+glance(m_main) %>% 
+  select(r.squared, adj.r.squared)
 
 
 ```
@@ -434,7 +445,37 @@ In taking the most variables with the largest correlations with the greatest cor
 
 
 
+```{r Hypothesis 1 Visualization}
 
+#Hypothesis for cases per capita strong negative correlation to stringency index.
+
+#Make variable depending on states that had highest final cases per death
+
+# covid_cases_stringency <- covid %>%
+#   group_by(continent, date) %>%
+#   filter(!is.na(stringency_index)) %>%
+#   mutate(avg_str_index = mean(stringency_index))
+# 
+# #Make title more informative
+# ggplot(data = covid_continent_str_i_2, aes(x=date, y=avg_str_index,
+#                                            color = continent)) +
+#   geom_line()+
+#   labs(x = "Date",
+#        y = "Mean Stringency Index",
+#        title = "Mean Stringency Index Over Time",
+#        subtitle = "Color by Continent")
+
+ggplot(data = covid_continent_str_i_2, aes(x=date, y=total_cases_per_cap,
+                                           color = continent)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Mean Stringency Index",
+       title = "Mean Stringency Index Over Time",
+       subtitle = "Color by Continent")
+
+
+
+```
 
 
 
