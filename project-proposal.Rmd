@@ -164,42 +164,66 @@ covid_continental_stringency <- covid %>%
   group_by(date) %>%
   filter(!is.na(stringency_index) & !is.na(total_cases_per_cap)) %>%
   mutate(avg_str_index = mean(stringency_index),
-         avg_total_cases_cap = mean(total_cases_per_cap))
+         avg_total_cases_cap = mean(total_cases_per_cap),
+         avg_new_cases_cap = mean(new_cases_per_cap))
 
 #Make title more informative
 ggplot(data = covid_continental_stringency, aes(x=date, y = avg_str_index)) +
   geom_line()+
   labs(x = "Date",
        y = "Mean Stringency Index",
-       title = "Mean Stringency Index Over Time",
-       subtitle = "Color by Continent")+
+       title = "Mean Stringency Index Over Time")+
 ggplot(data = covid_continental_stringency, aes(x=date, y= avg_total_cases_cap)) +
   geom_line()+
   labs(x = "Date",
        y = "Mean Total Cases Per Capita",
-       title = "Mean Total Cases Per Capita Over Time",
-       subtitle = "Color by Continent")  
+       title = "Mean Total Cases Per Capita Over Time")  
 
 ```
 
-In visualizing a graph of the average global stringency index over time alongside a graph of the average total cases per capita of countries over time, it becomes clear that our hypothesis is incorrect. While governments initially increased their stringency indexes greatly, there reaches a point in mid-April where it begins decreasing, while total cases per capita retains exponential growth until October.
+In visualizing a graph of the average global stringency index over time alongside a graph of the average total cases per capita of countries over time, it becomes clear that our hypothesis seems ill-advised. While governments initially increased their stringency indexes greatly, there reaches a point in mid-April where it begins decreasing, while total cases per capita retains exponential growth until October.
+
+-------------------Insert explanation for why this may be---------------
+
+In calculating our summary statistic for correlation between stringency index and total cases per capita, we see that they appear to have a positive correlation. This seems to be supported by the graph. The reason for this may be because countries started with extremely low stringency indexes and were reactive in their COVID responses, such that COVID infiltrated their countries before their stringency index became so high. Thus, they would have higher stringency indexes and higher case counts, as they failed to prevent the spread and increased their stringency index as a result of cases becoming so high. Thus, total cases per capita increased at a high rate despite stringency index being high, and thus it appears to have a positive correlation.
+
+
+Thus, we would like to investigate whether there may be a statistically significant positive correlation between total cases per capita and stringency index, as well as new cases per capita and stringency index.  
+
+```{r Visualize Stringency Index with New Cases Per Capita}
+
+#Make title more informative
+ggplot(data = covid_continental_stringency, aes(x=date, y = avg_str_index)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Mean Stringency Index",
+       title = "Mean Stringency Index Over Time")+
+ggplot(data = covid_continental_stringency, aes(x=date, y= avg_new_cases_cap)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Mean New Cases Per Capita",
+       title = "Mean New Cases Per Capita Over Time")  
+
+
+```
 
 
 ```{r Summarize Correlation Stringency New Cases Per Capita Stringency}
 
 covid %>% 
   filter(!is.na(stringency_index) & !is.na(new_cases_per_cap)) %>% 
-  summarize(cor_stringency = cor(stringency_index, new_cases_per_cap))
+  summarize(cor_stringency_new_cases = cor(stringency_index, new_cases_per_cap))
 
+# Exploration of Hypothesis Test 1
+cor.test(covid$stringency_index, covid$new_cases_per_cap, alternative="less")
 
 ```
 
 
 
-```{r Cor Test}
 
-# Exploration of Hypothesis Test 1
-cor.test(covid$stringency_index, covid$new_cases_per_cap, alternative="less")
+
+```{r Cor Test}
 
 
 covid_by_country <- covid %>%
