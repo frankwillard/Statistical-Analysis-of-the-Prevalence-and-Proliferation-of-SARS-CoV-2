@@ -99,13 +99,7 @@ H_2: We hypothesize that deaths per case will be largely determined by the GDP p
 H_3: We hypothesize that the stringency index is going to vary the most by continent. We expect Europe, Asia, Oceania, and North America to have higher stringency indexes, while Africa and South America will have lower stringency indexes.
 
 
-### Alex
-
-$H_0$: The true correlation of a country's stringency index and total cases per capita is zero. There is no correlation. ($\rho$ = 0)
-
-$H_1$: The true correlation of a country's stringency index and total cases per capita is not zero. There is a negative correlation. ($\rho <$ 0)
-
-$\alpha$: 0.05
+Hypothesis 1:
 
 
 ``` {r general-correlations}
@@ -140,14 +134,99 @@ correlations <- correlations %>%
 
 correlations
 
+```
+
+$H_0$: The true correlation of a country's stringency index and total cases per capita is zero. There is no correlation. ($\rho$ = 0)
+
+$H_1$: The true correlation of a country's stringency index and total cases per capita is not zero. There is a negative correlation. ($\rho <$ 0)
+
+$\alpha$: 0.05
+
+```{r Bootstrap for Correlations}
+
+covid %>% 
+  filter(!is.na(stringency_index) & !is.na(total_cases_per_cap)) %>% 
+  summarize(cor_stringency = cor(stringency_index, total_cases_per_cap))
+
+cor.test(covid$stringency_index, covid$total_cases_per_cap, alternative="less")
+
+```
+
+In summarizing the correlation between stringency index and total cases per capita, it becomes clear that our hypothesis is likely incorrect.
+
+In performing a correlation test using Central Limit Theorem, we have a t distribution with test statistic t = 29.683 and 40315 degrees of freedom. Because our calculated p-value of 1 is greater than my predetermined $\alpha$ of 0.05, we fail to reject the null hypothesis. There is not enough evidence to suggest any negative correlation between stringency index and total cases per capita.
+
+
+
+```{r Visualize Total Cases per Capita}
+
+covid_continental_stringency <- covid %>%
+  group_by(date) %>%
+  filter(!is.na(stringency_index) & !is.na(total_cases_per_cap)) %>%
+  mutate(avg_str_index = mean(stringency_index),
+         avg_total_cases_cap = mean(total_cases_per_cap),
+         avg_new_cases_cap = mean(new_cases_per_cap))
+
+#Make title more informative
+ggplot(data = covid_continental_stringency, aes(x=date, y = avg_str_index)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Mean Stringency Index",
+       title = "Mean Stringency Index Over Time")+
+ggplot(data = covid_continental_stringency, aes(x=date, y= avg_total_cases_cap)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Mean Total Cases Per Capita",
+       title = "Mean Total Cases Per Capita Over Time")  
+
+```
+
+In visualizing a graph of the average global stringency index over time alongside a graph of the average total cases per capita of countries over time, it becomes clear that our hypothesis seems ill-advised. While governments initially increased their stringency indexes greatly, there reaches a point in mid-April where it begins decreasing, while total cases per capita retains exponential growth until October.
+
+-------------------Insert explanation for why this may be---------------
+
+In calculating our summary statistic for correlation between stringency index and total cases per capita, we see that they appear to have a positive correlation. This seems to be supported by the graph. The reason for this may be because countries started with extremely low stringency indexes and were reactive in their COVID responses, such that COVID infiltrated their countries before their stringency index became so high. Thus, they would have higher stringency indexes and higher case counts, as they failed to prevent the spread and increased their stringency index as a result of cases becoming so high. Thus, total cases per capita increased at a high rate despite stringency index being high, and thus it appears to have a positive correlation.
+
+
+Thus, we would like to investigate whether there may be a statistically significant positive correlation between total cases per capita and stringency index, as well as new cases per capita and stringency index.  
+
+```{r Visualize Stringency Index with New Cases Per Capita}
+
+#Make title more informative
+ggplot(data = covid_continental_stringency, aes(x=date, y = avg_str_index)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Mean Stringency Index",
+       title = "Mean Stringency Index Over Time")+
+ggplot(data = covid_continental_stringency, aes(x=date, y= avg_new_cases_cap)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Mean New Cases Per Capita",
+       title = "Mean New Cases Per Capita Over Time")  
+
+
+```
+
+
+```{r Summarize Correlation Stringency New Cases Per Capita Stringency}
+
+covid %>% 
+  filter(!is.na(stringency_index) & !is.na(new_cases_per_cap)) %>% 
+  summarize(cor_stringency_new_cases = cor(stringency_index, new_cases_per_cap))
+
 # Exploration of Hypothesis Test 1
 cor.test(covid$stringency_index, covid$new_cases_per_cap, alternative="less")
+
+```
+
 
 
 #dataset$rate <- 0
 #for(i in 2:nrow(dataset)){
 #dataset$rate[i] <- dataset$cases[i]/dataset$cases[i - 1]
 #}
+
+```{r Cor Test}
 
 
 covid_by_country <- covid %>%
@@ -166,7 +245,6 @@ for (i in 2:nrow(covid_by_country)) {
 }
 
 ```
-Using Central Limit Theorem, we have a t distribution with test statistic t = 29.683 and 40315 degrees of freedom. Because our calculated p-value of 1 is greater than my predetermined $\alpha$ of 0.05, we fail to reject the null hypothesis. There is not enough evidence to suggest any negative correlation between stringency index and total cases per capita.
 
 ``` {r}
 covid_by_country %>%
@@ -181,7 +259,9 @@ covid_by_country %>%
 
 ```
 
-### Parker
+Hypothesis 3
+
+
 
 
 $H_0$: The true mean stringency index of Europe, Asia, Oceania, and North America is equal to the true mean stringency index of Africa and South America
@@ -199,14 +279,7 @@ We are performing a CLT-based Hypothesis Test at the $\alpha$ = .05 level.
 #Change from covid to covid final date- shouldnt be using all observations
 #Could be interesting to note how countries stringency indexes change
 
-covid_continent_str_i <- covid_final_date %>%
-  group_by(continent) %>%
-  filter(!is.na(stringency_index)) %>%
-  count(total_str_index = sum(stringency_index)) %>%
-  mutate(avg_str_index = total_str_index/n) %>%
-  arrange(desc(avg_str_index)) %>%
-  select(continent, avg_str_index) %>%
-  print(covid_continent_str_i)
+
 
 
 # covid_continent_str_i_2 <- covid %>%
@@ -224,7 +297,7 @@ covid_si <- covid_final_date %>%
   mutate(grouped_continents = case_when(
     ((continent == "Africa") | (continent == "South America")) ~ "af_sa",
     ((continent == "Europe") | (continent == "Asia") ||
-       (continent == "Oceania") || (continent == "North America"))
+       (continent == "Oceania") | (continent == "North America"))
     ~ "eu_as_oc_na"))
  
 #Group 1
@@ -246,6 +319,17 @@ t.test(stringency_index ~ grouped_continents,
        alternative = "less",
        conf.level = 0.95)
 
+  
+  
+  
+  # isolated <- covid_num %>%
+  #   filter(!is.na(deaths_per_case) & !is.na(covid_num[[i]])) %>%
+  #   select(col_names[i], deaths_per_case)
+  # 
+  # cors_deaths[i] <- cor(isolated)[2]
+
+  
+  
 ```
 
 Using Central Limit Theorem, I have a t distribution with test statistic t = 34.081 and 29017 degrees of freedom.
@@ -258,7 +342,7 @@ In looking at the summary statistics for the dataset, it becomes clear our perce
 
 ```{r Further Exploration of Hypothesis 3}
 
-chisq.test(table(covid_final_date$continent, covid_final_date$stringency_index))
+chisq.test(table(covid$continent, covid$stringency_index))
 
 ```
 
@@ -269,9 +353,84 @@ $H_1$: Stringency index and continent are not independent (have an association).
 
 We are performing a Chi-Square Test at the $\alpha$ = .05 level.
 
-We have a chi-square distribution with our test statistic $\chi$^2 = 322.47 and 285 degrees of freedom.
+We have a chi-square distribution with our test statistic $\chi$^2 = 28610 and 835 degrees of freedom.
 
-We have a P-value = 0.0624 > $\alpha$ = 0.05. Thus, we fail to reject $H_0$. We do not have convincing evidence to suggest that stringency index and continent are not independent.
+We have a P-value = 2.2e-16 > $\alpha$ = 0.05. Thus, we reject $H_0$. We have convincing evidence to suggest that stringency index and continent are not independent.
+
+
+```{r Chi Square Plot}
+
+
+
+```
+
+
+
+```{r Exploration of H3}
+
+covid_continent_str_i <- covid %>%
+  group_by(continent) %>%
+  filter(!is.na(stringency_index)) %>%
+  count(total_str_index = sum(stringency_index)) %>%
+  mutate(avg_str_index = total_str_index/n) %>%
+  arrange(desc(avg_str_index)) %>%
+  select(continent, avg_str_index) %>%
+  print(covid_continent_str_i)
+
+```
+In analyzing the average stringency indexes, there seem to be South America, North America, and Asia clumped at the highest stringency index, Africa being in the middle, and Oceania and Europe remaining way below them. This contradicts our hypothesis that Africa and South America would have the lowest stringency indexes and Oceania and Europe would be among the continents with the highest stringency index.
+
+
+
+
+Based on the summary statistics, we maintain our hypothesis that stringency index and continents have a statistically significant relationship, however, we rehypothesize that the group of continents that are greater are South America, North America, Asia, and Africa, and the group of continents that are lower are Oceania and Europe.
+
+$H_0$: The true mean stringency index of Europe, Asia, Oceania, and North America is equal to the true mean stringency index of Africa and South America
+
+$H_1$: The true mean stringency index of Europe, Asia, Oceania, and North America is greater the true mean stringency index of Africa and South America
+
+
+
+We are performing a CLT-based Hypothesis Test at the $\alpha$ = .05 level.
+
+
+```{r Grouped Continents Test}
+
+covid_si <- covid_final_date %>%
+  filter(!is.na(stringency_index)) %>%
+  mutate(grouped_continents = case_when(
+    ((continent == "Oceania") | (continent == "Europe")) ~ "oc_eu",
+    ((continent == "South America") | (continent == "Asia") ||
+       (continent == "Africa") | (continent == "North America"))
+    ~ "sa_na_as_af"))
+ 
+#Group 1
+covid_si %>% 
+  filter(grouped_continents == "oc_eu") %>% 
+  summarise(mean_si = mean(stringency_index)) %>% 
+  print(covid_si)
+
+#Group 2
+covid_si %>% 
+  filter(grouped_continents == "sa_na_as_af") %>% 
+  summarise(mean_si = mean(stringency_index)) %>% 
+  print(covid_si)
+
+t.test(stringency_index ~ grouped_continents,
+       data = covid_si,
+       mu = 0,
+       var.equal = FALSE,
+       alternative = "less",
+       conf.level = 0.95)
+
+
+```
+
+
+
+
+
+
 
 ```{r Visualize Continent Stringency Indexes over Time}
 
@@ -422,7 +581,7 @@ cors_deaths <- c(rep(NA, ncol(covid_num)))
 for(i in 1:ncol(covid_num)) {
   isolated <- covid_num %>%
     filter(!is.na(deaths_per_case) & !is.na(covid_num[[i]])) %>%
-    select(deaths_per_case, col_names[i])
+    select(col_names[i], deaths_per_case)
 
   cors_deaths[i] <- cor(isolated)[2]
 }
@@ -442,6 +601,7 @@ correlations_deaths <- correlations_deaths %>%
 
 
 
+
 ```
 
 Variables with st
@@ -450,14 +610,13 @@ Variables with st
 
 #Could try running a bunch of lines and then seeing which has maximum adjust R^2
 
-m_main <- lm(deaths_per_case ~  hospital_beds_per_thousand + aged_70_older + population_density, data = covid_final_date_deaths)
+m_main <- lm(deaths_per_case ~ male_smokers + diabetes_prevalence + hospital_beds_per_thousand + aged_70_older + population_density + aged_65_older + population + female_smokers + extreme_poverty + stringency_index + human_development_index + gdp_per_capita + life_expectancy + cardiovasc_death_rate + handwashing_facilities + median_age, data = covid_final_date_deaths)
 
-# m_main %>%
-#  tidy() %>%
-#  select(term, estimate)
+m_main %>%
+ tidy()
 
-glance(m_main)
-glance(m_main)$r.squared
+glance(m_main) %>% 
+  select(r.squared, adj.r.squared)
 
 
 ```
@@ -469,7 +628,37 @@ In taking the most variables with the largest correlations with the greatest cor
 
 
 
+```{r Hypothesis 1 Visualization}
 
+#Hypothesis for cases per capita strong negative correlation to stringency index.
+
+#Make variable depending on states that had highest final cases per death
+
+# covid_cases_stringency <- covid %>%
+#   group_by(continent, date) %>%
+#   filter(!is.na(stringency_index)) %>%
+#   mutate(avg_str_index = mean(stringency_index))
+# 
+# #Make title more informative
+# ggplot(data = covid_continent_str_i_2, aes(x=date, y=avg_str_index,
+#                                            color = continent)) +
+#   geom_line()+
+#   labs(x = "Date",
+#        y = "Mean Stringency Index",
+#        title = "Mean Stringency Index Over Time",
+#        subtitle = "Color by Continent")
+
+ggplot(data = covid_continent_str_i_2, aes(x=date, y=total_cases_per_cap,
+                                           color = continent)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Mean Stringency Index",
+       title = "Mean Stringency Index Over Time",
+       subtitle = "Color by Continent")
+
+
+
+```
 
 
 
