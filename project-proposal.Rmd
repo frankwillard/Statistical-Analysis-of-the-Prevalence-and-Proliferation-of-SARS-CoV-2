@@ -144,24 +144,42 @@ correlations
 cor.test(covid$stringency_index, covid$new_cases_per_cap, alternative="less")
 
 
-
+#dataset$rate <- 0
+#for(i in 2:nrow(dataset)){
+#dataset$rate[i] <- dataset$cases[i]/dataset$cases[i - 1]
+#}
 
 
 covid_by_country <- covid %>%
   group_by(location) %>%
-  filter(!is.na(new_cases))
+  filter(!is.na(total_cases)) %>%
+  filter(!is.na(new_cases)) %>%
+  filter(!is.na(stringency_index))
 
-factors = c(rep(NA, nrow(covid_by_country)))
+covid_by_country$growth_total_cases <- 0
+covid_by_country$growth_new_cases <- 0
 
+# This Loop Takes a While but it WILL run
 for (i in 2:nrow(covid_by_country)) {
-  factors[i] = covid_by_country[i, 6] / covid_by_country[i - 1, 6]
+  covid_by_country$growth_total_cases[i] <- covid_by_country$total_cases[i] / covid_by_country$total_cases[i - 1]
+  covid_by_country$growth_new_cases[i] <- covid_by_country$new_cases[i] / covid_by_country$new_cases[i - 1]
 }
-
-factors[357]
 
 ```
 Using Central Limit Theorem, we have a t distribution with test statistic t = 29.683 and 40315 degrees of freedom. Because our calculated p-value of 1 is greater than my predetermined $\alpha$ of 0.05, we fail to reject the null hypothesis. There is not enough evidence to suggest any negative correlation between stringency index and total cases per capita.
 
+``` {r}
+covid_by_country %>%
+  filter(date > "2020-04-15")
+
+covid_by_country %>%
+  filter(date > "2020-04-15" & 
+           is.finite(growth_total_cases) &
+           is.finite(growth_new_cases)) %>%
+  summarize(cor_tot = cor(growth_total_cases, stringency_index),
+            cor_new = cor(growth_new_cases, stringency_index))
+
+```
 
 ### Parker
 
