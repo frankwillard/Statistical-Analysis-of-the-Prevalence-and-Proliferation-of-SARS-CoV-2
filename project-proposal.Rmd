@@ -520,6 +520,62 @@ covid_early %>%
 Hypothesis 2: We hypothesize that deaths per case will be largely determined by the GDP per capita, the number of citizens aged 65+, hospital beds per thousand, the human development index, and columns concerning pre-existing conditions (i.e. diabetes prevalence, cardiovascular death rate, etc).
 
 
+
+```{r Visualize Deaths/Case Over Time}
+
+#Could move this to exploratory data analysis
+
+
+#Categories created based on 
+# https://onlinelibrary.wiley.com/doi/full/10.1002/brb3.1755
+
+
+
+
+covid <- covid %>% 
+  mutate(hdi_columns = case_when(
+    human_development_index >= 0.8 ~ "Very High",
+    human_development_index < 0.8 & human_development_index >= 0.7 ~ "High",
+    human_development_index < 0.7 & human_development_index >= 0.55 ~ "Medium",
+    human_development_index < 0.55~ "Low"
+  )) %>% 
+  mutate(deaths_per_case = total_deaths/total_cases)
+
+  
+covid_deaths_case <- covid %>%
+  group_by(date) %>%
+  filter(!is.na(deaths_per_case)) %>%
+  mutate(avg_deaths_case = mean(deaths_per_case))
+
+#Make title more informative
+ggplot(data = covid_deaths_case, aes(x=date, y=avg_deaths_case)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Deaths/Case",
+       title = "Deaths Per Case Over Time")
+
+
+covid_deaths_hdi <- covid %>%
+  group_by(hdi_columns, date) %>%
+  filter(!is.na(deaths_per_case) & !is.na(human_development_index)) %>%
+  mutate(avg_deaths_case = mean(deaths_per_case))
+
+
+
+#Make title more informative
+ggplot(data = covid_deaths_hdi, aes(x=date, y=avg_deaths_case, 
+                                    color = hdi_columns)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Deaths/Case",
+       title = "Mean Deaths Per Case Over Time",
+       subtitle = "Color by Human Development Index Category")
+
+
+
+```
+
+
 ``` {r manny}
 
 # In order to accurately compare between countries, mutate deaths per case
@@ -616,6 +672,24 @@ correlations_deaths <- correlations_deaths %>%
 
 
 ```
+
+```{r Determine Variables with Statisticall Significant Relationships with Deaths/Case}
+
+
+#Trying to run loop to determine variables with statistically significant correlations
+
+# for(i in 1:ncol(covid_num)) {
+#   isolated <- covid_final_date_deaths %>%
+#     filter(!is.na(deaths_per_case) & !is.na(col_names[i]))
+#   cor.test(isolated$as.matrix(col_names[i]), isolated$total_cases_per_cap)
+# }
+
+
+
+```
+
+
+
 
 Variables with st
 
@@ -782,7 +856,7 @@ ggplot(data = covid_continent_str_i_2, aes(x=date, y=total_cases_per_cap,
 
 
 
-
+###Conclusion
 
 
 
