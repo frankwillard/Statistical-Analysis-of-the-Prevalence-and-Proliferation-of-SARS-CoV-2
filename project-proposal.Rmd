@@ -45,7 +45,13 @@ covid <- read_csv("data/covid-data.csv")
 glimpse(covid)
 ```
 
+```{r Add GG Inference}
 
+install.packages("gginference")
+
+library(gginference)
+
+```
 
 
 
@@ -360,6 +366,13 @@ We have a P-value = 2.2e-16 > $\alpha$ = 0.05. Thus, we reject $H_0$. We have co
 
 ```{r Chi Square Plot}
 
+#Why isn't visualization good
+
+chisq_continent_stringency <- chisq.test(table(covid$continent, covid$stringency_index))
+
+chisq_continent_stringency
+
+ggchisqtest(chisq_continent_stringency, colaccept="lightsteelblue1", colreject="gray84", colstat="navyblue", alpha=0.05)
 
 
 ```
@@ -624,6 +637,112 @@ glance(m_main) %>%
 
 
 In taking the most variables with the largest correlations with the greatest correlations, we can create a linear regression model to attempt to predict a country's deaths per cases based on its data and demographics. 
+
+
+
+```{r Load in GLM Net}
+
+install.packages("glmnet", repos = "http://cran.us.r-project.org")
+
+
+```
+
+```{r Add Libraries}
+
+library(glmnet)
+library(caret)
+
+```
+
+
+```{r ML Test Summarize Data}
+
+# Running penalized regression (Lasso) based on guidance of:
+# https://www.pluralsight.com/guides/linear-lasso-and-ridge-regression-with-r
+
+set.seed(100) 
+
+index = sample(1:nrow(covid_final_date_deaths), 0.7*nrow(covid_final_date_deaths)) 
+
+train = covid_final_date_deaths[index,]
+test = covid_final_date_deaths[-index,]
+
+
+cols = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'cardiovasc_death_rate', 'handwashing_facilities', 'median_age')
+
+pre_proc_val <- preProcess(train[,cols], method = c("center", "scale"))
+
+train[,cols] = predict(pre_proc_val, train[,cols])
+test[,cols] = predict(pre_proc_val, test[,cols])
+
+summary(train)
+
+
+
+```
+
+
+```{r ML Split Data}
+
+cols_reg = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'cardiovasc_death_rate', 'handwashing_facilities', 'median_age', 'deaths_per_case')
+
+
+dummies <- dummyVars(deaths_per_case ~ ., data = covid_final_date_deaths[,cols_reg])
+train_dummies = predict(dummies, newdata = train[,cols_reg])
+test_dummies = predict(dummies, newdata = test[,cols_reg])
+
+
+#Need to fix- y and x diff lengths
+
+x = as.matrix(train_dummies)
+y_train = covid_final_date_deaths$deaths_per_case
+
+x_test = as.matrix(test_dummies)
+y_test = covid_final_date_deaths$deaths_per_case
+
+
+
+
+```
+
+```{r ML Find Lambda}
+
+lambdas <- 10^seq(2, -3, by = -.1)
+
+lasso_reg <- cv.glmnet(x, y_train, alpha = 1, lambda = lambdas, standardize = TRUE, nfolds = 5)
+
+lambda_best <- lasso_reg$lambda.min 
+lambda_best
+
+
+```
+
+```{r ML Run Lasso}
+
+
+lasso_model <- glmnet(x, y_train, alpha = 1, lambda = lambda_best, standardize = TRUE)
+
+
+```
+
+```{r Eval Lasso}
+
+eval_results <- function(true, predicted, df) {
+  SSE <- sum((predicted - true)^2)
+  SST <- sum((true - mean(true))^2)
+  R_square <- 1 - SSE / SST
+  RMSE = sqrt(SSE/nrow(df))
+}
+
+predictions_train <- predict(lasso_model, s = lambda_best, newx = x)
+eval_results(y_train, predictions_train, train)
+
+predictions_test <- predict(lasso_model, s = lambda_best, newx = x_test)
+eval_results(y_test, predictions_test, test)
+
+
+```
+
 
 
 
