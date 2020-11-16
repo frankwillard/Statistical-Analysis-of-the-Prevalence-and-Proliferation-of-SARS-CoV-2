@@ -104,8 +104,86 @@ H_2: We hypothesize that deaths per case will be largely determined by the GDP p
 
 H_3: We hypothesize that the stringency index is going to vary the most by continent. We expect Europe, Asia, Oceania, and North America to have higher stringency indexes, while Africa and South America will have lower stringency indexes.
 
+### Hypothesis 1:
 
-Hypothesis 1:
+Some politicians are pushing hard for the federal government to enact strict policies in the United States to slow the spread of Covid-19. They argue that social distancing, stay-at-home orders, mask wearing, and business closures are all crucial to flatten the curve and keep Covid-related deaths low.
+
+Intuitively, this makes sense. It is proven that social distancing, in all forms, is effective at slowing viral transmission. We are therefore interested to see the effects of policies mandating social distancing on the spread of Covid-19. To analyze the relationship, we will assess the correlation between a country's "stringency index" and the daily growth rate of its Covid-19 cases.
+
+Stringency Index is a column in our dataset. It is a number on a scale of 0 to 100 that measures how strict a country's Covid-related policies are (100 being the strictest). It is a composite score of 9 other measurements including travel bans and workplace closures. 
+
+We will calculate the daily growth rate of Covid-19 cases by dividing the number of new cases on a given day by the number of new cases the day before. This will give us a factor by which the number of new Covid cases is changing. Slowing the transmission of the virus by definition will mean that this factor is shrinking.
+
+We hypothesize that there is a negative correlation between stringency index and the daily growth rate of Covid cases. As stringency index increases, the daily growth rate of covid cases will decrease. We will test this hypothesis at the $\alpha = 0.05$ level.
+
+$H_0$: The true correlation of a country's stringency index and total cases per capita is zero. ($\rho$ = 0)
+
+$H_A$: The true correlation of a country's stringency index and total cases per capita is less than zero. ($\rho <$ 0)
+
+$\alpha$: 0.05
+
+```{r Cor Test}
+
+covid_stringency <- covid %>%
+  filter(!is.na(new_cases)) %>%
+  filter(!is.na(stringency_index))
+
+covid_stringency$growth_new_cases <- 0
+covid_stringency$mu_stringency_index <- 0
+covid_stringency$mu_growth_new_cases <- 0
+
+
+for (i in 2:nrow(covid_stringency)) {
+  temp <- covid_stringency$new_cases[i] / covid_stringency$new_cases[i - 1]
+  covid_stringency$growth_new_cases[i] <- if_else(is.finite(temp), temp, 0)
+}
+
+```
+
+``` {r Plotting Hypothesis 1}
+
+covid_stringency <- covid_stringency %>%
+  select(location, date, new_cases, growth_new_cases, stringency_index)
+
+usa_only <- covid_stringency %>%
+  filter(location == "United States") %>%
+  mutate(preapril = if_else(date < "2020-04-01", T, F))
+
+covid_stringency
+
+ggplot(data = usa_only, aes(x=date, y = stringency_index, color = preapril)) +
+  geom_line() +
+  labs(x = "Date",
+       y = "Stringency Index",
+       title = "Stringency Index over time showing a sharp increase at the
+       beginning of the pandemic in March with a slow decline afterward.") +
+  
+ggplot(data = usa_only, aes(x=date, y= growth_new_cases, color = preapril)) +
+  geom_line() +
+  labs(x = "Date",
+       y = "Rate of Spread of Covid-19",
+       title = "The transmission rate of Covid-19, showing a huge spike in
+       transmission around mid-March, followed by a rapid decline
+       to a transmission rate hovering around 1.0")  
+
+```
+
+```{r Cor Test for the USA}
+
+pre <- usa_only %>%
+  filter(preapril)
+
+post <- usa_only %>%
+  filter(!preapril)
+
+# Pre April
+cor.test(pre$growth_new_cases, pre$stringency_index, alternative="less")
+
+# Post April
+cor.test(post$stringency_index, post$growth_new_cases, alternative="less")
+
+
+```
 
 
 ``` {r general-correlations}
@@ -135,7 +213,7 @@ correlations <- tibble(cors)
 correlations$other_var = col_names
 correlations <- correlations %>%
   filter(other_var != "stringency_index")%>% 
-  arrange(desc(abs(cors)))
+  arrange(cors)
 
 
 correlations
@@ -226,12 +304,6 @@ cor.test(covid$stringency_index, covid$new_cases_per_cap, alternative="less")
 ```
 
 
-
-#dataset$rate <- 0
-#for(i in 2:nrow(dataset)){
-#dataset$rate[i] <- dataset$cases[i]/dataset$cases[i - 1]
-#}
-
 ```{r Cor Test}
 
 
@@ -253,15 +325,16 @@ for (i in 2:nrow(covid_by_country)) {
 ```
 
 ``` {r}
-covid_by_country %>%
-  filter(date > "2020-04-15")
+
+covid_by_country <- covid_by_country %>%
+  filter(is.finite(growth_total_cases) &
+           is.finite(growth_new_cases))
 
 covid_by_country %>%
-  filter(date > "2020-04-15" & 
-           is.finite(growth_total_cases) &
-           is.finite(growth_new_cases)) %>%
   summarize(cor_tot = cor(growth_total_cases, stringency_index),
             cor_new = cor(growth_new_cases, stringency_index))
+
+cor.test(covid_by_country$stringency_index, covid_by_country$growth_new_cases, alternative="less")
 
 ```
 
