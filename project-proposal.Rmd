@@ -112,15 +112,24 @@ glimpse(covid1)
 covid1$growth_new_cases <- 0
 covid1$mu_stringency_index <- 0
 covid1$mu_growth_new_cases <- 0
+covid1$susceptible <- covid1$population - covid1$total_cases
+covid1$infected <- covid1$total_cases - covid1$total_deaths
+covid1$recovered <- covid1$total_deaths
 
 
 for (i in 2:nrow(covid1)) {
   temp <- covid1$new_cases[i] / covid1$new_cases[i - 1]
   covid1$growth_new_cases[i] <- temp
+  
+  if (i > 14) {
+    diff <- covid1$infected[i] - covid1$infected[i - 14]
+    covid1$infected[i] <- diff
+    covid1$recovered[i] <- covid1$recovered[i] + covid1$infected[i - 14]
+    
+  }
 }
 
-covid1 <- covid1 %>%
-  mutate(new_cases_cap = new_cases/population)
+covid1
 
 ```
 
@@ -157,33 +166,16 @@ plot_country("France")
 
 ``` {r all-var-lm}
 
-covid_us <- covid1 %>%
-  filter(continent == )
+covid_sir <- covid1 %>%
+  select(location, new_cases, stringency_index, population, susceptible, infected, recovered)
 
-lm_all <- lm(growth_new_cases ~ total_cases + new_cases + total_deaths + new_deaths + stringency_index + population + population_density + median_age + aged_65_older + aged_70_older + gdp_per_capita + cardiovasc_death_rate + diabetes_prevalence + female_smokers + male_smokers + handwashing_facilities + hospital_beds_per_thousand + life_expectancy + latitude + human_development_index + extreme_poverty, data = covid_eur)
+covid_sir
 
-lm_all %>%
+lm_sir <- lm(new_cases ~ population + susceptible + infected * stringency_index, data = covid_sir)
+lm_sir %>%
  tidy() %>%
   arrange(p.value)
-
-glance(lm_all) %>% 
-  select(adj.r.squared)
-
-
-lm_hypothesis <- lm(growth_new_cases ~ stringency_index + population_density + latitude + human_development_index + extreme_poverty + total_cases, data = covid_eur)
-
-lm_hypothesis %>%
- tidy()
-
-glance(lm_hypothesis) %>% 
-  select(adj.r.squared)
-
-lm_heavy <- lm(growth_new_cases ~ female_smokers, data = covid_eur)
-lm_heavy %>%
- tidy() %>%
-  arrange(p.value)
-
-glance(lm_heavy) %>% 
+glance(lm_sir) %>% 
   select(adj.r.squared)
 
 ```
