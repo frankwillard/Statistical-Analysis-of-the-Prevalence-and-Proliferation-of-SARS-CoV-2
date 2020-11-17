@@ -100,8 +100,8 @@ Alex and Parker: H_1 and H_3
 
 ``` {r}
 
-covid <- covid %>%
-  left_join(latitudes)
+#covid <- covid %>%
+#  left_join(latitudes)
 
 covid1 <- covid %>%
   filter(!is.na(new_cases)) %>%
@@ -886,6 +886,12 @@ library(caret)
 # Running penalized regression (Lasso) based on guidance of:
 # https://www.pluralsight.com/guides/linear-lasso-and-ridge-regression-with-r
 
+
+covid_final_date_deaths <- covid_final_date_deaths %>% 
+  select(deaths_per_case, -contains("case") & -contains("death") & -contains("test")) %>% 
+  select(-(2:6)) %>% 
+  filter_all(all_vars(!is.na(.)))
+
 set.seed(100) 
 
 index = sample(1:nrow(covid_final_date_deaths), 0.7*nrow(covid_final_date_deaths)) 
@@ -893,8 +899,10 @@ index = sample(1:nrow(covid_final_date_deaths), 0.7*nrow(covid_final_date_deaths
 train = covid_final_date_deaths[index,]
 test = covid_final_date_deaths[-index,]
 
+cols_reg <- colnames(covid_final_date_deaths)
 
-cols = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'cardiovasc_death_rate', 'handwashing_facilities', 'median_age')
+cols <- cols_reg[cols_reg != 'deaths_per_case']
+# cols = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'cardiovasc_death_rate', 'handwashing_facilities', 'median_age')
 
 pre_proc_val <- preProcess(train[,cols], method = c("center", "scale"))
 
@@ -908,9 +916,10 @@ summary(train)
 ```
 
 
+
 ```{r ML Split Data}
 
-cols_reg = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'cardiovasc_death_rate', 'handwashing_facilities', 'median_age', 'deaths_per_case')
+# cols_reg = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'cardiovasc_death_rate', 'handwashing_facilities', 'median_age', 'deaths_per_case')
 
 
 dummies <- dummyVars(deaths_per_case ~ ., data = covid_final_date_deaths[,cols_reg])
