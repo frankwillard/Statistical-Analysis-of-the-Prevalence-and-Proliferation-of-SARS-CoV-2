@@ -98,6 +98,97 @@ Manny and Frankie: H_2
 
 Alex and Parker: H_1 and H_3
 
+``` {r}
+
+covid <- covid %>%
+  left_join(latitudes)
+
+covid1 <- covid %>%
+  filter(!is.na(new_cases)) %>%
+  filter(!is.na(stringency_index))
+
+glimpse(covid1)
+
+covid1$growth_new_cases <- 0
+covid1$mu_stringency_index <- 0
+covid1$mu_growth_new_cases <- 0
+
+
+for (i in 2:nrow(covid1)) {
+  temp <- covid1$new_cases[i] / covid1$new_cases[i - 1]
+  covid1$growth_new_cases[i] <- temp
+}
+
+covid1 <- covid1 %>%
+  mutate(new_cases_cap = new_cases/population)
+
+```
+
+``` {r visualizing-certain-countries}
+
+plot_country <- function(x) {
+  
+  loc_data <- covid1 %>%
+    filter(location == x)
+  
+  ggplot(data = loc_data, aes(x = date, y = stringency_index)) +
+    geom_line() +
+    labs(x = "Date",
+       y = "Stringency Index",
+       title = x) +
+  ggplot(data = loc_data, aes(x = date, y = growth_new_cases)) +
+    geom_line() +
+    labs(x = "Date",
+       y = "Rate of Spread of Covid-19") +
+    geom_hline(yintercept = 1)
+
+}
+
+plot_country("United States")
+plot_country("Russia")
+plot_country("Saudi Arabia")
+plot_country("Brazil")
+plot_country("France")
+
+```
+
+
+
+
+``` {r all-var-lm}
+
+covid_us <- covid1 %>%
+  filter(continent == )
+
+lm_all <- lm(growth_new_cases ~ total_cases + new_cases + total_deaths + new_deaths + stringency_index + population + population_density + median_age + aged_65_older + aged_70_older + gdp_per_capita + cardiovasc_death_rate + diabetes_prevalence + female_smokers + male_smokers + handwashing_facilities + hospital_beds_per_thousand + life_expectancy + latitude + human_development_index + extreme_poverty, data = covid_eur)
+
+lm_all %>%
+ tidy() %>%
+  arrange(p.value)
+
+glance(lm_all) %>% 
+  select(adj.r.squared)
+
+
+lm_hypothesis <- lm(growth_new_cases ~ stringency_index + population_density + latitude + human_development_index + extreme_poverty + total_cases, data = covid_eur)
+
+lm_hypothesis %>%
+ tidy()
+
+glance(lm_hypothesis) %>% 
+  select(adj.r.squared)
+
+lm_heavy <- lm(growth_new_cases ~ female_smokers, data = covid_eur)
+lm_heavy %>%
+ tidy() %>%
+  arrange(p.value)
+
+glance(lm_heavy) %>% 
+  select(adj.r.squared)
+
+```
+
+
 H_1: We hypothesize that cases per capita will have a strong negative correlation to stringency index.
 
 H_2: We hypothesize that deaths per case will be largely determined by the GDP per capita, the number of citizens aged 65+, hospital beds per thousand, the human development index, and columns concerning pre-existing conditions (i.e. diabetes prevalence, cardiovascular death rate, etc).
