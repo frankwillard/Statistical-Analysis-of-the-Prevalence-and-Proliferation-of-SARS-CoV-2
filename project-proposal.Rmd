@@ -114,13 +114,7 @@ Stringency Index is a column in our dataset. It is a number on a scale of 0 to 1
 
 We will calculate the daily growth rate of Covid-19 cases by dividing the number of new cases on a given day by the number of new cases the day before. This will give us a factor by which the number of new Covid cases is changing. Slowing the transmission of the virus by definition will mean that this factor is shrinking.
 
-We hypothesize that there is a negative correlation between stringency index and the daily growth rate of Covid cases. As stringency index increases, the daily growth rate of covid cases will decrease. We will test this hypothesis at the $\alpha = 0.05$ level.
-
-$H_0$: The true correlation of a country's stringency index and total cases per capita is zero. ($\rho$ = 0)
-
-$H_A$: The true correlation of a country's stringency index and total cases per capita is less than zero. ($\rho <$ 0)
-
-$\alpha$: 0.05
+We hypothesize that a high stringency index will be associated with a low transmission rate. We will plot several countries from all continents to see if this pattern tends to hold true across many different demographics.
 
 ```{r Cor Test}
 
@@ -145,26 +139,30 @@ for (i in 2:nrow(covid_stringency)) {
 covid_stringency <- covid_stringency %>%
   select(location, date, new_cases, growth_new_cases, stringency_index)
 
-usa_only <- covid_stringency %>%
-  filter(location == "United States") %>%
-  mutate(preapril = if_else(date < "2020-04-01", T, F))
 
-covid_stringency
-
-ggplot(data = usa_only, aes(x=date, y = stringency_index, color = preapril)) +
-  geom_line() +
-  labs(x = "Date",
-       y = "Stringency Index",
-       title = "Stringency Index over time showing a sharp increase at the
-       beginning of the pandemic in March with a slow decline afterward.") +
+plot_country <- function(x) {
   
-ggplot(data = usa_only, aes(x=date, y= growth_new_cases, color = preapril)) +
-  geom_line() +
-  labs(x = "Date",
-       y = "Rate of Spread of Covid-19",
-       title = "The transmission rate of Covid-19, showing a huge spike in
-       transmission around mid-March, followed by a rapid decline
-       to a transmission rate hovering around 1.0")  
+  loc_data <- covid_stringency %>%
+    filter(location == x)
+  
+  ggplot(data = loc_data, aes(x = date, y = stringency_index)) +
+    geom_line() +
+    labs(x = "Date",
+       y = "Stringency Index",
+       title = x) +
+  ggplot(data = loc_data, aes(x = date, y = growth_new_cases)) +
+    geom_line() +
+    labs(x = "Date",
+       y = "Rate of Spread of Covid-19") +
+    geom_hline(yintercept = 1)
+
+}
+
+plot_country("United States")
+plot_country("Russia")
+plot_country("Saudi Arabia")
+plot_country("Brazil")
+plot_country("France")
 
 ```
 
@@ -219,28 +217,6 @@ correlations <- correlations %>%
 correlations
 
 ```
-
-$H_0$: The true correlation of a country's stringency index and total cases per capita is zero. There is no correlation. ($\rho$ = 0)
-
-$H_1$: The true correlation of a country's stringency index and total cases per capita is not zero. There is a negative correlation. ($\rho <$ 0)
-
-$\alpha$: 0.05
-
-```{r Bootstrap for Correlations}
-
-covid %>% 
-  filter(!is.na(stringency_index) & !is.na(total_cases_per_cap)) %>% 
-  summarize(cor_stringency = cor(stringency_index, total_cases_per_cap))
-
-cor.test(covid$stringency_index, covid$total_cases_per_cap, alternative="less")
-
-```
-
-In summarizing the correlation between stringency index and total cases per capita, it becomes clear that our hypothesis is likely incorrect.
-
-In performing a correlation test using Central Limit Theorem, we have a t distribution with test statistic t = 29.683 and 40315 degrees of freedom. Because our calculated p-value of 1 is greater than my predetermined $\alpha$ of 0.05, we fail to reject the null hypothesis. There is not enough evidence to suggest any negative correlation between stringency index and total cases per capita.
-
-
 
 ```{r Visualize Total Cases per Capita}
 
@@ -338,7 +314,7 @@ cor.test(covid_by_country$stringency_index, covid_by_country$growth_new_cases, a
 
 ```
 
-Hypothesis 3
+### Hypothesis 3
 
 
 
@@ -906,42 +882,6 @@ eval_results(y_train, predictions_train, train)
 
 predictions_test <- predict(lasso_model, s = lambda_best, newx = x_test)
 eval_results(y_test, predictions_test, test)
-
-
-```
-
-
-
-
-
-```{r Hypothesis 1 Visualization}
-
-#Hypothesis for cases per capita strong negative correlation to stringency index.
-
-#Make variable depending on states that had highest final cases per death
-
-# covid_cases_stringency <- covid %>%
-#   group_by(continent, date) %>%
-#   filter(!is.na(stringency_index)) %>%
-#   mutate(avg_str_index = mean(stringency_index))
-# 
-# #Make title more informative
-# ggplot(data = covid_continent_str_i_2, aes(x=date, y=avg_str_index,
-#                                            color = continent)) +
-#   geom_line()+
-#   labs(x = "Date",
-#        y = "Mean Stringency Index",
-#        title = "Mean Stringency Index Over Time",
-#        subtitle = "Color by Continent")
-
-ggplot(data = covid_continent_str_i_2, aes(x=date, y=total_cases_per_cap,
-                                           color = continent)) +
-  geom_line()+
-  labs(x = "Date",
-       y = "Mean Stringency Index",
-       title = "Mean Stringency Index Over Time",
-       subtitle = "Color by Continent")
-
 
 
 ```
