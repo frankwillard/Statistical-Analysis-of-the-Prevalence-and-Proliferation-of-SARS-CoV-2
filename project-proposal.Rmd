@@ -450,7 +450,27 @@ ggchisqtest(chisq_continent_stringency, colaccept="lightsteelblue1", colreject="
 
 ```
 
+``` {r}
 
+data.frame(chisq = 0:28610) %>% 
+           mutate(df_835 = dchisq(x = chisq, df = 835)) %>%
+  gather(key = "df", value = "density", -chisq) %>%
+ggplot() +
+  geom_line(aes(x = chisq, y = density, color = df)) +
+  labs(title = "Chi-Square at Various Degrees of Freedom",
+       x = "Chi-square",
+       y = "Density") + geom_vline(xintercept = 28610)
+
+data.frame(chisq = 400:1800) %>% 
+           mutate(df_835 = dchisq(x = chisq, df = 835)) %>%
+  gather(key = "df", value = "density", -chisq) %>%
+ggplot() +
+  geom_line(aes(x = chisq, y = density, color = df)) +
+  labs(title = "Chi-Square at Various Degrees of Freedom",
+       x = "Chi-square",
+       y = "Density") + geom_vline(xintercept = 903.336)
+
+```
 
 ```{r Exploration of H3}
 
