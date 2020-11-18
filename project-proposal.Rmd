@@ -710,26 +710,6 @@ covid_early %>%
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### Manny
 
 
@@ -784,6 +764,7 @@ covid_deaths_hdi <- covid %>%
   mutate(avg_deaths_case = mean(deaths_per_case))
 
 
+#Can Facet Wrap:   facet_wrap(hdi_columns~.)+
 
 #Make title more informative
 ggplot(data = covid_deaths_hdi, aes(x=date, y=avg_deaths_case, 
@@ -797,6 +778,50 @@ ggplot(data = covid_deaths_hdi, aes(x=date, y=avg_deaths_case,
 
 
 ```
+
+
+
+
+```{r Aged Visualization}
+
+covid <- covid %>% 
+  mutate(aged_columns = case_when(
+    aged_70_older >= 16 ~ "Very High",
+    aged_70_older < 16 & aged_70_older >= 12 ~ "High",
+    aged_70_older < 12 & aged_70_older >= 8 ~ "Medium",
+    aged_70_older < 8 & aged_70_older >= 4 ~ "Low",
+    aged_70_older < 4 & aged_70_older >= 0 ~ "Very Low"
+  ))
+
+covid_deaths_age <- covid %>%
+  group_by(aged_columns, date) %>%
+  filter(!is.na(deaths_per_case) & !is.na(aged_70_older)) %>%
+  mutate(avg_deaths_case = mean(deaths_per_case))
+
+
+#Can Facet Wrap:   facet_wrap(hdi_columns~.)+
+
+#Make title more informative
+ggplot(data = covid_deaths_age, aes(x=date, y=avg_deaths_case, 
+                                    color = aged_columns)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Deaths/Case",
+       title = "Mean Deaths Per Case Over Time",
+       subtitle = "Color by Aged 70+ Category")
+
+```
+
+
+Super interesting- High and Very High clearly have higher long-run deaths/case
+
+
+
+
+
+
+
+
 
 
 ``` {r manny, warning = FALSE, message = FALSE, echo = FALSE}
@@ -912,22 +937,31 @@ correlations_deaths <- correlations_deaths %>%
 ```
 
 
+```{r Filter COVID Deaths}
+
+covid_final_date_deaths <- covid_final_date_deaths %>%
+  select(deaths_per_case, cardiovasc_death_rate,-contains("case") & -contains("death") & -contains("test")) %>%
+  select(-iso_code, -continent, -location, -date, -positive_rate) %>%
+  filter_all(all_vars(!is.na(.)))
+
+
+```
+
 
 
 ```{r Mulitiple Linear Regression, warning = FALSE, message = FALSE, echo = FALSE}
 
 
-
-
 #Could try running a bunch of lines and then seeing which has maximum adjust R^2
 
-# m_main <- lm(deaths_per_case ~ male_smokers + diabetes_prevalence + hospital_beds_per_thousand + aged_70_older + population_density + aged_65_older + population + female_smokers + extreme_poverty + stringency_index + human_development_index + gdp_per_capita + life_expectancy + cardiovasc_death_rate + handwashing_facilities + median_age, data = covid_final_date_deaths)
-# 
-# m_main %>%
-#  tidy()
-# 
-# glance(m_main) %>% 
-#   select(r.squared, adj.r.squared)
+m_main <- lm(deaths_per_case ~ diabetes_prevalence + aged_70_older + population_density + aged_65_older + female_smokers + human_development_index + gdp_per_capita + life_expectancy + cardiovasc_death_rate + handwashing_facilities, data = covid_final_date_deaths)
+
+m_main %>%
+ tidy() %>% 
+  arrange(desc(p.value))
+
+glance(m_main) %>%
+  select(r.squared, adj.r.squared)
 
 
 ```
@@ -936,6 +970,67 @@ correlations_deaths <- correlations_deaths %>%
 
 In taking the most variables with the largest correlations with the greatest correlations, we can create a linear regression model to attempt to predict a country's deaths per cases based on its data and demographics. 
 
+```{r}
+# covid_final_date_deaths <- covid_final_date_deaths %>%
+#   select(deaths_per_case, cardiovasc_death_rate,-contains("case") & -contains("death") & -contains("test")) %>%
+#   select(-iso_code, -continent, -location, -date, -positive_rate) %>%
+#   filter_all(all_vars(!is.na(.)))
+# 
+# x_var <- model.matrix(deaths_per_case~. , covid_final_date_deaths)[,-1]
+# y_var <- covid_final_date_deaths$deaths_per_case
+# 
+# lambdas <- 10^seq(2, -3, by = -.1)
+# 
+# set.seed(86)
+# train = sample(1:nrow(x_vars), 0.7 * nrow(x_vars))
+# x_test = (-train)
+# y_test = y_var[x_test]
+# 
+# cv_output <- cv.glmnet(x_vars[train,], y_var[train],
+#                        alpha = 1, lambda = lambdas, 
+#                        nfolds = 5)
+#  
+# best_lam <- cv_output$lambda.min
+# best_lam
+```
+
+```{r}
+
+# lasso_best <- glmnet(x_vars[train,], y_var[train], alpha = 1, lambda = 10)
+# pred <- predict(lasso_best, s = best_lam, newx = x_vars[x_test,])
+
+```
+
+
+```{r}
+
+# coef(lasso_best)
+
+```
+
+
+```{r}
+
+# final <- cbind(y_var[x_test], pred)
+# # Checking the first six obs
+# head(final)
+
+```
+
+
+```{r}
+
+# eval_results <- function(true, predicted, df) {
+#   SSE <- sum((predicted - true)^2)
+#   SST <- sum((true - mean(true))^2)
+#   R_square <- 1 - SSE / SST
+#   RMSE = sqrt(SSE/nrow(df))
+# }
+# 
+# pred <- predict(lasso_best, s = best_lam, newx = x_vars[x_test,])
+# eval_results(y_test, pred, x_test)
+
+```
 
 
 ```{r ML Test Summarize Data, warning = FALSE, message = FALSE, echo = FALSE}
@@ -951,28 +1046,28 @@ In taking the most variables with the largest correlations with the greatest cor
 #   filter_all(all_vars(!is.na(.)))
 
 
-set.seed(100) 
-
-index = sample(1:nrow(covid_final_date_deaths), 0.7*nrow(covid_final_date_deaths)) 
-
-train = covid_final_date_deaths[index,]
-test = covid_final_date_deaths[-index,]
-
-dim(train)
-dim(test)
-
-cols_reg <- colnames(covid_final_date_deaths)
-
-cols <- cols_reg[cols_reg != 'deaths_per_case']
-
-#cols = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'handwashing_facilities', 'median_age')
-
-pre_proc_val <- preProcess(train[,cols], method = c("center", "scale"))
-
-train[,cols] = predict(pre_proc_val, train[,cols])
-test[,cols] = predict(pre_proc_val, test[,cols])
-
-#summary(train)
+# set.seed(100) 
+# 
+# index = sample(1:nrow(covid_final_date_deaths), 0.7*nrow(covid_final_date_deaths)) 
+# 
+# train = covid_final_date_deaths[index,]
+# test = covid_final_date_deaths[-index,]
+# 
+# dim(train)
+# dim(test)
+# 
+# cols_reg <- colnames(covid_final_date_deaths)
+# 
+# cols <- cols_reg[cols_reg != 'deaths_per_case']
+# 
+# #cols = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'handwashing_facilities', 'median_age')
+# 
+# pre_proc_val <- preProcess(train[,cols], method = c("center", "scale"))
+# 
+# train[,cols] = predict(pre_proc_val, train[,cols])
+# test[,cols] = predict(pre_proc_val, test[,cols])
+# 
+# #summary(train)
 
 
 
@@ -985,18 +1080,18 @@ test[,cols] = predict(pre_proc_val, test[,cols])
 #cols_reg = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'cardiovasc_death_rate', 'handwashing_facilities', 'median_age', 'deaths_per_case')
 
 
-dummies <- dummyVars(deaths_per_case ~ ., data = covid_final_date_deaths[,cols_reg])
-train_dummies = predict(dummies, newdata = train[,cols_reg])
-test_dummies = predict(dummies, newdata = test[,cols_reg])
-
-dim(train_dummies)
-dim(test_dummies)
-
-x = as.matrix(train_dummies)
-y_train = covid_final_date_deaths$deaths_per_case
-
-x_test = as.matrix(test_dummies)
-y_test = covid_final_date_deaths$deaths_per_case
+# dummies <- dummyVars(deaths_per_case ~ ., data = covid_final_date_deaths[,cols_reg])
+# train_dummies = predict(dummies, newdata = train[,cols_reg])
+# test_dummies = predict(dummies, newdata = test[,cols_reg])
+# 
+# dim(train_dummies)
+# dim(test_dummies)
+# 
+# x = as.matrix(train_dummies)
+# y_train = covid_final_date_deaths$deaths_per_case
+# 
+# x_test = as.matrix(test_dummies)
+# y_test = covid_final_date_deaths$deaths_per_case
 
 
 
@@ -1005,12 +1100,12 @@ y_test = covid_final_date_deaths$deaths_per_case
 
 ```{r ML Find Lambda, warning = FALSE, message = FALSE, echo = FALSE}
 
-lambdas <- 10^seq(2, -3, by = -.1)
-
-lasso_reg <- cv.glmnet(x, y_train, alpha = 1, lambda = lambdas, standardize = TRUE, nfolds = 5)
-
-lambda_best <- lasso_reg$lambda.min 
-lambda_best
+# lambdas <- 10^seq(2, -3, by = -.1)
+# 
+# lasso_reg <- cv.glmnet(x, y_train, alpha = 1, lambda = lambdas, standardize = TRUE, nfolds = 5)
+# 
+# lambda_best <- lasso_reg$lambda.min 
+# lambda_best
 
 
 ```
@@ -1018,25 +1113,25 @@ lambda_best
 ```{r ML Run Lasso, warning = FALSE, message = FALSE, echo = FALSE}
 
 
-lasso_model <- glmnet(x, y_train, alpha = 1, lambda = lambda_best, standardize = TRUE)
+# lasso_model <- glmnet(x, y_train, alpha = 1, lambda = lambda_best, standardize = TRUE)
 
 
 ```
 
 ```{r Eval Lasso, warning = FALSE, message = FALSE, echo = FALSE}
 
-eval_results <- function(true, predicted, df) {
-  SSE <- sum((predicted - true)^2)
-  SST <- sum((true - mean(true))^2)
-  R_square <- 1 - SSE / SST
-  RMSE = sqrt(SSE/nrow(df))
-}
-
-predictions_train <- predict(lasso_model, s = lambda_best, newx = x)
-eval_results(y_train, predictions_train, train)
-
-predictions_test <- predict(lasso_model, s = lambda_best, newx = x_test)
-eval_results(y_test, predictions_test, test)
+# eval_results <- function(true, predicted, df) {
+#   SSE <- sum((predicted - true)^2)
+#   SST <- sum((true - mean(true))^2)
+#   R_square <- 1 - SSE / SST
+#   RMSE = sqrt(SSE/nrow(df))
+# }
+# 
+# predictions_train <- predict(lasso_model, s = lambda_best, newx = x)
+# eval_results(y_train, predictions_train, train)
+# 
+# predictions_test <- predict(lasso_model, s = lambda_best, newx = x_test)
+# eval_results(y_test, predictions_test, test)
 
 
 ```
