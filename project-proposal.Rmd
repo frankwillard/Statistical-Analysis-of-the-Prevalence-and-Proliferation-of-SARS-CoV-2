@@ -63,7 +63,7 @@ glimpse(covid)
 
 ###Exploratory Data Analysis
 
-```{r Scatterplot}
+```{r Adjusting Date and Boxplot Visualization}
 
 covid_final_date <- covid %>% 
   filter(date == "2020-10-05" & !is.na(continent)) %>% 
@@ -72,13 +72,17 @@ covid_final_date <- covid %>%
 
 ggplot(data = covid_final_date, mapping = aes(x = continent , 
                                               y = total_cases)) + 
-  geom_boxplot()
+  geom_boxplot()+
+  labs(title = "The Distribution of COVID-19 Cases in Each Continent 
+       is Clearly Impacted by Outliers", x = "Continent", y = "Total Cases")
 
 
 ```
 
 
-``` {r}
+``` {r COVID-19 Stringency}
+
+# Prints out the stringency indices of each country from highest to lowest
 
 covid_stringency <- covid_final_date %>%
   filter(!is.na(stringency_index)) %>%
@@ -678,7 +682,15 @@ covid_early %>%
 
 ### Manny
 
-Hypothesis 2: We hypothesize that deaths per case will be largely determined by the GDP per capita, the number of citizens aged 65+, hospital beds per thousand, the human development index, and columns concerning pre-existing conditions (i.e. diabetes prevalence, cardiovascular death rate, etc).
+
+COVID-19 is complex disease which has been known to affect individuals and countries in vastly differing ways. There are a number of factors which can determine one's ability to successfully fight the disease. However, given the nature of the disease it is inevitable we have seen hundreds of thousands deaths. 
+
+Our previous hypothesis and analysis sought to determine what factors play a role in the transmission of COVID-19. We now would like to explore how the health systems, demographics, and other factors have an impact on individual health, and how they 
+
+A way to quantify impact on individuals for respective countries is through deaths per case, or for each COVID-19 case, how many people will be expected to die. For example, a country with a deaths per case ratio of .01 would expect that for every 10,000 cases, 100 people will die.
+
+We hypothesize that deaths per case will be largely determined by the GDP per capita, the number of citizens aged 65+, hospital beds per thousand, the human development index, and columns concerning pre-existing conditions (i.e. diabetes prevalence, cardiovascular death rate, etc).
+
 
 
 
