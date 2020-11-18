@@ -721,7 +721,28 @@ A way to quantify impact on individuals for respective countries is through deat
 
 We hypothesize that deaths per case will be largely determined by the GDP per capita, the number of citizens aged 65+, hospital beds per thousand, the human development index, and columns concerning pre-existing conditions (i.e. diabetes prevalence, cardiovascular death rate, etc).
 
+```{r Visualize Deaths Per Case}
 
+covid_deaths_case <- covid %>%
+  group_by(date) %>%
+  filter(!is.na(deaths_per_case)) %>%
+  mutate(avg_deaths_case = mean(deaths_per_case),
+         avg_total_case = mean(total_cases))
+
+#Make title more informative
+ggplot(data = covid_deaths_case, aes(x=date, y=avg_deaths_case)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Deaths/Case",
+       title = "Deaths Per Case Over Time")
+
+ggplot(data = covid_deaths_case, aes(x=avg_total_case, y=avg_deaths_case)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Deaths/Case",
+       title = "Deaths Per Case Over Time")
+
+```
 
 
 ```{r Visualize Deaths/Case Over Time, warning = FALSE, message = FALSE, echo = FALSE}
@@ -745,17 +766,7 @@ covid <- covid %>%
   mutate(deaths_per_case = total_deaths/total_cases)
 
   
-covid_deaths_case <- covid %>%
-  group_by(date) %>%
-  filter(!is.na(deaths_per_case)) %>%
-  mutate(avg_deaths_case = mean(deaths_per_case))
 
-#Make title more informative
-ggplot(data = covid_deaths_case, aes(x=date, y=avg_deaths_case)) +
-  geom_line()+
-  labs(x = "Date",
-       y = "Deaths/Case",
-       title = "Deaths Per Case Over Time")
 
 
 covid_deaths_hdi <- covid %>%
