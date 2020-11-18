@@ -113,33 +113,43 @@ covid1 <- covid %>%
   filter(!is.na(new_cases)) %>%
   filter(!is.na(stringency_index))
 
-glimpse(covid1)
-
+covid1$new_cases_tomorrow <- 0
 covid1$growth_new_cases <- 0
-covid1$mu_stringency_index <- 0
-covid1$mu_growth_new_cases <- 0
 covid1$susceptible <- covid1$population - covid1$total_cases
-covid1$infected <- covid1$total_cases - covid1$total_deaths
-covid1$recovered <- covid1$total_deaths
+covid1$infected <- covid1$population - covid1$susceptible
+covid1$recovered <- 0
 
+j <- 0
+loc <- "Aruba"
 
 for (i in 2:nrow(covid1)) {
-  temp <- covid1$new_cases[i] / covid1$new_cases[i - 1]
-  covid1$growth_new_cases[i] <- temp
+  j <- j + 1
   
-  if (i > 14) {
-    diff <- covid1$infected[i] - covid1$infected[i - 14]
-    covid1$infected[i] <- diff
-    covid1$recovered[i] <- covid1$recovered[i] + covid1$infected[i - 14]
+  if (covid$location[i] != loc) {
+    loc <- covid$location[i]
+    j <- 0
+  }
+  
+  if (j != 0 & i < nrow(covid1)) {
+    covid1$new_cases_tomorrow[i] = covid1$new_cases[i + 1]
+  }
+  
+  if (j > 1) {
+    temp <- covid1$new_cases[i] / covid1$new_cases[i - 1]
+    covid1$growth_new_cases[i] <- temp
     
+    if (j > 14) {
+      died_since <- covid1$total_deaths[i] - covid1$total_deaths[i - 14]
+      recovered <- # You didn't die and you don't have covid anymore
+      covid1$infected[i] <- covid1$infected[i - 1] + covid1$new_cases[i] - recovered
+      covid1$recovered[i] <- covid1$population[i] - covid1$susceptible[i] - covid1$infected[i]
+    }
   }
 }
 
-covid1
-
 ```
 
-``` {r visualizing-certain-countries, warning = FALSE, message = FALSE, echo = FALSE}
+``` {r visualizing-certain-countries}
 
 plot_country <- function(x) {
   
@@ -170,14 +180,14 @@ plot_country("France")
 
 
 
-``` {r all-var-lm, warning = FALSE, message = FALSE, echo = FALSE}
+``` {r all-var-lm}
 
 covid_sir <- covid1 %>%
-  select(location, new_cases, stringency_index, population, susceptible, infected, recovered)
+  select(location, date, new_cases_tomorrow, stringency_index, population, susceptible, infected, recovered)
 
 covid_sir
 
-lm_sir <- lm(new_cases ~ population + susceptible + infected * stringency_index, data = covid_sir)
+lm_sir <- lm(new_cases_tomorrow ~ susceptible + infected * stringency_index, data = covid_sir)
 lm_sir %>%
  tidy() %>%
   arrange(p.value)
@@ -185,6 +195,8 @@ glance(lm_sir) %>%
   select(adj.r.squared)
 
 ```
+
+Predicted New Cases = 9.54 + 
 
 
 H_1: We hypothesize that cases per capita will have a strong negative correlation to stringency index.
