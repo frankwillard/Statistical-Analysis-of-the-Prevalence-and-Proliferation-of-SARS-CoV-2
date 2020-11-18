@@ -122,26 +122,27 @@ covid1$recovered <- 0
 j <- 0
 loc <- "Aruba"
 
-for (i in 2:nrow(covid1)) {
+for (i in 1:nrow(covid1)) {
   j <- j + 1
-  
+
   if (covid$location[i] != loc) {
     loc <- covid$location[i]
     j <- 0
   }
   
-  if (j != 0 & i < nrow(covid1)) {
+  if (i < nrow(covid1)) {
     covid1$new_cases_tomorrow[i] = covid1$new_cases[i + 1]
   }
   
   if (j > 1) {
     temp <- covid1$new_cases[i] / covid1$new_cases[i - 1]
     covid1$growth_new_cases[i] <- temp
-    
     if (j > 14) {
-      died_since <- covid1$total_deaths[i] - covid1$total_deaths[i - 14]
-      recovered <- # You didn't die and you don't have covid anymore
-      covid1$infected[i] <- covid1$infected[i - 1] + covid1$new_cases[i] - recovered
+      sum <- 0
+      for (k in 0:14) {
+        sum <- sum + covid1$new_cases[i - k] - covid1$new_deaths[i - k]
+      }
+      covid1$infected[i] <- sum
       covid1$recovered[i] <- covid1$population[i] - covid1$susceptible[i] - covid1$infected[i]
     }
   }
@@ -183,7 +184,8 @@ plot_country("France")
 ``` {r all-var-lm}
 
 covid_sir <- covid1 %>%
-  select(location, date, new_cases_tomorrow, stringency_index, population, susceptible, infected, recovered)
+  select(location, new_cases_tomorrow, stringency_index, population, susceptible, infected, recovered) %>%
+  filter(recovered > 0)
 
 covid_sir
 
@@ -196,7 +198,33 @@ glance(lm_sir) %>%
 
 ```
 
-Predicted New Cases = 9.54 + 
+``` {r checking-conditions}
+
+# Augmented Linear Model
+m_aug <- augment(lm_sir)
+
+# Independence
+ggplot(data = m_aug, 
+       aes(x = 1:nrow(covid_sir), 
+           y = .resid)) + 
+  geom_point() + 
+  labs(title = "Plot 1: Residuals in Order of the Dataset", 
+       x = "Index", y = "Residual")
+
+# Linearity and Equal Variance
+ggplot(m_aug, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point() + 
+  geom_hline(yintercept = 0, lwd = 2, col = "red", lty = 2) +
+  labs(title = "Plot 2: PR Plot", x = "Predicted New Cases", y = "Residuals")
+
+# Normality
+ggplot(m_aug, mapping = aes(sample = .resid)) +
+  stat_qq() + 
+  stat_qq_line() + 
+  labs(title = "Plot 3: QQ Plot")
+
+
+```
 
 
 H_1: We hypothesize that cases per capita will have a strong negative correlation to stringency index.
