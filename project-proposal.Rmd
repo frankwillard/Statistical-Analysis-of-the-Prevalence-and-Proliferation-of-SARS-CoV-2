@@ -761,7 +761,7 @@ ggplot(data = covid_deaths_case, aes(x=date, y=avg_deaths_case)) +
 covid_deaths_hdi <- covid %>%
   group_by(hdi_columns, date) %>%
   filter(!is.na(deaths_per_case) & !is.na(human_development_index)) %>%
-  mutate(avg_deaths_case = mean(deaths_per_case))
+  mutate(avg_deaths_case = median(deaths_per_case))
 
 
 #Can Facet Wrap:   facet_wrap(hdi_columns~.)+
@@ -774,7 +774,6 @@ ggplot(data = covid_deaths_hdi, aes(x=date, y=avg_deaths_case,
        y = "Deaths/Case",
        title = "Mean Deaths Per Case Over Time",
        subtitle = "Color by Human Development Index Category")
-
 
 
 ```
@@ -796,7 +795,7 @@ covid <- covid %>%
 covid_deaths_age <- covid %>%
   group_by(aged_columns, date) %>%
   filter(!is.na(deaths_per_case) & !is.na(aged_70_older)) %>%
-  mutate(avg_deaths_case = mean(deaths_per_case))
+  mutate(avg_deaths_case = median(deaths_per_case))
 
 
 #Can Facet Wrap:   facet_wrap(hdi_columns~.)+
@@ -816,8 +815,14 @@ ggplot(data = covid_deaths_age, aes(x=date, y=avg_deaths_case,
 Super interesting- High and Very High clearly have higher long-run deaths/case
 
 
+Even more interesting when use median instead of mean
 
 
+
+
+One thing not factored in- case number
+
+Could try and find relationship between cases and deaths/case
 
 
 
