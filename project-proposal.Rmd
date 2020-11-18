@@ -40,172 +40,47 @@ https://www.ecdc.europa.eu/en/covid-19/data-collection
 
 ```{r Installing Packes and Loading Libraries, warning = FALSE, message = FALSE, echo = FALSE}
 
-install.packages("gginference")
-install.packages("glmnet", repos = "http://cran.us.r-project.org")
+#install.packages("gginference")
+#install.packages("glmnet", repos = "http://cran.us.r-project.org")
 
 library(tidyverse)
-library(gginference)
-library(glmnet)
-library(caret)
+#library(gginference)
+#library(glmnet)
+#library(caret)
 
 ```
 
 ```{r glimpse-data, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid <- read_csv("data/covid-data.csv")
-glimpse(covid)
+latitudes <- read_csv("data/latitudes.csv")
+covid <- covid %>%
+  left_join(latitudes)
 
 ```
 
-### Draft Report
-
-
-
-###Exploratory Data Analysis
-
-```{r Adjusting Date and Boxplot Visualization, warning = FALSE, message = FALSE, echo = FALSE}
+``` {r cpc-model}
 
 covid_final_date <- covid %>% 
-  filter(date == "2020-10-05" & !is.na(continent)) %>% 
-  print(covid_final_date)
+  mutate(stringency_index = if_else(is.na(stringency_index), 0, stringency_index)) %>%
+  group_by(location) %>%
+  mutate(median_si = median(stringency_index),
+         total_cases_per_cap = total_cases / population) %>%
+  filter(date == "2020-10-05" & !is.na(continent))
 
-
-ggplot(data = covid_final_date, mapping = aes(x = continent , 
-                                              y = total_cases)) + 
-  geom_boxplot()+
-  labs(title = "The Distribution of COVID-19 Cases in Each Continent 
-       is Clearly Impacted by Outliers", x = "Continent", y = "Total Cases")
-
-
-```
-
-
-``` {r COVID-19 Stringency, warning = FALSE, message = FALSE, echo = FALSE}
-
-# Prints out the stringency indices of each country from highest to lowest
-
-covid_stringency <- covid_final_date %>%
-  filter(!is.na(stringency_index)) %>%
-  arrange(desc(stringency_index)) %>%
-  select(stringency_index, location) %>%
-  print(covid_stringency)
-
-# US Stringency Index is 66
-
-```
-
-
-
-### TO-DO
-1. Create categorical variables (GDP, Stringency, Etc.)
-2. Figure out which variables have the most impact on Stringency index, cases per capita, cases per death, etc.
-
-Manny and Frankie: H_2
-
-Alex and Parker: H_1 and H_3
-
-``` {r, warning = FALSE, message = FALSE, echo = FALSE}
-
-#covid <- covid %>%
-#  left_join(latitudes)
-
-covid1 <- covid %>%
-  filter(!is.na(new_cases)) %>%
-  filter(!is.na(stringency_index))
-
-covid1$new_cases_tomorrow <- 0
-covid1$growth_new_cases <- 0
-covid1$susceptible <- covid1$population - covid1$total_cases
-covid1$infected <- covid1$population - covid1$susceptible
-covid1$recovered <- 0
-
-j <- 0
-loc <- "Aruba"
-
-for (i in 1:nrow(covid1)) {
-  j <- j + 1
-
-  if (covid$location[i] != loc) {
-    loc <- covid$location[i]
-    j <- 0
-  }
-  
-  if (i < nrow(covid1)) {
-    covid1$new_cases_tomorrow[i] = covid1$new_cases[i + 1]
-  }
-  
-  if (j > 1) {
-    temp <- covid1$new_cases[i] / covid1$new_cases[i - 1]
-    covid1$growth_new_cases[i] <- temp
-    if (j > 14) {
-      sum <- 0
-      for (k in 0:14) {
-        sum <- sum + covid1$new_cases[i - k] - covid1$new_deaths[i - k]
-      }
-      covid1$infected[i] <- sum
-      covid1$recovered[i] <- covid1$population[i] - covid1$susceptible[i] - covid1$infected[i]
-    }
-  }
-}
-
-```
-
-``` {r visualizing-certain-countries}
-
-plot_country <- function(x) {
-  
-  loc_data <- covid1 %>%
-    filter(location == x)
-  
-  ggplot(data = loc_data, aes(x = date, y = stringency_index)) +
-    geom_line() +
-    labs(x = "Date",
-       y = "Stringency Index",
-       title = x) +
-  ggplot(data = loc_data, aes(x = date, y = growth_new_cases)) +
-    geom_line() +
-    labs(x = "Date",
-       y = "Rate of Spread of Covid-19") +
-    geom_hline(yintercept = 1)
-
-}
-
-plot_country("United States")
-plot_country("Russia")
-plot_country("Saudi Arabia")
-plot_country("Brazil")
-plot_country("France")
-
-```
-
-
-
-
-``` {r all-var-lm}
-
-covid_sir <- covid1 %>%
-  select(location, new_cases_tomorrow, stringency_index, population, susceptible, infected, recovered) %>%
-  filter(recovered > 0)
-
-covid_sir
-
-lm_sir <- lm(new_cases_tomorrow ~ susceptible + infected * stringency_index, data = covid_sir)
-lm_sir %>%
+lm_cpc <- lm(total_cases_per_cap ~ latitude + median_si + human_development_index + continent + gdp_per_capita + handwashing_facilities + population_density, data = covid_final_date)
+lm_cpc %>%
  tidy() %>%
   arrange(p.value)
-glance(lm_sir) %>% 
-  select(adj.r.squared)
-
-```
-
-``` {r checking-conditions}
+glance(lm_cpc) %>% 
+  select(adj.r.squared, r.squared)
 
 # Augmented Linear Model
-m_aug <- augment(lm_sir)
+m_aug <- augment(lm_cpc)
 
 # Independence
 ggplot(data = m_aug, 
-       aes(x = 1:nrow(covid_sir), 
+       aes(x = 1:87, 
            y = .resid)) + 
   geom_point() + 
   labs(title = "Plot 1: Residuals in Order of the Dataset", 
@@ -223,6 +98,54 @@ ggplot(m_aug, mapping = aes(sample = .resid)) +
   stat_qq_line() + 
   labs(title = "Plot 3: QQ Plot")
 
+# Histogram of Residuals
+ggplot(m_aug, mapping = aes(x= .resid)) +
+  geom_histogram()
+
+```
+
+```{r Adjusting Date and Boxplot Visualization, warning = FALSE, message = FALSE, echo = FALSE}
+
+covid_final_date <- covid %>% 
+  filter(date == "2020-10-05" & !is.na(continent))
+covid_final_date
+
+
+ggplot(data = covid_final_date, mapping = aes(x = continent , 
+                                              y = total_cases)) + 
+  geom_boxplot()+
+  labs(title = "The Distribution of COVID-19 Cases in Each Continent 
+       is Clearly Impacted by Outliers", x = "Continent", y = "Total Cases")
+
+
+```
+
+``` {r, warning = FALSE, message = FALSE, echo = FALSE}
+
+covid1 <- covid %>%
+  filter(!is.na(new_cases)) %>%
+  filter(!is.na(stringency_index))
+
+``` 
+
+``` {r adding-growth-factor}
+covid1$growth_new_cases <- 0
+
+j <- 0
+loc <- "Aruba"
+
+for (i in 1:nrow(covid1)) {
+  j <- j + 1
+
+  if (covid$location[i] != loc) {
+    loc <- covid$location[i]
+    j <- 0
+  }
+  
+  if (j > 1) {
+    covid1$growth_new_cases[i] <- new_cases[i] / covid1$new_cases[i - 1]
+  }
+}
 
 ```
 
@@ -238,6 +161,7 @@ H_3: We hypothesize that the stringency index is going to vary the most by conti
 Some politicians are pushing hard for the federal government to enact strict policies in the United States to slow the spread of Covid-19. They argue that social distancing, stay-at-home orders, mask wearing, and business closures are all crucial to flatten the curve and keep Covid-related deaths low.
 
 Intuitively, this makes sense. A CDC study of Beijing households with at least one confirmed case of COVID found that mask use reduced second transmission within households by 79%. Further studies have shown its effectiveness in other settings, including a high-exposure setting in which two hair stylists that definitively had COVID and symptoms served 139 clients over 8 days with zero cases spread. All clients and patients wore masks. Thus, stricter masking policies seemingly have merit in reducing viral transmission [1]. 
+
 Furthermore, a Lancet study from earlier during the pandemic (using Wuhan as a case study) found that restrictions to social activities helps delay the epidemic peak, and that lifting governmental restrictions can bring about a second peak. We are therefore interested to see the effects of governmental policies mandating mask wearing and restricting contact on the spread of Covid-19. To analyze the relationship, we will assess the correlation between a country's "stringency index" and the daily growth rate of its Covid-19 cases.
 
 
@@ -972,6 +896,8 @@ covid_final_date_deaths <- covid_final_date_deaths %>%
 
 m_main <- lm(deaths_per_case ~ diabetes_prevalence + aged_70_older + population_density + aged_65_older + female_smokers + human_development_index + gdp_per_capita + life_expectancy + cardiovasc_death_rate + handwashing_facilities, data = covid_final_date_deaths)
 
+covid_final_date_deaths
+
 m_main %>%
  tidy() %>% 
   arrange(desc(p.value))
@@ -979,178 +905,11 @@ m_main %>%
 glance(m_main) %>%
   select(r.squared, adj.r.squared)
 
-
 ```
 
 
 
 In taking the most variables with the largest correlations with the greatest correlations, we can create a linear regression model to attempt to predict a country's deaths per cases based on its data and demographics. 
-
-```{r}
-# covid_final_date_deaths <- covid_final_date_deaths %>%
-#   select(deaths_per_case, cardiovasc_death_rate,-contains("case") & -contains("death") & -contains("test")) %>%
-#   select(-iso_code, -continent, -location, -date, -positive_rate) %>%
-#   filter_all(all_vars(!is.na(.)))
-# 
-# x_var <- model.matrix(deaths_per_case~. , covid_final_date_deaths)[,-1]
-# y_var <- covid_final_date_deaths$deaths_per_case
-# 
-# lambdas <- 10^seq(2, -3, by = -.1)
-# 
-# set.seed(86)
-# train = sample(1:nrow(x_vars), 0.7 * nrow(x_vars))
-# x_test = (-train)
-# y_test = y_var[x_test]
-# 
-# cv_output <- cv.glmnet(x_vars[train,], y_var[train],
-#                        alpha = 1, lambda = lambdas, 
-#                        nfolds = 5)
-#  
-# best_lam <- cv_output$lambda.min
-# best_lam
-```
-
-```{r}
-
-# lasso_best <- glmnet(x_vars[train,], y_var[train], alpha = 1, lambda = 10)
-# pred <- predict(lasso_best, s = best_lam, newx = x_vars[x_test,])
-
-```
-
-
-```{r}
-
-# coef(lasso_best)
-
-```
-
-
-```{r}
-
-# final <- cbind(y_var[x_test], pred)
-# # Checking the first six obs
-# head(final)
-
-```
-
-
-```{r}
-
-# eval_results <- function(true, predicted, df) {
-#   SSE <- sum((predicted - true)^2)
-#   SST <- sum((true - mean(true))^2)
-#   R_square <- 1 - SSE / SST
-#   RMSE = sqrt(SSE/nrow(df))
-# }
-# 
-# pred <- predict(lasso_best, s = best_lam, newx = x_vars[x_test,])
-# eval_results(y_test, pred, x_test)
-
-```
-
-
-```{r ML Test Summarize Data, warning = FALSE, message = FALSE, echo = FALSE}
-
-# Running penalized regression (Lasso) based on guidance of:
-# https://www.pluralsight.com/guides/linear-lasso-and-ridge-regression-with-r
-
-
-
-# covid_final_date_deaths <- covid_final_date_deaths %>%
-#   select(deaths_per_case, cardiovasc_death_rate,-contains("case") & -contains("death") & -contains("test")) %>%
-#   select(-iso_code, -continent, -location, -date, -positive_rate) %>%
-#   filter_all(all_vars(!is.na(.)))
-
-
-# set.seed(100) 
-# 
-# index = sample(1:nrow(covid_final_date_deaths), 0.7*nrow(covid_final_date_deaths)) 
-# 
-# train = covid_final_date_deaths[index,]
-# test = covid_final_date_deaths[-index,]
-# 
-# dim(train)
-# dim(test)
-# 
-# cols_reg <- colnames(covid_final_date_deaths)
-# 
-# cols <- cols_reg[cols_reg != 'deaths_per_case']
-# 
-# #cols = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'handwashing_facilities', 'median_age')
-# 
-# pre_proc_val <- preProcess(train[,cols], method = c("center", "scale"))
-# 
-# train[,cols] = predict(pre_proc_val, train[,cols])
-# test[,cols] = predict(pre_proc_val, test[,cols])
-# 
-# #summary(train)
-
-
-
-```
-
-
-
-```{r ML Split Data, warning = FALSE, message = FALSE, echo = FALSE}
-
-#cols_reg = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'cardiovasc_death_rate', 'handwashing_facilities', 'median_age', 'deaths_per_case')
-
-
-# dummies <- dummyVars(deaths_per_case ~ ., data = covid_final_date_deaths[,cols_reg])
-# train_dummies = predict(dummies, newdata = train[,cols_reg])
-# test_dummies = predict(dummies, newdata = test[,cols_reg])
-# 
-# dim(train_dummies)
-# dim(test_dummies)
-# 
-# x = as.matrix(train_dummies)
-# y_train = covid_final_date_deaths$deaths_per_case
-# 
-# x_test = as.matrix(test_dummies)
-# y_test = covid_final_date_deaths$deaths_per_case
-
-
-
-
-```
-
-```{r ML Find Lambda, warning = FALSE, message = FALSE, echo = FALSE}
-
-# lambdas <- 10^seq(2, -3, by = -.1)
-# 
-# lasso_reg <- cv.glmnet(x, y_train, alpha = 1, lambda = lambdas, standardize = TRUE, nfolds = 5)
-# 
-# lambda_best <- lasso_reg$lambda.min 
-# lambda_best
-
-
-```
-
-```{r ML Run Lasso, warning = FALSE, message = FALSE, echo = FALSE}
-
-
-# lasso_model <- glmnet(x, y_train, alpha = 1, lambda = lambda_best, standardize = TRUE)
-
-
-```
-
-```{r Eval Lasso, warning = FALSE, message = FALSE, echo = FALSE}
-
-# eval_results <- function(true, predicted, df) {
-#   SSE <- sum((predicted - true)^2)
-#   SST <- sum((true - mean(true))^2)
-#   R_square <- 1 - SSE / SST
-#   RMSE = sqrt(SSE/nrow(df))
-# }
-# 
-# predictions_train <- predict(lasso_model, s = lambda_best, newx = x)
-# eval_results(y_train, predictions_train, train)
-# 
-# predictions_test <- predict(lasso_model, s = lambda_best, newx = x_test)
-# eval_results(y_test, predictions_test, test)
-
-
-```
 
 ###Conclusion
 
