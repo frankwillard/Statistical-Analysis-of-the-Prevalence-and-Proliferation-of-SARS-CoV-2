@@ -53,6 +53,19 @@ library(gginference)
 
 ```
 
+```{r Load in GLM Net}
+
+install.packages("glmnet", repos = "http://cran.us.r-project.org")
+
+
+```
+
+```{r Add Libraries}
+
+library(glmnet)
+library(caret)
+
+```
 
 
 ### Draft Report
@@ -496,20 +509,9 @@ We have a chi-square distribution with our test statistic $\chi$^2 = 28610 and 8
 We have a P-value = 2.2e-16 > $\alpha$ = 0.05. Thus, we reject $H_0$. We have convincing evidence to suggest that stringency index and continent are not independent.
 
 
-```{r Chi Square Plot}
-
-#Why isn't visualization good
-
-chisq_continent_stringency <- chisq.test(table(covid$continent, covid$stringency_index))
-
-chisq_continent_stringency
-
-ggchisqtest(chisq_continent_stringency, colaccept="lightsteelblue1", colreject="gray84", colstat="navyblue", alpha=0.05)
-
-
-```
-
 ``` {r}
+
+#ADD SOURCE
 
 data.frame(chisq = 0:28610) %>% 
            mutate(df_835 = dchisq(x = chisq, df = 835)) %>%
@@ -533,6 +535,21 @@ ggplot() +
        y = "Density") + geom_vline(xintercept = 903.336, color="red")
 
 ```
+
+```{r Chi Square Plot}
+
+#Why isn't visualization good
+
+# chisq_continent_stringency <- chisq.test(table(covid$continent, covid$stringency_index))
+# 
+# chisq_continent_stringency
+# 
+# ggchisqtest(chisq_continent_stringency, colaccept="lightsteelblue1", colreject="gray84", colstat="navyblue", alpha=0.05)
+
+
+```
+
+
 
 ```{r Exploration of H3}
 
@@ -846,19 +863,20 @@ correlations_deaths <- correlations_deaths %>%
 
 
 
-Variables with st
-
 ```{r Mulitiple Linear Regression}
+
+
+
 
 #Could try running a bunch of lines and then seeing which has maximum adjust R^2
 
-m_main <- lm(deaths_per_case ~ male_smokers + diabetes_prevalence + hospital_beds_per_thousand + aged_70_older + population_density + aged_65_older + population + female_smokers + extreme_poverty + stringency_index + human_development_index + gdp_per_capita + life_expectancy + cardiovasc_death_rate + handwashing_facilities + median_age, data = covid_final_date_deaths)
-
-m_main %>%
- tidy()
-
-glance(m_main) %>% 
-  select(r.squared, adj.r.squared)
+# m_main <- lm(deaths_per_case ~ male_smokers + diabetes_prevalence + hospital_beds_per_thousand + aged_70_older + population_density + aged_65_older + population + female_smokers + extreme_poverty + stringency_index + human_development_index + gdp_per_capita + life_expectancy + cardiovasc_death_rate + handwashing_facilities + median_age, data = covid_final_date_deaths)
+# 
+# m_main %>%
+#  tidy()
+# 
+# glance(m_main) %>% 
+#   select(r.squared, adj.r.squared)
 
 
 ```
@@ -869,33 +887,18 @@ In taking the most variables with the largest correlations with the greatest cor
 
 
 
-```{r Load in GLM Net}
-
-install.packages("glmnet", repos = "http://cran.us.r-project.org")
-
-
-```
-
-```{r Add Libraries}
-
-library(glmnet)
-library(caret)
-
-```
-
-
 ```{r ML Test Summarize Data}
 
 # Running penalized regression (Lasso) based on guidance of:
 # https://www.pluralsight.com/guides/linear-lasso-and-ridge-regression-with-r
 
 
-covid_final_date_deaths <- covid_final_date_deaths %>%
-  select(deaths_per_case, -contains("case") & -contains("death") & -contains("test")) %>%
-  select(-(2:6)) %>%
-  filter_all(all_vars(!is.na(.)))
 
-covid_final_date_deaths
+# covid_final_date_deaths <- covid_final_date_deaths %>%
+#   select(deaths_per_case, cardiovasc_death_rate,-contains("case") & -contains("death") & -contains("test")) %>%
+#   select(-iso_code, -continent, -location, -date, -positive_rate) %>%
+#   filter_all(all_vars(!is.na(.)))
+
 
 set.seed(100) 
 
@@ -907,11 +910,11 @@ test = covid_final_date_deaths[-index,]
 dim(train)
 dim(test)
 
-#cols_reg <- colnames(covid_final_date_deaths)
+cols_reg <- colnames(covid_final_date_deaths)
 
-#cols <- cols_reg[cols_reg != 'deaths_per_case']
+cols <- cols_reg[cols_reg != 'deaths_per_case']
 
-cols = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'handwashing_facilities', 'median_age')
+#cols = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'handwashing_facilities', 'median_age')
 
 pre_proc_val <- preProcess(train[,cols], method = c("center", "scale"))
 
@@ -928,7 +931,7 @@ test[,cols] = predict(pre_proc_val, test[,cols])
 
 ```{r ML Split Data}
 
-cols_reg = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'cardiovasc_death_rate', 'handwashing_facilities', 'median_age', 'deaths_per_case')
+#cols_reg = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'cardiovasc_death_rate', 'handwashing_facilities', 'median_age', 'deaths_per_case')
 
 
 dummies <- dummyVars(deaths_per_case ~ ., data = covid_final_date_deaths[,cols_reg])
