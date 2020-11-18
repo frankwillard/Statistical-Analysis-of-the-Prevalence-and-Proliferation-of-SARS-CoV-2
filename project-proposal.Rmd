@@ -38,7 +38,7 @@ https://www.ecdc.europa.eu/en/covid-19/data-collection
 
 ### Section 3- Glimpse of data
 
-```{r Installing Packes and Loading Libraries}
+```{r Installing Packes and Loading Libraries, warning = FALSE, message = FALSE, echo = FALSE}
 
 install.packages("gginference")
 install.packages("glmnet", repos = "http://cran.us.r-project.org")
@@ -50,7 +50,7 @@ library(caret)
 
 ```
 
-```{r glimpse-data, warning=FALSE, message=FALSE}
+```{r glimpse-data, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid <- read_csv("data/covid-data.csv")
 glimpse(covid)
@@ -63,7 +63,7 @@ glimpse(covid)
 
 ###Exploratory Data Analysis
 
-```{r Adjusting Date and Boxplot Visualization}
+```{r Adjusting Date and Boxplot Visualization, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid_final_date <- covid %>% 
   filter(date == "2020-10-05" & !is.na(continent)) %>% 
@@ -80,7 +80,7 @@ ggplot(data = covid_final_date, mapping = aes(x = continent ,
 ```
 
 
-``` {r COVID-19 Stringency}
+``` {r COVID-19 Stringency, warning = FALSE, message = FALSE, echo = FALSE}
 
 # Prints out the stringency indices of each country from highest to lowest
 
@@ -104,7 +104,7 @@ Manny and Frankie: H_2
 
 Alex and Parker: H_1 and H_3
 
-``` {r}
+``` {r, warning = FALSE, message = FALSE, echo = FALSE}
 
 #covid <- covid %>%
 #  left_join(latitudes)
@@ -139,7 +139,7 @@ covid1
 
 ```
 
-``` {r visualizing-certain-countries}
+``` {r visualizing-certain-countries, warning = FALSE, message = FALSE, echo = FALSE}
 
 plot_country <- function(x) {
   
@@ -170,7 +170,7 @@ plot_country("France")
 
 
 
-``` {r all-var-lm}
+``` {r all-var-lm, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid_sir <- covid1 %>%
   select(location, new_cases, stringency_index, population, susceptible, infected, recovered)
@@ -215,7 +215,7 @@ We will calculate the daily growth rate of Covid-19 cases by dividing the number
 
 We hypothesize that a high stringency index will be associated with a low transmission rate. We will plot several countries from all continents to see if this pattern tends to hold true across many different demographics.
 
-```{r Cor Test}
+```{r Cor Test, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid_stringency <- covid %>%
   filter(!is.na(new_cases)) %>%
@@ -233,7 +233,7 @@ for (i in 2:nrow(covid_stringency)) {
 
 ```
 
-``` {r Plotting Hypothesis 1}
+``` {r Plotting Hypothesis 1, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid_stringency <- covid_stringency %>%
   select(location, date, new_cases, growth_new_cases, stringency_index)
@@ -265,7 +265,7 @@ plot_country("France")
 
 ```
 
-```{r Cor Test for the USA}
+```{r Cor Test for the USA, warning = FALSE, message = FALSE, echo = FALSE}
 
 pre <- usa_only %>%
   filter(preapril)
@@ -283,7 +283,7 @@ cor.test(post$stringency_index, post$growth_new_cases, alternative="less")
 ```
 
 
-``` {r general-correlations}
+``` {r general-correlations, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid <- covid %>%
   mutate(new_cases_per_cap = (new_cases/population),
@@ -317,7 +317,7 @@ correlations
 
 ```
 
-```{r Visualize Total Cases per Capita}
+```{r Visualize Total Cases per Capita, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid_continental_stringency <- covid %>%
   group_by(date) %>%
@@ -349,7 +349,7 @@ In calculating our summary statistic for correlation between stringency index an
 
 Thus, we would like to investigate whether there may be a statistically significant positive correlation between total cases per capita and stringency index, as well as new cases per capita and stringency index.  
 
-```{r Visualize Stringency Index with New Cases Per Capita}
+```{r Visualize Stringency Index with New Cases Per Capita, warning = FALSE, message = FALSE, echo = FALSE}
 
 #Make title more informative
 ggplot(data = covid_continental_stringency, aes(x=date, y = avg_str_index)) +
@@ -367,7 +367,7 @@ ggplot(data = covid_continental_stringency, aes(x=date, y= avg_new_cases_cap)) +
 ```
 
 
-```{r Summarize Correlation Stringency New Cases Per Capita Stringency}
+```{r Summarize Correlation Stringency New Cases Per Capita Stringency, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid %>% 
   filter(!is.na(stringency_index) & !is.na(new_cases_per_cap)) %>% 
@@ -379,7 +379,7 @@ cor.test(covid$stringency_index, covid$new_cases_per_cap, alternative="less")
 ```
 
 
-```{r Cor Test}
+```{r Cor Test, warning = FALSE, message = FALSE, echo = FALSE}
 
 
 covid_by_country <- covid %>%
@@ -399,7 +399,7 @@ for (i in 2:nrow(covid_by_country)) {
 
 ```
 
-``` {r}
+``` {r, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid_by_country <- covid_by_country %>%
   filter(is.finite(growth_total_cases) &
@@ -424,7 +424,7 @@ $H_1$: The true mean stringency index of Europe, Asia, Oceania, and North Americ
 
 We are performing a CLT-based Hypothesis Test at the $\alpha$ = .05 level.
 
-``` {r parker}
+``` {r parker, warning = FALSE, message = FALSE, echo = FALSE}
 # We hypothesize that the stringency index is going to vary the most by
 # continent. We expect Europe, Asia, Oceania, and North America to have higher
 # stringency indexes, while Africa and South America will have lower stringency
@@ -494,7 +494,7 @@ In looking at the summary statistics for the dataset, it becomes clear our perce
  
 
 
-```{r Further Exploration of Hypothesis 3}
+```{r Further Exploration of Hypothesis 3, warning = FALSE, message = FALSE, echo = FALSE}
 
 chisq.test(table(covid$continent, covid$stringency_index))
 
@@ -512,7 +512,7 @@ We have a chi-square distribution with our test statistic $\chi$^2 = 28610 and 8
 We have a P-value = 2.2e-16 > $\alpha$ = 0.05. Thus, we reject $H_0$. We have convincing evidence to suggest that stringency index and continent are not independent.
 
 
-``` {r}
+``` {r, warning = FALSE, message = FALSE, echo = FALSE}
 
 #ADD SOURCE
 
@@ -539,7 +539,7 @@ ggplot() +
 
 ```
 
-```{r Chi Square Plot}
+```{r Chi Square Plot, warning = FALSE, message = FALSE, echo = FALSE}
 
 #Why isn't visualization good
 
@@ -554,7 +554,7 @@ ggplot() +
 
 
 
-```{r Exploration of H3}
+```{r Exploration of H3, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid_continent_str_i <- covid %>%
   group_by(continent) %>%
@@ -582,7 +582,7 @@ $H_1$: The true mean stringency index of Europe, Asia, Oceania, and North Americ
 We are performing a CLT-based Hypothesis Test at the $\alpha$ = .05 level.
 
 
-```{r Grouped Continents Test}
+```{r Grouped Continents Test, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid_si <- covid_final_date %>%
   filter(!is.na(stringency_index)) %>%
@@ -620,7 +620,7 @@ t.test(stringency_index ~ grouped_continents,
 
 
 
-```{r Visualize Continent Stringency Indexes over Time}
+```{r Visualize Continent Stringency Indexes over Time, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid_continent_str_i_2 <- covid %>%
   group_by(continent, date) %>%
@@ -647,7 +647,7 @@ We've already observed from our correlation tables above that we don't have enou
 
 One downfall we see is that countries change their stringency index in reaction ot rising cases. This can give the illusion that they're more positively correlated than they may (not) be. Thus, we will create a new variable that tracks the factor by which new_cases is changing from day to day. We will check this correlation agains stringency index. After all, a high stringency index is designed to SLOW the spread of a virus - not stop it.
 
-``` {r eda-stringency-early-cases}
+``` {r eda-stringency-early-cases, warning = FALSE, message = FALSE, echo = FALSE}
 
 # Make some sort of variable that tracks a factor by which new cases is growing each day.
 
@@ -704,7 +704,7 @@ We hypothesize that deaths per case will be largely determined by the GDP per ca
 
 
 
-```{r Visualize Deaths/Case Over Time}
+```{r Visualize Deaths/Case Over Time, warning = FALSE, message = FALSE, echo = FALSE}
 
 #Could move this to exploratory data analysis
 
@@ -759,7 +759,7 @@ ggplot(data = covid_deaths_hdi, aes(x=date, y=avg_deaths_case,
 ```
 
 
-``` {r manny}
+``` {r manny, warning = FALSE, message = FALSE, echo = FALSE}
 
 # In order to accurately compare between countries, mutate deaths per case
 covid_final_date <- covid_final_date %>% 
@@ -817,7 +817,7 @@ Hypothesis 2: We hypothesize that deaths per case will be largely determined by 
 
 
 ### Frankie
-``` {r frankie}
+``` {r frankie, warning = FALSE, message = FALSE, echo = FALSE}
 
 covid_final_date_deaths <- covid_final_date %>% 
   filter(!is.na(total_deaths) & !is.na(total_cases)) %>% 
@@ -856,7 +856,7 @@ correlations_deaths <- correlations_deaths %>%
 
 ```
 
-```{r Determine Variables with Statisticall Significant Relationships with Deaths/Case}
+```{r Determine Variables with Statisticall Significant Relationships with Deaths/Case, warning = FALSE, message = FALSE, echo = FALSE}
 
 
 #Trying to run loop to determine variables with statistically significant correlations
@@ -874,7 +874,7 @@ correlations_deaths <- correlations_deaths %>%
 
 
 
-```{r Mulitiple Linear Regression}
+```{r Mulitiple Linear Regression, warning = FALSE, message = FALSE, echo = FALSE}
 
 
 
@@ -898,7 +898,7 @@ In taking the most variables with the largest correlations with the greatest cor
 
 
 
-```{r ML Test Summarize Data}
+```{r ML Test Summarize Data, warning = FALSE, message = FALSE, echo = FALSE}
 
 # Running penalized regression (Lasso) based on guidance of:
 # https://www.pluralsight.com/guides/linear-lasso-and-ridge-regression-with-r
@@ -940,7 +940,7 @@ test[,cols] = predict(pre_proc_val, test[,cols])
 
 
 
-```{r ML Split Data}
+```{r ML Split Data, warning = FALSE, message = FALSE, echo = FALSE}
 
 #cols_reg = c('male_smokers', 'diabetes_prevalence', 'hospital_beds_per_thousand',  'aged_70_older', 'population_density','aged_65_older', 'population','female_smokers', 'extreme_poverty','stringency_index', 'human_development_index', 'gdp_per_capita', 'life_expectancy', 'cardiovasc_death_rate', 'handwashing_facilities', 'median_age', 'deaths_per_case')
 
@@ -963,7 +963,7 @@ y_test = covid_final_date_deaths$deaths_per_case
 
 ```
 
-```{r ML Find Lambda}
+```{r ML Find Lambda, warning = FALSE, message = FALSE, echo = FALSE}
 
 lambdas <- 10^seq(2, -3, by = -.1)
 
@@ -975,7 +975,7 @@ lambda_best
 
 ```
 
-```{r ML Run Lasso}
+```{r ML Run Lasso, warning = FALSE, message = FALSE, echo = FALSE}
 
 
 lasso_model <- glmnet(x, y_train, alpha = 1, lambda = lambda_best, standardize = TRUE)
@@ -983,7 +983,7 @@ lasso_model <- glmnet(x, y_train, alpha = 1, lambda = lambda_best, standardize =
 
 ```
 
-```{r Eval Lasso}
+```{r Eval Lasso, warning = FALSE, message = FALSE, echo = FALSE}
 
 eval_results <- function(true, predicted, df) {
   SSE <- sum((predicted - true)^2)
