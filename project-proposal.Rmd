@@ -204,9 +204,19 @@ H_3: We hypothesize that the stringency index is going to vary the most by conti
 
 Some politicians are pushing hard for the federal government to enact strict policies in the United States to slow the spread of Covid-19. They argue that social distancing, stay-at-home orders, mask wearing, and business closures are all crucial to flatten the curve and keep Covid-related deaths low.
 
-Intuitively, this makes sense. It is proven that social distancing, in all forms, is effective at slowing viral transmission. We are therefore interested to see the effects of policies mandating social distancing on the spread of Covid-19. To analyze the relationship, we will assess the correlation between a country's "stringency index" and the daily growth rate of its Covid-19 cases.
+Intuitively, this makes sense. A CDC study of Beijing households with at least one confirmed case of COVID found that mask use reduced second transmission within households by 79%. Further studies have shown its effectiveness in other settings, including a high-exposure setting in which two hair stylists that definitively had COVID and symptoms served 139 clients over 8 days with zero cases spread. All clients and patients wore masks. Thus, stricter masking policies seemingly have merit in reducing viral transmission [1]. 
+Furthermore, a Lancet study from earlier during the pandemic (using Wuhan as a case study) found that restrictions to social activities helps delay the epidemic peak, and that lifting governmental restrictions can bring about a second peak. We are therefore interested to see the effects of governmental policies mandating mask wearing and restricting contact on the spread of Covid-19. To analyze the relationship, we will assess the correlation between a country's "stringency index" and the daily growth rate of its Covid-19 cases.
 
-Stringency Index is a column in our dataset. It is a number on a scale of 0 to 100 that measures how strict a country's Covid-related policies are (100 being the strictest). It is a composite score of 9 other measurements including travel bans and workplace closures. 
+
+SOURCES:
+1: https://www.cdc.gov/coronavirus/2019-ncov/more/masking-science-sars-cov2.html
+2: https://www.thelancet.com/journals/lanpub/article/PIIS2468-2667(20)30073-6/fulltext
+
+Stringency Index is a column in our dataset. It is a number on a scale of 0 to 100 that measures how strict a country's Covid-related policies are (100 being the strictest). It is a rescaled composite score of 9 ordinal measurements of government responses, including school closures, workplace closures, canceling of public events, restriction on gatherings, stay at home events, internal travel restrictions, international travel restrictions, and face covering policies [3]. Thus, it is able to provide us a comparative variable as to the extent of a government's COVID response was. This will help us to analyze the relationship between country's government COVID response and the spread of new cases in 
+
+Source:
+3: https://ourworldindata.org/grapher/covid-stringency-index
+https://www.bsg.ox.ac.uk/research/research-projects/coronavirus-government-response-tracker
 
 We will calculate the daily growth rate of Covid-19 cases by dividing the number of new cases on a given day by the number of new cases the day before. This will give us a factor by which the number of new Covid cases is changing. Slowing the transmission of the virus by definition will mean that this factor is shrinking.
 
@@ -989,9 +999,6 @@ eval_results(y_test, predictions_test, test)
 
 
 ```
-
-
-
 
 ###Conclusion
 
