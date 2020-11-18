@@ -1,7 +1,7 @@
 ---
-title: 'Final Project Proposal: COVID-19 Dataset'
+title: 'Final Project: COVID-19 Dataset'
 author: 'The Lads: Frankie Willard, Manny Mokel, Alex Katopodis, Parker Dingman'
-subtitle: Due Friday, October 9, 11:59 PM
+subtitle: Due Friday, November 20, 11:59 PM
 output:
   html_document: default
   pdf_document: default
@@ -38,35 +38,24 @@ https://www.ecdc.europa.eu/en/covid-19/data-collection
 
 ### Section 3- Glimpse of data
 
-```{r glimpse-data, warning=FALSE, message=FALSE}
-library(tidyverse)
-
-covid <- read_csv("data/covid-data.csv")
-glimpse(covid)
-```
-
-```{r Add GG Inference}
+```{r Installing Packes and Loading Libraries}
 
 install.packages("gginference")
-
-library(gginference)
-
-```
-
-```{r Load in GLM Net}
-
 install.packages("glmnet", repos = "http://cran.us.r-project.org")
 
-
-```
-
-```{r Add Libraries}
-
+library(tidyverse)
+library(gginference)
 library(glmnet)
 library(caret)
 
 ```
 
+```{r glimpse-data, warning=FALSE, message=FALSE}
+
+covid <- read_csv("data/covid-data.csv")
+glimpse(covid)
+
+```
 
 ### Draft Report
 
