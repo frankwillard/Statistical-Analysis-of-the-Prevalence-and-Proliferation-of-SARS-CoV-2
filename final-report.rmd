@@ -26,7 +26,7 @@ We are interested in investigating how a country's demographics impact the domes
 
 We hypothesize that stringency-index, GDP per capita, population density, and human development index will have a strong impact on cases per capita. We also hypothesize that deaths per case will be largely determined by GDP per capita, the number of citizens aged 65+, hospital beds per thousand, and prevalence of pre-existing conditions (ex. diabetes prevalence, cardiovascular death rate, etc.). Finally, we expect that strict COVID-19 policy has effectively slowed the transmission of the virus. 
 
-These hypotheses are based on prior experiences and research. There is evidence that a high stringency index, a composite score based on how strict a country's restrictions are, slows the spread of COVID-19 [1]. We also know that patients with pre-existing conditions face a higher COVID-19 mortality rate [2, NEED A SOURCE!!!!!].  
+These hypotheses are based on prior experiences and research. There is evidence that a high stringency index, a composite score based on how strict a country's restrictions are, slows the spread of COVID-19 [1]. We also know that patients with pre-existing conditions face a higher COVID-19 mortality rate [2].  
 
 
 ### Data Description
@@ -69,13 +69,13 @@ covid_final_date <- covid %>%
 
 ```
 ### Question 1: Effectiveness of COVID-19 Related Policies
-Politicians worldwide are pushing for governments to enact strict policies to mitigate the spread of Covid-19. They argue that social distancing, stay-at-home orders, mask wearing, and business closures are all crucial to flatten the curve and keep Covid-related deaths low.
+Politicians worldwide are pushing for governments to enact strict policies to mitigate the spread of COVID-19. They argue that social distancing, stay-at-home orders, mask wearing, and business closures are all crucial to flatten the curve and keep Covid-related deaths low.
 
-A Lancet study from earlier during the pandemic (using Wuhan as a case study) found that restrictions to social activities helps delay the epidemic peak, and that lifting governmental restrictions can bring about a second peak. Thus, stricter masking policies seemingly have merit in reducing viral transmission [1]. We are therefore interested in analyzing the relationship between stringency index and both total cases per capita and the growth rate of COVID-19 cases.
+A Lancet study from earlier during the pandemic (using Wuhan as a case study) found that restrictions to social activities helps delay the epidemic peak, and that lifting governmental restrictions can bring about a second peak. Thus, stricter masking policies seemingly have merit in reducing viral transmission [3]. We are therefore interested in analyzing the relationship between stringency index and both total cases per capita and the growth rate of COVID-19 cases.
 
-Stringency index is a composite variable that
+Stringency index is a composite variable based on nine other categories that determines how "strict" a country's COVID-19 prevention policies are, with 100 being the most strict and 0 meaning they have no COVID-19 related policies.
 
-In order to visualize the relationship between stringency index and the total cases per capita we created two world map plots. The first shows the median stringency index of a country throughout the entire pandemic while the second shows the total cases per capita on October 5th, 2020.
+In order to visualize the relationship between a stringency index and the total cases per capita we created two world map plots. The first shows the median stringency index of a country during the entire pandemic while the second shows the total cases per capita on October 5th, 2020.
 
 ``` {r World Maps}
 
@@ -115,7 +115,7 @@ covid_stringency$growth_new_cases <- 0
 
 for (i in 2:nrow(covid_stringency)) {
   temp <- covid_stringency$new_cases[i] / covid_stringency$new_cases[i - 1]
-  covid_stringency$growth_new_cases[i] <- if_else(is.finite(temp), temp, 1)
+  covid_stringency$growth_new_cases[i] <- if_else(is.finite(temp), temp, NaN)
 }
 
 
@@ -152,14 +152,15 @@ plot_country("China")
 plot_country("Germany")
 
 ```
+For all countries there is a massive spike in cases during mid-March. This can be explained by the fact that cases were exploding during those few weeks globally. It was also around the same exact time that the World Health Organization declared COVID-19 a global pandemic because they were “deeply concerned by the alarming levels of spread and severity of the outbreak" and "the alarming levels of inaction” [4].
 
-As is clear in all the graphs of individual countries, a high stringency index is associated with a lower volatility in the transmission rate of COVID-19. In the graphs of the US, Russia, and Saudi Arabia, this hold particularly true. There is a massive spike in cases during mid-March, which was roughly around the beginning of the first wave, and stringency index rises sharply. After stringency index rises, cases fall to a much lower growth rate. In the case of Brazil, China, and Germany, the graphs are a bit different. There are still major spikes around mid-March with stringency indexes going high almost immediately after. However, the transmission rates don't seem to flatten out nearly as much as they do in the US, Russia, and Saudi Arabia. There is still a good amount of volatility.
+It should be noted that the red line on the "Rate of Spread of COVID-19" graphs represents a growth factor of 1, meaning that at this line cases per day was unchanged from one day to the next. Also most graphs contain large gaps in data pre mid-March. This is because data on new COVID-19 cases was not being consistently reported each day before then. Thus, there is no information to plot.
 
 ### Question 2: Which Demographics and Characteristics Impact Total Cases per Capita the Most?
-To assess which factors had the largest impact on determining a countries total cases per capita as well as test our hypothesis about total cases per capita, we will create a linear model to predict total cases per capita. We used the following linear model to try and predict total cases per capita based off of the demographics we hypothesized as well as a few additional variables. 
+To assess which factors had the largest impact on determining a countries total cases per capita as well as test our hypothesis about total cases per capita, we will create a linear model to predict total cases per capita. We used stringency index, GDP per capita, and population density as predictors since they were all included in our hypothesis.
 ``` {r Cases Per Capita Regression}
 
-lm_cpc <- lm(total_cases_per_cap ~ median_si + continent + gdp_per_capita + handwashing_facilities, data = covid_final_date)
+lm_cpc <- lm(total_cases_per_cap ~ median_si + gdp_per_capita + population_density, data = covid_final_date)
 lm_cpc %>%
  tidy() %>%
   arrange(p.value)
@@ -172,7 +173,7 @@ m_aug <- augment(lm_cpc)
 
 # Independence
 ggplot(data = m_aug, 
-       aes(x = 1:88, 
+       aes(x = 1:181, 
            y = .resid)) + 
   geom_point() + 
   labs(title = "Plot 1: Residuals in Order of the Dataset", 
@@ -190,11 +191,12 @@ ggplot(m_aug, mapping = aes(x= .resid)) +
 
 ```
 
+### Extra Analysis: Total Cases per Capita vs. Continent
 Our visualizations and linear models suggested there might be some sort of relationship between total cases per capita and continent. In the visualization of total cases per capita on the world map, it appeared that continents seemed to have similar total cases per capita. In the linear model predicting total cases per capita, we observed that certain continent predictor weights were statistically significant. Thus, we will test for independence between total cases per capita and continent. We will do so using a chi-squared test at the $\alpha$ = 0.05 significance level.
 
 $H_0$: There is independence between continent and total cases per capita.
 
-$H_0$: There is NOT independence between continent and total cases per capita.
+$H_1$: There is NOT independence between continent and total cases per capita.
 
 ``` {r Chi-Squared Continent and CPC}
 
@@ -332,6 +334,8 @@ glance(m_main) %>%
 
 
 ### Results
+### Question 1
+As is clear in all the graphs of individual countries, a high stringency index is associated with a lower volatility in the transmission rate of COVID-19. In the graphs of the US, Russia, and Saudi Arabia, this hold particularly true.  In the case of Brazil, China, and Germany, the graphs are a bit different. There are still major spikes around mid-March with stringency indexes going high almost immediately after. However, the transmission rates don't seem to flatten out nearly as much as they do in the US, Russia, and Saudi Arabia. There is still a good amount of volatility.
 
 
 
@@ -342,7 +346,9 @@ glance(m_main) %>%
 ### References
 
 [1] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7418951/#:~:text=Our%20model%20implies%20that%20social,at%2021%20days%20after%20implementation.
-[2]
-[3]
+[2] https://www.cdc.gov/coronavirus/2019-ncov/need-extra-precautions/people-with-medical-conditions.html#:~:text=Adults%20of%20any%20age%20with%20the%20following%20conditions%20are%20at,COPD%20(chronic%20obstructive%20pulmonary%20disease)
+[3] https://www.thelancet.com/journals/lanpub/article/PIIS2468-2667(20)30073-6/fulltext
+[4] https://www.ajmc.com/view/a-timeline-of-covid19-developments-in-2020
+[5] 
 
 
