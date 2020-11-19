@@ -78,7 +78,7 @@ covid_final_date <- covid %>%
   mutate(final_deaths_per_case = total_deaths/total_cases)
 
 ```
-### Question 1: Effectiveness of COVID-19 Related Policies
+### Question 1: Effectiveness of COVID-19 Related Policies on Mitigating Total Cases per Capita
 Politicians worldwide are pushing for governments to enact strict policies to mitigate the spread of COVID-19. They argue that social distancing, stay-at-home orders, mask wearing, and business closures are all crucial to flatten the curve and keep Covid-related deaths low.
 
 A Lancet study from earlier during the pandemic (using Wuhan as a case study) found that restrictions to social activities helps delay the epidemic peak, and that lifting governmental restrictions can bring about a second peak. Thus, stricter masking policies seemingly have merit in reducing viral transmission [3]. We are therefore interested in analyzing the relationship between stringency index and both total cases per capita and the growth rate of COVID-19 cases.
