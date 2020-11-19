@@ -67,7 +67,8 @@ covid <- covid %>%
   
 
 covid_final_date <- covid %>% 
-  mutate(stringency_index = if_else(is.na(stringency_index), 0, stringency_index)) %>%
+  mutate(stringency_index = if_else(is.na(stringency_index), 0, 
+                                    stringency_index)) %>%
   group_by(location) %>%
   mutate(median_si = median(stringency_index),
          total_cases_per_cap = total_cases / population) %>%
@@ -96,16 +97,20 @@ covid_map <- left_join(map, map_data, by = c("region" = "location"))
 ggplot(covid_map, mapping = aes(long, lat, group = group)) +
   coord_fixed(1.3) +
   geom_polygon(aes(fill = as.numeric(median_si)), color = "white") +
-  scale_fill_gradient(low = "tomato", high = "seagreen1", name = "Median Stringency Index") +
+  scale_fill_gradient(low = "tomato", high = "seagreen1", 
+                      name = "Median Stringency Index") +
   labs(title = "Median stringency index by country suggesting that most 
-       countries have a median stringency index of about 60", x = "Longitude", y = "Latitude")
+       countries have a median stringency index of about 60", 
+       x = "Longitude", y = "Latitude")
 
 ggplot(covid_map, mapping = aes(long, lat, group = group)) +
   coord_fixed(1.3) +
   geom_polygon(aes(fill = total_cases_per_cap), color = "white") +
-  scale_fill_gradient(low = "seagreen1", high = "tomato", name = "Total Cases per Capita") +
-  labs(title = "Total cases per capita by country suggesting that total cases per capita 
-       varies largely by continent", x = "Longitude", y = "Latitude")
+  scale_fill_gradient(low = "seagreen1", high = "tomato", 
+                      name = "Total Cases per Capita") +
+  labs(title = "Total cases per capita by country suggesting that 
+       total cases per capita varies largely by continent", 
+       x = "Longitude", y = "Latitude")
 
 
 ```
@@ -167,7 +172,9 @@ It should be noted that the red line on the "Rate of Spread of COVID-19" graphs 
 To assess which factors had the largest impact on determining a countries total cases per capita as well as test our hypothesis about total cases per capita, we will create a linear model to predict total cases per capita. We used stringency index, GDP per capita, human development index, and population density as predictors since they were all in our hypothesis.
 ``` {r Cases Per Capita Regression}
 
-lm_cpc <- lm(total_cases_per_cap ~ median_si + gdp_per_capita + population_density + human_development_index + continent, data = covid_final_date)
+lm_cpc <- lm(total_cases_per_cap ~ median_si + gdp_per_capita + 
+               population_density + human_development_index + continent, 
+             data = covid_final_date)
 lm_cpc %>%
  tidy() %>%
   arrange(p.value)
@@ -351,11 +358,18 @@ covid_deaths_reg <- covid %>%
   filter(date == "2020-10-05" & !is.na(continent)) %>%
   filter(!is.na(total_deaths) & !is.na(total_cases)) %>%
   mutate(final_deaths_per_case = total_deaths / total_cases) %>%
-  select(final_deaths_per_case, cardiovasc_death_rate,-contains("case") & -contains("death") & -contains("test")) %>%
+  select(final_deaths_per_case, 
+         cardiovasc_death_rate,
+         -contains("case") 
+         & -contains("death") 
+         & -contains("test")) %>%
   select(-iso_code, -continent, -location, -date, -positive_rate) %>%
   filter_all(all_vars(!is.na(.)))
 
-m_main <- lm(final_deaths_per_case ~ diabetes_prevalence + aged_70_older  + female_smokers + human_development_index + gdp_per_capita + life_expectancy + cardiovasc_death_rate + handwashing_facilities, data = covid_deaths_reg)
+m_main <- lm(final_deaths_per_case ~ diabetes_prevalence + aged_70_older + 
+               female_smokers + human_development_index + gdp_per_capita + 
+               life_expectancy + cardiovasc_death_rate + 
+               handwashing_facilities, data = covid_deaths_reg)
 
 m_main %>%
  tidy() %>% 
