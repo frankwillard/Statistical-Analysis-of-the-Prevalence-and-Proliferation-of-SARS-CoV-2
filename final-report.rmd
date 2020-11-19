@@ -52,6 +52,8 @@ https://www.ecdc.europa.eu/en/covid-19/data-collection
 
 ### Methodology
 ```{r Mutate Variables and Join}
+
+# Creating per capita metrics and categorizing HDI
 covid <- covid %>%
   mutate(new_cases_per_cap = (new_cases/population),
          new_deaths_per_cap = (new_deaths/population),
@@ -65,7 +67,7 @@ covid <- covid %>%
   )) %>% 
   mutate(deaths_per_case = total_deaths/total_cases)
   
-
+# New data frame based on last available date when downloaded
 covid_final_date <- covid %>% 
   mutate(stringency_index = if_else(is.na(stringency_index), 0, 
                                     stringency_index)) %>%
@@ -99,8 +101,8 @@ ggplot(covid_map, mapping = aes(long, lat, group = group)) +
   geom_polygon(aes(fill = as.numeric(median_si)), color = "white") +
   scale_fill_gradient(low = "tomato", high = "seagreen1", 
                       name = "Median Stringency Index") +
-  labs(title = "Median stringency index by country suggesting that most 
-       countries have a median stringency index of about 60", 
+  labs(title = "The median stringency index among all countries appears 
+       to be approximately 60", 
        x = "Longitude", y = "Latitude")
 
 ggplot(covid_map, mapping = aes(long, lat, group = group)) +
