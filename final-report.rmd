@@ -21,12 +21,6 @@ covid <- covid %>%
          total_cases_per_cap = (total_cases/population),
          total_deaths_per_cap = (total_deaths/population))
 
-covid_final_date <- covid %>% 
-  mutate(stringency_index = if_else(is.na(stringency_index), 0, stringency_index)) %>%
-  group_by(location) %>%
-  mutate(median_si = median(stringency_index)) %>%
-  filter(date == "2020-10-05" & !is.na(continent))
-
 
 ```
 
@@ -67,7 +61,6 @@ https://www.kaggle.com/paultimothymooney/latitude-and-longitude-for-every-countr
 ### Methodology
 ```{r Mutate Variables and Join}
 covid <- covid %>%
-  left_join(latitudes) %>%
   mutate(new_cases_per_cap = (new_cases/population),
          new_deaths_per_cap = (new_deaths/population),
          total_cases_per_cap = (total_cases/population),
@@ -288,7 +281,7 @@ m_aug <- augment(lm_cpc)
 
 # Independence
 ggplot(data = m_aug, 
-       aes(x = 1:87, 
+       aes(x = 1:88, 
            y = .resid)) + 
   geom_point() + 
   labs(title = "Plot 1: Residuals in Order of the Dataset", 
@@ -307,6 +300,31 @@ ggplot(m_aug, mapping = aes(sample = .resid)) +
   labs(title = "Plot 3: QQ Plot")
 
 ```
+
+
+```{r Deaths Per Case Multiple Linear Regression, warning = FALSE, message = FALSE, echo = FALSE}
+
+covid_deaths_reg <- covid %>%
+  filter(date == "2020-10-05" & !is.na(continent)) %>%
+  filter(!is.na(total_deaths) & !is.na(total_cases)) %>%
+  mutate(final_deaths_per_case = total_deaths / total_cases) %>%
+  select(final_deaths_per_case, cardiovasc_death_rate,-contains("case") & -contains("death") & -contains("test")) %>%
+  select(-iso_code, -continent, -location, -date, -positive_rate) %>%
+  filter_all(all_vars(!is.na(.)))
+
+
+
+m_main <- lm(final_deaths_per_case ~ diabetes_prevalence + aged_70_older  + female_smokers + human_development_index + gdp_per_capita + life_expectancy + cardiovasc_death_rate + handwashing_facilities, data = covid_deaths_reg)
+
+m_main %>%
+ tidy() %>% 
+  arrange(desc(p.value))
+
+glance(m_main) %>%
+  select(r.squared, adj.r.squared)
+
+```
+
 
 ### Results
 
