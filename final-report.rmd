@@ -51,7 +51,7 @@ https://www.ecdc.europa.eu/en/covid-19/data-collection
 
 
 ### Methodology
-We plan to use visualizations, chi-squared tests, and linear regressions to help us test our hypotheses and answer our research questions. For 
+We will attempt to answer all of our research questions and hypotheses with similar approaches
 
 Stringency index is a composite variable based on nine other categories that determines how "strict" a country's COVID-19 prevention policies are, with 100 being the most strict and 0 meaning they have no COVID-19 related policies.
 
@@ -463,7 +463,7 @@ Our test statistic was 126458, which has a chi-square distribution with 99284 de
 
 
 
-###Limitations
+### Limitations
 
 When it comes to our dataset and statistical analysis, there are many limitations to consider. In the dataset, there was missingness in the data, as many countries did not report testing, cases, positive rate, or deaths at different points especially early on, as well as data on country data  such as percentage of male smokers and female smokers, cardiovascular death rate, extreme poverty rate, handwashing facilities, hospital beds per thousand, and human development index. This led to countries potentially being under or over-represented in the data based on whether or not their data was public and added to this dataset. These are key factors in the governmental policy, viral transmission, and death rate of countries that we seek to explore, such that this missingness reduces the reliability of our statistical analysis. 
 
