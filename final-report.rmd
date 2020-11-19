@@ -294,7 +294,7 @@ ggplot(covid_map, mapping = aes(long, lat, group = group)) +
 
 ```
 
-
+In looking at this hypothesis, we first seek to explore the data. Thus, we created a line plot to visualize how the median deaths per case changes over time. We chose to visualize the median to prevent outlier countries from skewing the line in any direction. 
 
 ```{r Visualize Deaths Per Case}
 
@@ -302,7 +302,7 @@ covid_deaths_case <- covid %>%
   mutate(deaths_per_case = total_deaths/total_cases) %>%
   group_by(date) %>%
   filter(!is.na(deaths_per_case)) %>%
-  mutate(avg_deaths_case = mean(deaths_per_case),
+  mutate(avg_deaths_case = median(deaths_per_case),
          avg_total_case = mean(total_cases))
 
 #Make title more informative
@@ -313,6 +313,42 @@ ggplot(data = covid_deaths_case, aes(x=date, y=avg_deaths_case)) +
        title = "Deaths Per Case Over Time")
 
 ```
+
+In trying to determine what predictors have a relationship with deaths per case and what variables factor into a country's deaths per case, we decided to run a multiple linear regression including variables that encompass different country characteristics including age, pre-existing conditions (diabetes, smoking, cardiovascular death rate), as well as variables to predict how well a country's healthcare system may be including human development index, life expectancy, and GDP per capita (how much they may be able to spend on pandemic).
+
+
+```{r Deaths Per Case Multiple Linear Regression, warning = FALSE, message = FALSE, echo = FALSE}
+
+covid_deaths_reg <- covid %>%
+  filter(date == "2020-10-05" & !is.na(continent)) %>%
+  filter(!is.na(total_deaths) & !is.na(total_cases)) %>%
+  mutate(final_deaths_per_case = total_deaths / total_cases) %>%
+  select(final_deaths_per_case, 
+         cardiovasc_death_rate,
+         -contains("case") 
+         & -contains("death") 
+         & -contains("test")) %>%
+  select(-iso_code, -continent, -location, -date, -positive_rate) %>%
+  filter_all(all_vars(!is.na(.)))
+
+m_main <- lm(final_deaths_per_case ~ diabetes_prevalence + aged_70_older + 
+               female_smokers + human_development_index + gdp_per_capita + 
+               life_expectancy + cardiovasc_death_rate + 
+               handwashing_facilities + population_density, data = covid_deaths_reg)
+
+m_main %>%
+ tidy() %>% 
+  arrange(desc(p.value))
+
+glance(m_main) %>%
+  select(r.squared, adj.r.squared)
+
+```
+
+In creating our regression, we found that the percentage of a country's population that is aged above 70, as well as human development index, to be the variables with the highest coefficients and most statistically significant P-values. Thus, we choose to explore them further in a line visualization, to see how they change over time. 
+
+First we will look at human development index. We will visualize deaths per case over time as we did before, however, we will have different lines denoting different human development indexes. We have categorized them into bins of "Very high", "High", "Medium", "Low", and "Very Low", based on the various thresholds used by the UN [7]. 
+
 
 ```{r Visualize HDI vs Deaths/Case Over Time, warning = FALSE, message = FALSE, echo = FALSE}
 
@@ -342,6 +378,7 @@ ggplot(data = covid_deaths_hdi, aes(x=date, y=avg_deaths_case,
 
 
 ```
+
 In visualizing the line plot of deaths per case over time colored by human development categories, there are clear distinctions between the different categories, especially around May and June. Thus, we will test for independence between human development index category and deaths per case. We will do so using a chi-squared test at the $\alpha$ = 0.05 significance level.
 
 $H_0$: Human development index category and deaths per case are independent.
@@ -357,6 +394,8 @@ covid_hdic <- covid %>%
 chisq.test(table(covid_hdic$hdi_columns, covid_hdic$deaths_per_case))$p.value
 
 ```
+
+Our test statistic was 83240, which has a chi-square distribution with 73212 degree of freedom under $H_0$. This correlates with a P-value approximately equal to 2.487605e-139 which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that human development index category and deaths per case are not independent.
 
 
 
@@ -390,6 +429,7 @@ ggplot(data = covid_deaths_age, aes(x=date, y=avg_deaths_case,
        color = "Aged Category")
 
 ```
+
 In visualizing the line plot of deaths per case over time colored by categories denoting the percentage of the country's population that is aged 70 or older, there are stark contrasts in the line throughout the entire duration of the pandemic, with higher percentages of populations aged 70 or older having higher median deaths per case. Thus, to test for statistical significance, we will perform a test for independence between aged category and deaths per case. We will do so using a chi-squared test at the $\alpha$ = 0.05 significance level.
 
 $H_0$: Human development index and deaths per case are independent.
@@ -406,37 +446,7 @@ chisq.test(table(covid_aged$aged_columns, covid_aged$deaths_per_case))$p.value
 
 ```
 
-
-
-
-
-```{r Deaths Per Case Multiple Linear Regression, warning = FALSE, message = FALSE, echo = FALSE}
-
-covid_deaths_reg <- covid %>%
-  filter(date == "2020-10-05" & !is.na(continent)) %>%
-  filter(!is.na(total_deaths) & !is.na(total_cases)) %>%
-  mutate(final_deaths_per_case = total_deaths / total_cases) %>%
-  select(final_deaths_per_case, 
-         cardiovasc_death_rate,
-         -contains("case") 
-         & -contains("death") 
-         & -contains("test")) %>%
-  select(-iso_code, -continent, -location, -date, -positive_rate) %>%
-  filter_all(all_vars(!is.na(.)))
-
-m_main <- lm(final_deaths_per_case ~ diabetes_prevalence + aged_70_older + 
-               female_smokers + human_development_index + gdp_per_capita + 
-               life_expectancy + cardiovasc_death_rate + 
-               handwashing_facilities, data = covid_deaths_reg)
-
-m_main %>%
- tidy() %>% 
-  arrange(desc(p.value))
-
-glance(m_main) %>%
-  select(r.squared, adj.r.squared)
-
-```
+Our test statistic was 126458, which has a chi-square distribution with 99284 degrees of freedom under $H_0$. This correlates with a P-value approximately equal to 0, which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that aged category and deaths per case are not independent.
 
 
 
@@ -458,14 +468,10 @@ Figure 2 (HDI):
 
 Chi-Square Test (HDI): 
  
-Our test statistic was 83240, which has a chi-square distribution with 73212 degree of freedom under $H_0$. This correlates with a P-value approximately equal to 2.487605e-139 which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that human development index category and deaths per case are not independent.
 
 Figure 3 (Aged):
 
 Chi-Square Test (Aged): 
-
-Our test statistic was 126458, which has a chi-square distribution with 99284 degrees of freedom under $H_0$. This correlates with a P-value approximately equal to 0, which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that aged category and deaths per case are not independent.
-
 
 
 
@@ -500,5 +506,6 @@ Talk more about diagnostic plots:
 [4] https://www.ajmc.com/view/a-timeline-of-covid19-developments-in-2020
 [5] https://www.worldometers.info/coronavirus/
 [6] https://pubmed.ncbi.nlm.nih.gov/32321524/
+[7] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7507379/
 
 
