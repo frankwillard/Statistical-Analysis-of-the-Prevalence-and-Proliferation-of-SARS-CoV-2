@@ -293,7 +293,11 @@ $H_0$: Human development index category and deaths per case are NOT independent.
 covid_hdic <- covid %>%
   filter(!is.na(hdi_columns) & !is.na(deaths_per_case))
 
-chisq.test(table(covid_hdic$hdi_columns, covid_hdic$deaths_per_case))$p.value
+chisq_hdi <- chisq.test(table(covid_hdic$hdi_columns, covid_hdic$deaths_per_case))
+
+chisq_hdi
+
+chisq_hdi$p.value
 
 ```
 
@@ -340,13 +344,13 @@ $H_0$: Human development index and deaths per case are NOT independent.
 covid_aged <- covid %>%
   filter(!is.na(aged_columns) & !is.na(deaths_per_case))
 
-chisq.test(table(covid_aged$aged_columns, covid_aged$deaths_per_case))$p.value
+chisq_aged <- chisq.test(table(covid_aged$aged_columns, covid_aged$deaths_per_case))
+
+chisq_aged
+
+chisq_aged$p.value
 
 ```
-
-
-
-
 
 ```{r Deaths Per Case Multiple Linear Regression}
 
@@ -371,9 +375,34 @@ glance(m_main) %>%
 
 
 ### Results
-### Question 1
+
+### Hypothesis 1
 As is clear in all the graphs of individual countries, a high stringency index is associated with a lower volatility in the transmission rate of COVID-19. In the graphs of the US, Russia, and Saudi Arabia, this hold particularly true.  In the case of Brazil, China, and Germany, the graphs are a bit different. There are still major spikes around mid-March with stringency indexes going high almost immediately after. However, the transmission rates don't seem to flatten out nearly as much as they do in the US, Russia, and Saudi Arabia. There is still a good amount of volatility.
 
+
+### Hypothesis 2
+
+
+### Hypothesis 3
+
+Map:
+
+Figure 1: 
+
+
+Figure 2 (HDI):
+
+
+Chi-Square Test (HDI): 
+
+Our test statistic was 83240, which has a chi-square distribution with 73212 degree of freedom under $H_0$. This correlates with a P-value approximately equal to 2.487605e-139 which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that human development index category and deaths per case are not independent.
+
+Figure 3 (Aged):
+
+
+Chi-Square Test (Aged): 
+
+Our test statistic was 126458, which has a chi-square distribution with 99284 degrees of freedom under $H_0$. This correlates with a P-value approximately equal to 0, which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that aged category and deaths per case are not independent.
 
 
 
