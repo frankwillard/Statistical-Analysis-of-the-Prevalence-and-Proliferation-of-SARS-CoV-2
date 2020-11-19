@@ -218,7 +218,7 @@ plot_country <- function(x) {
     geom_line() +
     labs(x = "Date",
        y = "Rate of Spread of Covid-19") +
-    geom_hline(yintercept = 1)
+    geom_hline(yintercept = 1, color = "red")
 
 }
 
