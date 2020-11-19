@@ -272,7 +272,8 @@ ggplot(data = covid_deaths_hdi, aes(x=date, y=avg_deaths_case,
   labs(x = "Date",
        y = "Deaths/Case",
        title = "Median Deaths Per Case Over Time",
-       subtitle = "Color by Human Development Index Category")
+       subtitle = "Color by Human Development Index Category",
+       color = "HDI Category")
 
 
 ```
@@ -320,7 +321,8 @@ ggplot(data = covid_deaths_age, aes(x=date, y=avg_deaths_case,
   labs(x = "Date",
        y = "Deaths/Case",
        title = "Median Deaths Per Case Over Time",
-       subtitle = "Color by Aged 70+ Category")
+       subtitle = "Color by Aged 70+ Category",
+       color = "Aged Category")
 
 ```
 In visualizing the line plot of deaths per case over time colored by categories denoting the percentage of the country's population that is aged 70 or older, there are stark contrasts in the line throughout the entire duration of the pandemic, with higher percentages of populations aged 70 or older having higher median deaths per case. Thus, to test for statistical significance, we will perform a test for independence between aged category and deaths per case. We will do so using a chi-squared test at the $\alpha$ = 0.05 significance level.
