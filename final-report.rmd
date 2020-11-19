@@ -450,20 +450,24 @@ Our test statistic was 126458, which has a chi-square distribution with 99284 de
 
 ###Limitations
 
-All:
-* Lot of missing data for different variables, dates, can mess up the results
-* Time series data- have less understanding as to how to work with it
-* Dynamic and novel virus- hard to know what most impacts spread, death rate with so many variables changing
-* Different strains of coronavirus- can be a variable in terms of fatality rate
-* Cut off dataset in October, however, lots of new information has come in on coronavirus since then that may be helpful
-* Coronavirus data reporting- many countries do not have the comprehensive testing and thus our numbers for total cases/capita and deaths/case will be off
+When it comes to our dataset and statistical analysis, there are many limitations to consider. In the dataset, there was missingness in the data, as many countries did not report testing, cases, positive rate, or deaths at different points especially early on, as well as data on country data  such as percentage of male smokers and female smokers, cardiovascular death rate, extreme poverty rate, handwashing facilities, hospital beds per thousand, and human development index. This led to countries potentially being under or over-represented in the data based on whether or not their data was public and added to this dataset. These are key factors in the governmental policy, viral transmission, and death rate of countries that we seek to explore, such that this missingness reduces the reliability of our statistical analysis. 
 
-Regressions:
-* Doesn't pass diagnostic plots
-* Low R^2 or variance accounted for in regressions- not too many variables, missing important variables
-* Limited dataset
-* Still can not attribute causation- may be confounding variables
+Additionally, coronavirus data reporting and testing varies significantly by country, such that countries that lack comprehensive testing programs skew our anlaysis by reporting less cases than there are. Given that we are seeking to determine factors that affect cases per capita and deaths per case, knowledge of the true cases within each country is crucial to coming to this understanding. The disparity in the level of testing as well as reporting for cases and deaths among different countries adds bias to the model that we can not truly pinpoint and address without knowing the true numbers for these countries.
 
+Given that the project started in October, our dataset only includes data up to October 5th. Over one month has passed since then, and we have seen a dramatic uptick in the new cases and total cases around the world, with the daily new cases increasing from ~270,000 when we downloaded the dataset to over 500,000 daily new cases globally now [5]. Many countries have experienced rapid growth/new spikes in cases and deaths, providing new and helpful information about the dissemination and deaths of the coronavirus. In not having this new data in our dataset, our statistical analysis will fail to interpret this new and potentially vital or enlightening information that could shed more light on the effect of different variables over time. 
+
+The previous limitation is ultimately rooted in the fact that  SARS-CoV-2 is dynamic and novel, meaning that we are still learning about the virus and it is hard to know what variables have the most impact on spread and death rate. For example,experimentation on the virus publishd in the Journal of Translational Medicine found evidence for different geographical strains of SARS-CoV-2, as the virus is evolving and mutating. This is an important variable that is not in our dataset, but could be a confounding variable if a strain is more infectious or more fatal, as we seek to determine what affects  deaths per case and total cases per capita being.
+Our dataset likely does not include all relevant variables, which can be seen in our regressions as we are only able to account for 49% of the variance explained in deaths per case and 30.9% of the variance explained in total cases per capita. With so many variables changing over time and many relevant variables likely not in the dataset, it is difficult to determine the greatest factors in the spread and fatality rate of SARS-CoV-2.
+
+Finally, our data is of a time series format, which we have less statistical experience dealing with. Time series data requires a different style of analysis as each observation is not independent of each other (e.g. cases yesterday is not independent of cases today). This was yet another problem in our linear regression model. Our linear regression model did not pass all of the diagnostic plots and thus must be interpreted as biased and virtually unusable. Our linear regression model is also limited in that it assumes a linear relationship between the variables, when in fact there may not be. For example, there could be a polynomial relationship between a variable and the response, the larger it gets, the more it affects the response variable. 
+Additionally, the regression model can not attribute causality, but only an association. While a predictor and response variable may share a linear relationship, this could potentially be due to a confounding variable, such that the predictor does not actually cause the response. For example, people being aged 70 or older having a higher negative coefficient and negative relationship with deaths per case in the regression could be because of another variable. More people being aged 70 could lead to more retired people and less people in the workforce and medical system, causing deaths per case to be higher. This is thus a limit of using a linear regression. 
+
+With our current regression, another limitation is variables can be collinear, leading to coefficients that do not accurately reflect the relationship between the variable and a model. When running a linear regression, two multicollinear variables may have correlation coefficients that differ but rather additively have their true effect, as linear regressions struggle to differentiate the effects of two multicollinear variables. This is why machine learning specialists often perform feature selection (via ridge and lasso regression) and principal components analysis, to remove predictors and a model with more consistency in its correlation coefficients.
+
+
+Talk more about diagnostic plots:
+* Heteroscedastic?
+* Normality
 
 
 
@@ -473,6 +477,7 @@ Regressions:
 [2] https://www.cdc.gov/coronavirus/2019-ncov/need-extra-precautions/people-with-medical-conditions.html#:~:text=Adults%20of%20any%20age%20with%20the%20following%20conditions%20are%20at,COPD%20(chronic%20obstructive%20pulmonary%20disease)
 [3] https://www.thelancet.com/journals/lanpub/article/PIIS2468-2667(20)30073-6/fulltext
 [4] https://www.ajmc.com/view/a-timeline-of-covid19-developments-in-2020
-[5] 
+[5] https://www.worldometers.info/coronavirus/
+[6] https://pubmed.ncbi.nlm.nih.gov/32321524/
 
 
