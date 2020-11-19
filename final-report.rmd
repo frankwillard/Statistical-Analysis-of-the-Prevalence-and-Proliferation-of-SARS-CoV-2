@@ -14,7 +14,6 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = FALSE)
 library(tidyverse)
 
 covid <- read_csv("data/covid-data.csv")
-<<<<<<< HEAD
 
 covid <- covid %>%
   mutate(new_cases_per_cap = (new_cases/population),
@@ -27,10 +26,7 @@ covid_final_date <- covid %>%
   group_by(location) %>%
   mutate(median_si = median(stringency_index)) %>%
   filter(date == "2020-10-05" & !is.na(continent))
-=======
-latitudes <- read_csv("data/latitudes.csv")
 
->>>>>>> c7945107f09bb5f5aceb7b0b97d23128459a4234
 
 ```
 
