@@ -292,6 +292,11 @@ chisq.test(table(covid_tcpc$continent, covid_tcpc$total_cases_per_cap))
 After running a $\chi^2$ test with a test statisitc of 227767 and 159400 degrees of freedom, we calculated a p value of 2.2e-16, which is less than our $\alpha$ = 0.05 significance level. Thus we reject the null hypothesis. There is sufficient evidence to suggest that continents are not independent from total cases per capita.
 
 ### Hypothesis 3: Which Demographics and Characteristics Impact Deaths per Case the Most?
+
+In looking at this hypothesis, we first seek to perform exploratory data analysis. 
+
+First, we are creating a map to visualize the final deaths per case by region/country, and see if there are any evident shared characteristics in countries with higher deaths per cases.
+
 ```{r Deaths Per Case Map}
 
 ggplot(covid_map, mapping = aes(long, lat, group = group)) +
@@ -305,7 +310,9 @@ ggplot(covid_map, mapping = aes(long, lat, group = group)) +
 
 ```
 
-In looking at this hypothesis, we first seek to explore the data. Thus, we created a line plot to visualize how the median deaths per case changes over time. We chose to visualize the median to prevent outlier countries from skewing the line in any direction. 
+In looking at the plot, it is clear that most countries have a deaths per case in the 0 to 0.1 range, with Yemen being a clear outlier in the map.
+
+In addition to exploring the regional deaths per case, we created a line plot to visualize how the median deaths per case changes in relation to time. We chose to visualize the median to prevent outlier countries from skewing the line in any direction. 
 
 ```{r Visualize Deaths Per Case}
 
