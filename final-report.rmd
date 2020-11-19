@@ -1,0 +1,18 @@
+---
+title: 'Final Project: COVID-19 Dataset'
+author: 'The Lads: Frankie Willard, Manny Mokel, Alex Katopodis, Parker Dingman'
+subtitle: Due Friday, November 20, 11:59 PM
+output:
+  html_document: default
+  pdf_document: default
+---
+
+### Introduction
+
+### Data Description
+
+### Methodology
+
+### Results
+
+### Discussion
