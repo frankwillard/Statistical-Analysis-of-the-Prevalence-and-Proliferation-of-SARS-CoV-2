@@ -48,7 +48,6 @@ glimpse(covid)
 Sources:
 https://ourworldindata.org/coronavirus-source-data
 https://www.ecdc.europa.eu/en/covid-19/data-collection
-https://www.kaggle.com/paultimothymooney/latitude-and-longitude-for-every-country-and-state
 
 
 ### Methodology
