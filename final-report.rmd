@@ -51,7 +51,13 @@ https://www.ecdc.europa.eu/en/covid-19/data-collection
 
 
 ### Methodology
-We will attempt to answer all of our research questions and hypotheses with similar approaches
+We will attempt to answer all of our research questions and hypotheses with similar approaches. We will create visualizations to graphically show any relationships we wish to analyze. We then plan to use linear models to analyze which variables in particular have relationships with total cases per capita and deaths per case.
+
+Our graphs will consist of both line plots and world maps. The world maps will serve to show different variables with respect to geography. This will hopefully provide clear visuals to show which variables are associated with total cases per capita and deaths per case in a given country. Our line plots will be used to visualize relationships between two variables.
+
+Our regressions will be simple linear models with predictor variables that we hypothesized. We do not plan on including interaction variables in our models. We plan on adjusting our models to try and improve $R^2$ to a level we are satisfied with while also keeping them simple.
+
+For our data analysis, we will look at stringency index, 
 
 Stringency index is a composite variable based on nine other categories that determines how "strict" a country's COVID-19 prevention policies are, with 100 being the most strict and 0 meaning they have no COVID-19 related policies.
 
