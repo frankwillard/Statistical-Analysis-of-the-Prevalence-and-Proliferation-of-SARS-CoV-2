@@ -78,7 +78,11 @@ covid_final_date <- covid %>%
   mutate(final_deaths_per_case = total_deaths/total_cases)
 
 ```
-### Question 1: Effectiveness of COVID-19 Related Policies on Mitigating Total Cases per Capita
+
+### Results
+
+
+### Question 1: Effectiveness of COVID-19 Related Policies
 Politicians worldwide are pushing for governments to enact strict policies to mitigate the spread of COVID-19. They argue that social distancing, stay-at-home orders, mask wearing, and business closures are all crucial to flatten the curve and keep Covid-related deaths low.
 
 A Lancet study from earlier during the pandemic (using Wuhan as a case study) found that restrictions to social activities helps delay the epidemic peak, and that lifting governmental restrictions can bring about a second peak. Thus, stricter masking policies seemingly have merit in reducing viral transmission [3]. We are therefore interested in analyzing the relationship between stringency index and both total cases per capita and the growth rate of COVID-19 cases.
@@ -383,7 +387,10 @@ glance(m_main) %>%
 ```
 
 
-### Results
+
+
+### Discussion
+
 ### Hypothesis 1
 As is clear in all the graphs of individual countries, a high stringency index is associated with a lower volatility in the transmission rate of COVID-19. In the graphs of the US, Russia, and Saudi Arabia, this hold particularly true.  In the case of Brazil, China, and Germany, the graphs are a bit different. There are still major spikes around mid-March with stringency indexes going high almost immediately after. However, the transmission rates don't seem to flatten out nearly as much as they do in the US, Russia, and Saudi Arabia. There is still a good amount of volatility.
 
@@ -410,7 +417,23 @@ Our test statistic was 126458, which has a chi-square distribution with 99284 de
 
 
 
-### Discussion
+###Limitations
+
+All:
+* Lot of missing data for different variables, dates, can mess up the results
+* Time series data- have less understanding as to how to work with it
+* Dynamic and novel virus- hard to know what most impacts spread, death rate with so many variables changing
+* Different strains of coronavirus- can be a variable in terms of fatality rate
+* Cut off dataset in October, however, lots of new information has come in on coronavirus since then that may be helpful
+* Coronavirus data reporting- many countries do not have the comprehensive testing and thus our numbers for total cases/capita and deaths/case will be off
+
+Regressions:
+* Doesn't pass diagnostic plots
+* Low R^2 or variance accounted for in regressions- not too many variables, missing important variables
+* Limited dataset
+* Still can not attribute causation- may be confounding variables
+
+
 
 
 ### References
