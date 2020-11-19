@@ -51,6 +51,9 @@ https://www.ecdc.europa.eu/en/covid-19/data-collection
 
 
 ### Methodology
+
+Stringency index is a composite variable based on nine other categories that determines how "strict" a country's COVID-19 prevention policies are, with 100 being the most strict and 0 meaning they have no COVID-19 related policies.
+
 ```{r Mutate Variables and Join}
 
 # Creating per capita metrics and categorizing HDI
@@ -80,14 +83,10 @@ covid_final_date <- covid %>%
 ```
 
 ### Results
-
-
-### Question 1: Effectiveness of COVID-19 Related Policies
+### Question 1: Do Strict COVID-19 Related Policies Keep Total Cases per Capita Low?
 Politicians worldwide are pushing for governments to enact strict policies to mitigate the spread of COVID-19. They argue that social distancing, stay-at-home orders, mask wearing, and business closures are all crucial to flatten the curve and keep Covid-related deaths low.
 
-A Lancet study from earlier during the pandemic (using Wuhan as a case study) found that restrictions to social activities helps delay the epidemic peak, and that lifting governmental restrictions can bring about a second peak. Thus, stricter masking policies seemingly have merit in reducing viral transmission [3]. We are therefore interested in analyzing the relationship between stringency index and both total cases per capita and the growth rate of COVID-19 cases.
-
-Stringency index is a composite variable based on nine other categories that determines how "strict" a country's COVID-19 prevention policies are, with 100 being the most strict and 0 meaning they have no COVID-19 related policies.
+A Lancet study from early in the pandemic (using Wuhan as a case study) found that restrictions to social activities helps delay the epidemic peak, and that lifting governmental restrictions can bring about a second peak. Thus, stricter masking policies seemingly have merit in reducing viral transmission [3]. We are therefore interested in analyzing the relationship between stringency index and both total cases per capita and the growth rate of COVID-19 cases.
 
 In order to visualize the relationship between a stringency index and the total cases per capita we created two world map plots. The first shows the median stringency index of a country during the entire pandemic while the second shows the total cases per capita on October 5th, 2020.
 
@@ -120,7 +119,10 @@ ggplot(covid_map, mapping = aes(long, lat, group = group)) +
 
 
 ```
-While these visuals can help capture the big picture, it also is useful to see how stringency index impacts the growth of cases over time. To visualize this, we will plot several countries that have both relatively high and low total cases per capita. The growth of cases will be represented by the factor for which the new cases changed from the previous day.
+
+From these world maps alone, it is difficult to determine if a high stringency index is associated with a low total cases per capita. There does not seem to be any pattern of high stringency index countries ending up with low total cases per capita. In fact, it appears from the visual alone that total cases per capita is mostly associated with continent. South America looks to have the highest stringency indices, but also the highest total cases per capita. From these two visualizations, it's hard to asses any relationship between stringency index and total cases per capita.
+
+It also is useful to see how stringency index impacts the growth of cases over time. To visualize this, we will plot several countries that have both relatively high and low total cases per capita. The growth of cases will be represented by the factor for which the new cases changed from the previous day.
 
 ``` {r Modifying the Data for Individual Plotting}
 
@@ -170,12 +172,36 @@ plot_country("China")
 plot_country("Germany")
 
 ```
+As is clear in all the graphs of individual countries, a high stringency index is associated with a lower volatility in the transmission rate of COVID-19. In the graphs of the US, Russia, and Saudi Arabia, this hold particularly true.  In the case of Brazil, China, and Germany, the graphs are a bit different. The transmission rates don't seem to flatten out nearly as much as they do in the US, Russia, and Saudi Arabia. There is still a good amount of volatility even after the mid-March spike.
+
 For all countries there is a massive spike in cases during mid-March. This can be explained by the fact that cases were exploding during those few weeks globally. It was also around the same exact time that the World Health Organization declared COVID-19 a global pandemic because they were “deeply concerned by the alarming levels of spread and severity of the outbreak" and "the alarming levels of inaction” [4].
 
 It should be noted that the red line on the "Rate of Spread of COVID-19" graphs represents a growth factor of 1, meaning that at this line cases per day was unchanged from one day to the next. Also most graphs contain large gaps in data pre mid-March. This is because data on new COVID-19 cases was not being consistently reported each day before then. Thus, there is no information to plot.
 
 ### Question 2: Which Demographics and Characteristics Impact Total Cases per Capita the Most?
-To assess which factors had the largest impact on determining a countries total cases per capita as well as test our hypothesis about total cases per capita, we will create a linear model to predict total cases per capita. We used stringency index, GDP per capita, human development index, and population density as predictors since they were all in our hypothesis.
+To assess which factors had the largest impact on determining a countries total cases per capita, we will create a linear model to predict total cases per capita. This model will determine if certain variables are statistically significant in determining total cases per capita. 
+
+We will use stringency index, GDP per capita, human development index, and population density as predictors since they were all in our hypothesis. In addition, we added continent as a predictor after observing its potential relevance in the world maps above. We will test our variables at the$\alpha = 0.05$ significance level.
+
+Stringency Index:
+$H_0$: There is no relationship between stringency index and total cases per capita. $\beta_{si}$ = 0
+$H_1$: There is a relationship between stringency index and total cases per capita. $\beta_{si} \neq$ 0
+
+GDP per Capita:
+$H_0$: There is no relationship between GDP per Capita and total cases per capita. $\beta_{gdp}$ = 0
+$H_1$: There is a relationship between GDP per Capita and total cases per capita. $\beta_{gdp} \neq$ 0
+
+Human Development Index:
+$H_0$: There is no relationship between Human Development Index and total cases per capita. $\beta_{hdi}$ = 0
+$H_1$: There is a relationship between Human Development Index and total cases per capita. $\beta_{hdi} \neq$ 0
+
+Population Density:
+$H_0$: There is no relationship between Population Density and total cases per capita. $\beta_{pd}$ = 0
+$H_1$: There is a relationship between Population Densityand total cases per capita. $\beta_{pd} \neq$ 0
+
+The model will take the format:
+$\beta_0$ + $\beta_1$ * (GDP per Capita) + $\beta_2$ * (Median Stringency Index) + $\beta_3$ * (Human Development Index) + $\beta_4$ * (Population Density) + 
+
 ``` {r Cases Per Capita Regression}
 
 lm_cpc <- lm(total_cases_per_cap ~ median_si + gdp_per_capita + 
@@ -210,6 +236,11 @@ ggplot(m_aug, mapping = aes(x= .resid)) +
   geom_histogram()
 
 ```
+
+After creating the linear model, we see that stringency index and GDP per capita have corresponding p values less than our significance level of 0.05. We reject the null hypotheses. There is sufficient evidence to suggest that there is a relationship between stringency index and total cases per capita as well as GDP per capita and total cases per capita.
+
+As for the coefficients of population density and human development index, both have a p value greater than our significance level of 0.05. Therefore, we fail to reject the null hypothesis. There is not enough evidence to suggest that population density has any relationship to total cases per capita nor that human development index has any relationship to total cases per capita.
+
 
 ### Extra Analysis: Total Cases per Capita vs. Continent
 Our visualizations and linear models suggest there might be some sort of relationship between total cases per capita and continent. In the visualization of total cases per capita on the world map, it appeared that continents seemed to have similar total cases per capita. In the linear model predicting total cases per capita, we observed that certain continent predictor weights were statistically significant. Thus, we will test for independence between total cases per capita and continent. We will do so using a chi-squared test at the $\alpha$ = 0.05 significance level.
@@ -392,7 +423,7 @@ glance(m_main) %>%
 ### Discussion
 
 ### Hypothesis 1
-As is clear in all the graphs of individual countries, a high stringency index is associated with a lower volatility in the transmission rate of COVID-19. In the graphs of the US, Russia, and Saudi Arabia, this hold particularly true.  In the case of Brazil, China, and Germany, the graphs are a bit different. There are still major spikes around mid-March with stringency indexes going high almost immediately after. However, the transmission rates don't seem to flatten out nearly as much as they do in the US, Russia, and Saudi Arabia. There is still a good amount of volatility.
+
 
 ### Hypothesis 2
 
