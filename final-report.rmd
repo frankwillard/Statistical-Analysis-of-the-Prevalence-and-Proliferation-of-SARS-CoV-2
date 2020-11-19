@@ -186,6 +186,45 @@ ggplot(data = covid_deaths_case, aes(x=date, y=avg_deaths_case)) +
 
 ```
 
+```{r Visualize HDI vs Deaths/Case Over Time, warning = FALSE, message = FALSE, echo = FALSE}
+
+#Could move this to exploratory data analysis
+
+
+#Categories created based on 
+# https://onlinelibrary.wiley.com/doi/full/10.1002/brb3.1755
+
+covid <- covid %>% 
+  mutate(hdi_columns = case_when(
+    human_development_index >= 0.8 ~ "Very High",
+    human_development_index < 0.8 & human_development_index >= 0.7 ~ "High",
+    human_development_index < 0.7 & human_development_index >= 0.55 ~ "Medium",
+    human_development_index < 0.55~ "Low"
+  )) %>% 
+  mutate(deaths_per_case = total_deaths/total_cases)
+
+  
+covid_deaths_hdi <- covid %>%
+  group_by(hdi_columns, date) %>%
+  filter(!is.na(deaths_per_case) & !is.na(human_development_index)) %>%
+  mutate(avg_deaths_case = median(deaths_per_case))
+
+
+#Can Facet Wrap:   facet_wrap(hdi_columns~.)+
+
+#Make title more informative
+ggplot(data = covid_deaths_hdi, aes(x=date, y=avg_deaths_case, 
+                                    color = hdi_columns)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Deaths/Case",
+       title = "Mean Deaths Per Case Over Time",
+       subtitle = "Color by Human Development Index Category")
+
+
+```
+
+
 ```{r Aged Visualization}
 
 covid <- covid %>% 
