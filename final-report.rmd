@@ -425,6 +425,23 @@ Our test statistic was 126458, which has a chi-square distribution with 99284 de
 
 
 
+###Limitations
+
+All:
+* Lot of missing data for different variables, dates, can mess up the results
+* Time series data- have less understanding as to how to work with it
+* Dynamic and novel virus- hard to know what most impacts spread, death rate with so many variables changing
+* Different strains of coronavirus- can be a variable in terms of fatality rate
+* Cut off dataset in October, however, lots of new information has come in on coronavirus since then that may be helpful
+* Coronavirus data reporting- many countries do not have the comprehensive testing and thus our numbers for total cases/capita and deaths/case will be off
+
+Regressions:
+* Doesn't pass diagnostic plots
+* Low R^2 or variance accounted for in regressions- not too many variables, missing important variables
+* Limited dataset
+* Still can not attribute causation- may be confounding variables
+
+
 
 
 ### References
