@@ -16,7 +16,11 @@ library(tidyverse)
 covid <- read_csv("data/covid-data.csv")
 latitudes <- read_csv("data/latitudes.csv")
 covid <- covid %>%
-  left_join(latitudes)
+  left_join(latitudes) %>%
+  mutate(new_cases_per_cap = (new_cases/population),
+         new_deaths_per_cap = (new_deaths/population),
+         total_cases_per_cap = (total_cases/population),
+         total_deaths_per_cap = (total_deaths/population))
 
 covid_final_date <- covid %>% 
   mutate(stringency_index = if_else(is.na(stringency_index), 0, stringency_index)) %>%
@@ -46,6 +50,14 @@ We selected a data set from "Our World in Data." Each observation in the data se
 “Our World In Data” uses data from the European Center for Disease Prevention and Control (ECDC), a world leader for COVID-19 data. The ECDC has a team of epidemiologists that works every day to screen up to 500 sources to get the latest figures. These sources include ministries of health (43%),  websites of public health institutes (9%),  websites of public health institutes (6%), World Health Organization (WHO) websites,  WHO situation reports (2%), and official dashboards and interactive maps from national and international institutions (10%). The EDEC also utilizes social media accounts maintained by national authorities, ministries of health, and official media outlets (30%). These social media sources are screened and validated by the other sources mentioned previously. The data is recorded daily, and we will be using the data set updated as of October 9, 2020 (10:30, London time).
 
 We used latitude data from the website "Kaggle" to supplement the COVID-19 data set. This data was collected from a Google data set and was merged with the "Our World in Data" COVID-19 data set to create one larger data set.   
+
+Here is a glimpse of our data set:
+
+``` {r Glimpse}
+
+glimpse(covid)
+
+```
  
 Sources:
 https://ourworldindata.org/coronavirus-source-data
@@ -77,8 +89,8 @@ ggplot(covid_map, mapping = aes(long, lat, group = group)) +
   coord_fixed(1.3) +
   geom_polygon(aes(fill = total_cases_per_cap), color = "white") +
   scale_fill_gradient(low = "seagreen1", high = "tomato", name = "Total Cases per Capita") +
-  labs(title = "Total cases per capita by country suggesting that it varies largely
-       by continent", x = "Longitude", y = "Latitude")
+  labs(title = "Total cases per capita by country suggesting that total cases per capita 
+       varies largely by continent", x = "Longitude", y = "Latitude")
 
 
 ```
@@ -130,6 +142,21 @@ plot_country("Saudi Arabia")
 plot_country("Brazil")
 plot_country("China")
 plot_country("Germany")
+
+```
+
+As is clear in all the graphs of individual countries, a high stringency index is associated with a lower volatility in the transmission rate of COVID-19. In the graphs of the US, Russia, and Saudi Arabia, this hold particularly true. There is a massive spike in cases during mid-March, which was roughly around the beginning of the first wave, and stringency index rises sharply. After stringency index rises, cases fall to a much lower growth rate. In the case of Brazil, China, and Germany, the graphs are a bit different. There are still major spikes around mid-March with stringency indexes going high almost immediately after. However, the transmission rates don't seem to flatten out nearly as much as they do in the US, Russia, and Saudi Arabia. There is still a good amount of volatility.
+
+### Regressions
+
+``` {r Cases Per Capita Regression}
+
+lm_cpc <- lm(total_cases_per_cap ~ latitude + median_si + human_development_index + continent + gdp_per_capita + handwashing_facilities + population_density, data = covid_final_date)
+lm_cpc %>%
+ tidy() %>%
+  arrange(p.value)
+glance(lm_cpc) %>% 
+  select(adj.r.squared, r.squared)
 
 ```
 

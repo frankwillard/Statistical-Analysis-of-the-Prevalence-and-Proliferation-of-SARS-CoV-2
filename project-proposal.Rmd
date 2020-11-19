@@ -150,6 +150,26 @@ for (i in 1:nrow(covid1)) {
 
 ```
 
+``` {r maps}
+
+map_data <- covid_final_date %>%
+  mutate(location = if_else(location == "United States", "USA", location)) %>%
+  summarize(location, median_si, total_cases_per_cap)
+
+map <- map_data("world")
+covid_map <- left_join(map, map_data, by = c("region" = "location"))
+
+ggplot(covid_map, mapping = aes(long, lat, group = group)) +
+  coord_fixed(1.3) +
+  geom_polygon(aes(fill = as.numeric(median_si)), color = "white") +
+  scale_fill_gradient(low = "tomato", high = "seagreen1")
+
+ggplot(covid_map, mapping = aes(long, lat, group = group)) +
+  coord_fixed(1.3) +
+  geom_polygon(aes(fill = total_cases_per_cap), color = "white") +
+  scale_fill_gradient(low = "seagreen1", high = "tomato")
+
+```
 
 H_1: We hypothesize that cases per capita will have a strong negative correlation to stringency index.
 
