@@ -1,5 +1,5 @@
 ---
-title: 'Final Project: COVID-19 Dataset'
+title: 'Final Project: SARS-CoV-2 Dataset'
 author: 'The Lads: Frankie Willard, Manny Mokel, Alex Katopodis, Parker Dingman'
 subtitle: Due Friday, November 20, 11:59 PM
 output:
@@ -18,24 +18,24 @@ covid <- read_csv("data/covid-data.csv")
 ```
 
 ### Introduction
-Throughout the year 2020, the COVID-19 pandemic took the world by storm, deeply impacting every country on the planet, albeit with differing degrees of severity. As cases continued to rise, families suffered from the loss of family members, jobs, social interactions, disposable income, and more. 
+Throughout the year 2020, the SARS-CoV-2 pandemic took the world by storm, deeply impacting every country on the planet, albeit with differing degrees of severity. As cases continued to rise, families suffered from the loss of family members, jobs, social interactions, disposable income, and more. 
 
-This public health crisis became severe enough such that many countries took decisive action, shutting down their economies to prioritize the lives of citizens. Meanwhile, other countries were less strict in their policies, attempting to preserve their economy at the potential expense of their citizen’s lives. The difference in each country’s characteristics, demographics, public health capacities, and the strictness of COVID-19 policies led to vastly different effects of the pandemic on different countries. Given our personal connections to the effects of the pandemic through our lives, our friends, and our families, we wanted to determine what led to the pandemic affecting some places worse than others.  
+This public health crisis became severe enough such that many countries took decisive action, shutting down their economies to prioritize the lives of citizens. Meanwhile, other countries were less strict in their policies, attempting to preserve their economy at the potential expense of their citizen’s lives. The difference in each country’s characteristics, demographics, public health capacities, and the strictness of SARS-CoV-2 policies led to vastly different effects of the pandemic on different countries. Given our personal connections to the effects of the pandemic through our lives, our friends, and our families, we wanted to determine what led to the pandemic affecting some places worse than others.  
 
-We are interested in investigating how a country's demographics impact the domestic severity of COVID-19. More specifically, we would like to see which demographics lead to higher cases per capita and deaths per case. We are also interested in analyzing how effective lockdowns and COVID-19 related policies have been in mitigating the spread of the virus.   
+We are interested in investigating how a country's demographics impact the domestic severity of SARS-CoV-2. More specifically, we would like to see which demographics lead to higher cases per capita and deaths per case. We are also interested in analyzing how effective lockdowns and SARS-CoV-2 related policies have been in mitigating the spread of the virus.   
 
-We hypothesize that stringency-index, GDP per capita, population density, and human development index will have a strong impact on cases per capita. We also hypothesize that deaths per case will be largely determined by GDP per capita, the number of citizens aged 65+, hospital beds per thousand, and prevalence of pre-existing conditions (ex. diabetes prevalence, cardiovascular death rate, etc.). Finally, we expect that strict COVID-19 policy has effectively slowed the transmission of the virus. 
+We hypothesize that stringency-index, GDP per capita, population density, and human development index will have a strong impact on cases per capita. We also hypothesize that deaths per case will be largely determined by GDP per capita, the number of citizens aged 65+, hospital beds per thousand, and prevalence of pre-existing conditions (ex. diabetes prevalence, cardiovascular death rate, etc.). Finally, we expect that strict SARS-CoV-2 policy has effectively slowed the transmission of the virus. 
 
-These hypotheses are based on prior experiences and research. There is evidence that a high stringency index, a composite score based on how strict a country's restrictions are, slows the spread of COVID-19 [1]. We also know that patients with pre-existing conditions face a higher COVID-19 mortality rate [2].  
+These hypotheses are based on prior experiences and research. There is evidence that a high stringency index, a composite score based on how strict a country's restrictions are, slows the spread of SARS-CoV-2 [9]. We also know that patients with pre-existing conditions face a higher SARS-CoV-2 mortality rate [10].  
 
 
 ### Data Description
 
-We selected a data set from "Our World in Data." Each observation in the data set shows relevant COVID-19 data for a particular country on a given date. The COVID-19 data in the data set includes total deaths, total cases, new deaths, new cases, total cases per million, total deaths per million, total tests, new tests, total tests per thousand, positive rate, as well as telling country numbers such as stringency index (composite measure of government strictness policy) and hospital beds per thousand. Additionally, the data set includes country characteristics including population density, median age, GDP per capita, diabetes prevalence, life expectancy, and extreme poverty rate. While the previous variables are quantitative, the data set also includes categorical variables when it comes to geography such as the country and continent. 
+We selected a data set from "Our World in Data." Each observation in the data set shows relevant SARS-CoV-2 data for a particular country on a given date. The SARS-CoV-2 data in the data set includes total deaths, total cases, new deaths, new cases, total cases per million, total deaths per million, total tests, new tests, total tests per thousand, positive rate, as well as telling country numbers such as stringency index (composite measure of government strictness policy) and hospital beds per thousand. Additionally, the data set includes country characteristics including population density, median age, GDP per capita, diabetes prevalence, life expectancy, and extreme poverty rate. While the previous variables are quantitative, the data set also includes categorical variables when it comes to geography such as the country and continent. 
 
-“Our World In Data” uses data from the European Center for Disease Prevention and Control (ECDC), a world leader for COVID-19 data. The ECDC has a team of epidemiologists that works every day to screen up to 500 sources to get the latest figures. These sources include ministries of health (43%),  websites of public health institutes (9%),  websites of public health institutes (6%), World Health Organization (WHO) websites,  WHO situation reports (2%), and official dashboards and interactive maps from national and international institutions (10%). The EDEC also utilizes social media accounts maintained by national authorities, ministries of health, and official media outlets (30%). These social media sources are screened and validated by the other sources mentioned previously. The data is recorded daily, and we will be using the data set updated as of October 9, 2020 (10:30, London time).
+“Our World In Data” uses data from the European Center for Disease Prevention and Control (ECDC), a world leader for SARS-CoV-2 data. The ECDC has a team of epidemiologists that works every day to screen up to 500 sources to get the latest figures. These sources include ministries of health (43%),  websites of public health institutes (9%),  websites of public health institutes (6%), World Health Organization (WHO) websites,  WHO situation reports (2%), and official dashboards and interactive maps from national and international institutions (10%). The EDEC also utilizes social media accounts maintained by national authorities, ministries of health, and official media outlets (30%). These social media sources are screened and validated by the other sources mentioned previously. The data is recorded daily, and we will be using the data set updated as of October 9, 2020 (10:30, London time).
 
-We used latitude data from the website "Kaggle" to supplement the COVID-19 data set. This data was collected from a Google data set and was merged with the "Our World in Data" COVID-19 data set to create one larger data set.   
+We used latitude data from the website "Kaggle" to supplement the SARS-CoV-2 data set. This data was collected from a Google data set and was merged with the "Our World in Data" SARS-CoV-2 data set to create one larger data set.   
 
 Here is a glimpse of our data set:
 
@@ -44,22 +44,23 @@ Here is a glimpse of our data set:
 glimpse(covid)
 
 ```
- 
-Sources:
-https://ourworldindata.org/coronavirus-source-data
-https://www.ecdc.europa.eu/en/covid-19/data-collection
 
 
 ### Methodology
 We will attempt to answer all of our research questions and hypotheses with similar approaches. We will create visualizations to graphically show any relationships we wish to analyze. We then plan to use linear models to analyze which variables in particular have relationships with total cases per capita and deaths per case.
 
-Our graphs will consist of both line plots and world maps. The world maps will serve to show different variables with respect to geography. This will hopefully provide clear visuals to show which variables are associated with total cases per capita and deaths per case in a given country. Our line plots will be used to visualize relationships between two variables.
+Our graphs will consist of both line plots and world maps. The world maps will serve to show different variables with respect to geography. This will provide clear visualizations for us to identify countries and regions with high numbers of cases per capita and deaths per case. We can use maps comparatively with stringency index and cases per capita to see if median stringency index (chose median because resistant to outliers) and cases per capita are related, helping us analyze the effect of governmental policy on the transmission of SARS-CoV-2.
 
-Our regressions will be simple linear models with predictor variables that we hypothesized. We do not plan on including interaction variables in our models. We plan on adjusting our models to try and improve $R^2$ to a level we are satisfied with while also keeping them simple.
+Our line plots will be used to visualize relationships between two variables. We like to visualize our response variable over time, looking at deaths per case as the pandemic progresses. We can visualize the change in deaths per case over time when color is based on a categorical variable, allowing us to see not only the relationship between the variable and the response (deaths per case), but also how the relationship changes over time.
 
-For our data analysis, we will look at stringency index, 
+Our regressions will be simple linear models with predictor variables that we hypothesized. We do not plan on including interaction variables in our models. We plan on adjusting our models to try and improve $R^2$ to a level we are satisfied with while also keeping them simple. This is due to the fact that simpler models are more interpretable, less overfit, and can reduce collinearity among the variables. This will help us model the relationship between various country characteristics including age, population-related statistics (density, total), pre-existing conditions (cardiovascular death rate, diabetes prevalence), and wealth/quality of public health system (GDP per capita, life expectancy, hospital beds per thousand, human development index), and see how these relate with total cases per capita and deaths per cases. 
 
-Stringency index is a composite variable based on nine other categories that determines how "strict" a country's COVID-19 prevention policies are, with 100 being the most strict and 0 meaning they have no COVID-19 related policies.
+In making our regression for deaths per cases, we choose to use deaths per cases using all deaths and cases accrued up until our cutoff date (October 5), as this provides a more stable variable to predict that represents a country's response overall. Deaths per cases were essentially 0 for many countries for so long due to a lack of cases (and lack of reporting for many countries), such that to model deaths per cases and determine relevant variables, we must model it later in the pandemic.
+
+For our data analysis, we will look at stringency index, which is a composite variable based on nine other categories that determines how "strict" a country's SARS-CoV-2 prevention policies are, with 100 being the most strict and 0 meaning they have no SARS-CoV-2 related policies. These ordinal measurements of government responses include school closures, workplace closures, canceling of public events, restriction on gatherings, stay at home events, internal travel restrictions, international travel restrictions, and face covering policies [8]. Thus, it is able to provide us a comparative variable as to what the extent and severity a government's COVID response was. This will help us to analyze the relationship between country's government COVID response and the growth rate of SARS-CoV-2.
+
+Additionally, we seek to find valuable predictors as to a country's total cases per capita and deaths per cases. Given the sheer number of variables, we can try hypothesis tests and bayesian paradigms on all of them, and thus we use a multiple linear regression to get an idea of the variables that have more statistically significant relationships with our response variable (deaths per case and cases per capita). We can then extract these variables, and perform chi square tests for independence to confirm a statistically significant association between variables. Furthermore, with deaths per cases, we categorize our significant variables into categories before visualizing them on an aforementioned line plot, to see how their relationship with the response variable changes over time
+
 
 ```{r Mutate Variables and Join}
 
@@ -90,10 +91,10 @@ covid_final_date <- covid %>%
 ```
 
 ### Results
-### Hypothesis 1: Do Strict COVID-19 Related Policies Keep Total Cases per Capita Low?
-Politicians worldwide are pushing for governments to enact strict policies to mitigate the spread of COVID-19. They argue that social distancing, stay-at-home orders, mask wearing, and business closures are all crucial to flatten the curve and keep Covid-related deaths low.
+### Hypothesis 1: Do Strict SARS-CoV-2 Related Policies Keep Total Cases per Capita Low?
+Politicians worldwide are pushing for governments to enact strict policies to mitigate the spread of SARS-CoV-2. They argue that social distancing, stay-at-home orders, mask wearing, and business closures are all crucial to flatten the curve and keep Covid-related deaths low.
 
-A Lancet study from early in the pandemic (using Wuhan as a case study) found that restrictions to social activities helps delay the epidemic peak, and that lifting governmental restrictions can bring about a second peak. Thus, stricter masking policies seemingly have merit in reducing viral transmission [3]. We are therefore interested in analyzing the relationship between stringency index and both total cases per capita and the growth rate of COVID-19 cases.
+A Lancet study from early in the pandemic (using Wuhan as a case study) found that restrictions to social activities helps delay the epidemic peak, and that lifting governmental restrictions can bring about a second peak. Thus, stricter masking policies seemingly have merit in reducing viral transmission [3]. We are therefore interested in analyzing the relationship between stringency index and both total cases per capita and the growth rate of SARS-CoV-2 cases.
 
 In order to visualize the relationship between a stringency index and the total cases per capita we created two world map plots. The first shows the median stringency index of a country during the entire pandemic while the second shows the total cases per capita on October 5th, 2020.
 
@@ -166,7 +167,7 @@ plot_country <- function(x) {
   ggplot(data = loc_data, aes(x = date, y = growth_new_cases)) +
     geom_line() +
     labs(x = "Date",
-       y = "Daily Factor by Which New COVID-19 Cases Increased") +
+       y = "Daily Factor by Which New SARS-CoV-2 Cases Increased") +
     geom_hline(yintercept = 1, color = "red")
 
 }
@@ -180,11 +181,11 @@ plot_country("Germany")
 
 ```
 
-From the graphs of individual countries, it appears that a high stringency index is associated with a lower volatility in the transmission rate of COVID-19. In the graphs of the US, Russia, and Saudi Arabia, this hold particularly true.  In the case of Brazil, China, and Germany, the graphs are a bit different. The transmission rates don't seem to flatten out nearly as much as they do in the US, Russia, and Saudi Arabia. There is still a good amount of volatility even after the mid-March spike.
+From the graphs of individual countries, it appears that a high stringency index is associated with a lower volatility in the transmission rate of SARS-CoV-2. In the graphs of the US, Russia, and Saudi Arabia, this hold particularly true.  In the case of Brazil, China, and Germany, the graphs are a bit different. The transmission rates don't seem to flatten out nearly as much as they do in the US, Russia, and Saudi Arabia. There is still a good amount of volatility even after the mid-March spike.
 
-For all countries there is a massive spike in cases during mid-March. This can be explained by the fact that cases were exploding during those few weeks globally. It was also around the same exact time that the World Health Organization declared COVID-19 a global pandemic because they were “deeply concerned by the alarming levels of spread and severity of the outbreak" and "the alarming levels of inaction” [4].
+For all countries there is a massive spike in cases during mid-March. This can be explained by the fact that cases were exploding during those few weeks globally. It was also around the same exact time that the World Health Organization declared SARS-CoV-2 a global pandemic because they were “deeply concerned by the alarming levels of spread and severity of the outbreak" and "the alarming levels of inaction” [4].
 
-It should be noted that the red line on the "Rate of Spread of COVID-19" graphs represents a growth factor of 1, meaning that at this line cases per day was unchanged from one day to the next. Also most graphs contain large gaps in data pre mid-March. This is because data on new COVID-19 cases was not being consistently reported each day before then. Thus, there is no information to plot.
+It should be noted that the red line on the "Rate of Spread of SARS-CoV-2" graphs represents a growth factor of 1, meaning that at this line cases per day was unchanged from one day to the next. Also most graphs contain large gaps in data pre mid-March. This is because data on new SARS-CoV-2 cases was not being consistently reported each day before then. Thus, there is no information to plot.
 
 ### Hypothesis 2: Which Demographics and Characteristics Impact Total Cases per Capita the Most?
 To assess which factors had the largest impact on determining a countries total cases per capita, we will create a linear model to predict total cases per capita. This model will determine if certain variables are statistically significant in determining total cases per capita. 
@@ -479,9 +480,9 @@ Chi-Square Test (Aged):
 
 When it comes to our dataset and statistical analysis, there are many limitations to consider. In the dataset, there was missingness in the data, as many countries did not report testing, cases, positive rate, or deaths at different points especially early on, as well as data on country data  such as percentage of male smokers and female smokers, cardiovascular death rate, extreme poverty rate, handwashing facilities, hospital beds per thousand, and human development index. This led to countries potentially being under or over-represented in the data based on whether or not their data was public and added to this dataset. These are key factors in the governmental policy, viral transmission, and death rate of countries that we seek to explore, such that this missingness reduces the reliability of our statistical analysis. 
 
-Additionally, coronavirus data reporting and testing varies significantly by country, such that countries that lack comprehensive testing programs skew our anlaysis by reporting less cases than there are. Given that we are seeking to determine factors that affect cases per capita and deaths per case, knowledge of the true cases within each country is crucial to coming to this understanding. The disparity in the level of testing as well as reporting for cases and deaths among different countries adds bias to the model that we can not truly pinpoint and address without knowing the true numbers for these countries.
+Additionally, SARS-CoV-2 data reporting and testing varies significantly by country, such that countries that lack comprehensive testing programs skew our anlaysis by reporting less cases than there are. Given that we are seeking to determine factors that affect cases per capita and deaths per case, knowledge of the true cases within each country is crucial to coming to this understanding. The disparity in the level of testing as well as reporting for cases and deaths among different countries adds bias to the model that we can not truly pinpoint and address without knowing the true numbers for these countries.
 
-Given that the project started in October, our dataset only includes data up to October 5th. Over one month has passed since then, and we have seen a dramatic uptick in the new cases and total cases around the world, with the daily new cases increasing from ~270,000 when we downloaded the dataset to over 500,000 daily new cases globally now [5]. Many countries have experienced rapid growth/new spikes in cases and deaths, providing new and helpful information about the dissemination and deaths of the coronavirus. In not having this new data in our dataset, our statistical analysis will fail to interpret this new and potentially vital or enlightening information that could shed more light on the effect of different variables over time. 
+Given that the project started in October, our dataset only includes data up to October 5th. Over one month has passed since then, and we have seen a dramatic uptick in the new cases and total cases around the world, with the daily new cases increasing from ~270,000 when we downloaded the dataset to over 500,000 daily new cases globally now [5]. Many countries have experienced rapid growth/new spikes in cases and deaths, providing new and helpful information about the dissemination and deaths of the SARS-CoV-2. In not having this new data in our dataset, our statistical analysis will fail to interpret this new and potentially vital or enlightening information that could shed more light on the effect of different variables over time. 
 
 The previous limitation is ultimately rooted in the fact that  SARS-CoV-2 is dynamic and novel, meaning that we are still learning about the virus and it is hard to know what variables have the most impact on spread and death rate. For example,experimentation on the virus publishd in the Journal of Translational Medicine found evidence for different geographical strains of SARS-CoV-2, as the virus is evolving and mutating. This is an important variable that is not in our dataset, but could be a confounding variable if a strain is more infectious or more fatal, as we seek to determine what affects  deaths per case and total cases per capita being.
 Our dataset likely does not include all relevant variables, which can be seen in our regressions as we are only able to account for 49% of the variance explained in deaths per case and 30.9% of the variance explained in total cases per capita. With so many variables changing over time and many relevant variables likely not in the dataset, it is difficult to determine the greatest factors in the spread and fatality rate of SARS-CoV-2.
@@ -496,7 +497,8 @@ Talk more about diagnostic plots:
 * Heteroscedastic?
 * Normality
 
-
+Notes
+* Analyze maps
 
 ### References
 
@@ -507,5 +509,6 @@ Talk more about diagnostic plots:
 [5] https://www.worldometers.info/coronavirus/
 [6] https://pubmed.ncbi.nlm.nih.gov/32321524/
 [7] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7507379/
-
-
+[8] https://ourworldindata.org/grapher/covid-stringency-index
+[9] https://ourworldindata.org/coronavirus-source-data
+[10] https://www.ecdc.europa.eu/en/covid-19/data-collection
