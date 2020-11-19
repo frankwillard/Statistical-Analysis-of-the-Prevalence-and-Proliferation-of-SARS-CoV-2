@@ -68,7 +68,8 @@ covid <- covid %>%
   
 
 covid_final_date <- covid %>% 
-  mutate(stringency_index = if_else(is.na(stringency_index), 0, stringency_index)) %>%
+  mutate(stringency_index = if_else(is.na(stringency_index), 0, 
+                                    stringency_index)) %>%
   group_by(location) %>%
   mutate(median_si = median(stringency_index),
          total_cases_per_cap = total_cases / population) %>%
@@ -97,16 +98,19 @@ covid_map <- left_join(map, map_data, by = c("region" = "location"))
 ggplot(covid_map, mapping = aes(long, lat, group = group)) +
   coord_fixed(1.3) +
   geom_polygon(aes(fill = as.numeric(median_si)), color = "white") +
-  scale_fill_gradient(low = "tomato", high = "seagreen1", name = "Median Stringency Index") +
+  scale_fill_gradient(low = "tomato", high = "seagreen1", 
+                      name = "Median Stringency Index") +
   labs(title = "Median stringency index by country suggesting that most 
-       countries have a median stringency index of about 60", x = "Longitude", y = "Latitude")
+       countries have a median stringency index of about 60", 
+       x = "Longitude", y = "Latitude")
 
 ggplot(covid_map, mapping = aes(long, lat, group = group)) +
   coord_fixed(1.3) +
   geom_polygon(aes(fill = total_cases_per_cap), color = "white") +
-  scale_fill_gradient(low = "seagreen1", high = "tomato", name = "Total Cases per Capita") +
-  labs(title = "Total cases per capita by country suggesting that total cases per capita 
-       varies largely by continent", x = "Longitude", y = "Latitude")
+  scale_fill_gradient(low = "seagreen1", high = "tomato", 
+                      name = "Total Cases per Capita") +
+  labs(title = "Total cases per capita by country suggesting that total cases
+  per capita varies largely by continent", x = "Longitude", y = "Latitude")
 
 
 ```
@@ -250,7 +254,7 @@ ggplot(data = covid_deaths_case, aes(x=date, y=avg_deaths_case)) +
 
 ```
 
-```{r Visualize HDI vs Deaths/Case Over Time, warning = FALSE, message = FALSE, echo = FALSE}
+```{r Visualize HDI vs Deaths/Case Over Time}
 
 #Could move this to exploratory data analysis
 
@@ -344,7 +348,7 @@ chisq.test(table(covid_aged$aged_columns, covid_aged$deaths_per_case))$p.value
 
 
 
-```{r Deaths Per Case Multiple Linear Regression, warning = FALSE, message = FALSE, echo = FALSE}
+```{r Deaths Per Case Multiple Linear Regression}
 
 covid_deaths_reg <- covid %>%
   filter(date == "2020-10-05" & !is.na(continent)) %>%
