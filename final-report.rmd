@@ -289,6 +289,28 @@ ggplot(m_aug, mapping = aes(x= .resid)) +
 
 ```
 
+
+```{r Deaths Per Case Multiple Linear Regression, warning = FALSE, message = FALSE, echo = FALSE}
+
+covid_deaths_reg <- covid %>%
+  filter(date == "2020-10-05" & !is.na(continent)) %>%
+  filter(!is.na(total_deaths) & !is.na(total_cases)) %>%
+  mutate(final_deaths_per_case = total_deaths / total_cases) %>%
+  select(final_deaths_per_case, cardiovasc_death_rate,-contains("case") & -contains("death") & -contains("test")) %>%
+  select(-iso_code, -continent, -location, -date, -positive_rate) %>%
+  filter_all(all_vars(!is.na(.)))
+
+m_main <- lm(final_deaths_per_case ~ diabetes_prevalence + aged_70_older  + female_smokers + human_development_index + gdp_per_capita + life_expectancy + cardiovasc_death_rate + handwashing_facilities, data = covid_deaths_reg)
+
+m_main %>%
+ tidy() %>% 
+  arrange(desc(p.value))
+
+glance(m_main) %>%
+  select(r.squared, adj.r.squared)
+
+```
+
 ### Chi-Squared
 Our visualizations and linear models suggested there might be some sort of relationship between total cases per capita and continent. In the visualization of total cases per capita on the world map, it appeared that continents seemed to have similar total cases per capita. In the linear model predicting total cases per capita, we observed that certain continent predictor weights were statistically significant. Thus, we will test for independence between total cases per capita and continent. We will do so using a chi-squared test at the $\alpha$ = 0.05 significance level.
 
