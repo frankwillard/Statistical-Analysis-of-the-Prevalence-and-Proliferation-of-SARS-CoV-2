@@ -414,7 +414,7 @@ chisq.test(table(covid_hdic$hdi_columns, covid_hdic$deaths_per_case))$p.value
 
 Our test statistic was 83240, which has a chi-square distribution with 73212 degree of freedom under $H_0$. This correlates with a P-value approximately equal to 2.487605e-139 which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that human development index category and deaths per case are not independent.
 
-
+ 
 
 ```{r Aged Visualization}
 
