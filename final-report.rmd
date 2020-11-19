@@ -57,7 +57,15 @@ covid <- covid %>%
   mutate(new_cases_per_cap = (new_cases/population),
          new_deaths_per_cap = (new_deaths/population),
          total_cases_per_cap = (total_cases/population),
-         total_deaths_per_cap = (total_deaths/population))
+         total_deaths_per_cap = (total_deaths/population)) %>%
+  mutate(hdi_columns = case_when(
+    human_development_index >= 0.8 ~ "Very High",
+    human_development_index < 0.8 & human_development_index >= 0.7 ~ "High",
+    human_development_index < 0.7 & human_development_index >= 0.55 ~ "Medium",
+    human_development_index < 0.55~ "Low"
+  )) %>% 
+  mutate(deaths_per_case = total_deaths/total_cases)
+  
 
 covid_final_date <- covid %>% 
   mutate(stringency_index = if_else(is.na(stringency_index), 0, stringency_index)) %>%
@@ -248,15 +256,6 @@ ggplot(data = covid_deaths_case, aes(x=date, y=avg_deaths_case)) +
 
 #Categories created based on 
 # https://onlinelibrary.wiley.com/doi/full/10.1002/brb3.1755
-
-covid <- covid %>% 
-  mutate(hdi_columns = case_when(
-    human_development_index >= 0.8 ~ "Very High",
-    human_development_index < 0.8 & human_development_index >= 0.7 ~ "High",
-    human_development_index < 0.7 & human_development_index >= 0.55 ~ "Medium",
-    human_development_index < 0.55~ "Low"
-  )) %>% 
-  mutate(deaths_per_case = total_deaths/total_cases)
 
   
 covid_deaths_hdi <- covid %>%
