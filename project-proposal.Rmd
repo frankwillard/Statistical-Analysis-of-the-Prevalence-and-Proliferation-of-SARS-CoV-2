@@ -230,23 +230,6 @@ plot_country("France")
 
 ```
 
-```{r Cor Test for the USA, warning = FALSE, message = FALSE, echo = FALSE}
-
-pre <- usa_only %>%
-  filter(preapril)
-
-post <- usa_only %>%
-  filter(!preapril)
-
-# Pre April
-cor.test(pre$growth_new_cases, pre$stringency_index, alternative="less")
-
-# Post April
-cor.test(post$stringency_index, post$growth_new_cases, alternative="less")
-
-
-```
-
 
 ``` {r general-correlations, warning = FALSE, message = FALSE, echo = FALSE}
 
