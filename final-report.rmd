@@ -14,9 +14,8 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = FALSE)
 library(tidyverse)
 
 covid <- read_csv("data/covid-data.csv")
-latitudes <- read_csv("data/latitudes.csv")
+
 covid <- covid %>%
-  left_join(latitudes) %>%
   mutate(new_cases_per_cap = (new_cases/population),
          new_deaths_per_cap = (new_deaths/population),
          total_cases_per_cap = (total_cases/population),
@@ -25,8 +24,7 @@ covid <- covid %>%
 covid_final_date <- covid %>% 
   mutate(stringency_index = if_else(is.na(stringency_index), 0, stringency_index)) %>%
   group_by(location) %>%
-  mutate(median_si = median(stringency_index),
-         total_cases_per_cap = total_cases / population) %>%
+  mutate(median_si = median(stringency_index)) %>%
   filter(date == "2020-10-05" & !is.na(continent))
 
 ```
@@ -38,9 +36,9 @@ This public health crisis became severe enough such that many countries took dec
 
 We are interested in investigating how a country's demographics impact the domestic severity of COVID-19. More specifically, we would like to see which demographics lead to higher cases per capita and deaths per case. We are also interested in analyzing how effective lockdowns and COVID-19 related policies have been in mitigating the spread of the virus.   
 
-We hypothesize that stringency-index, GDP per capita, population density, human development index, and latitude will have a strong impact on cases per capita. We also hypothesize that deaths per case will be largely determined by GDP per capita, the number of citizens aged 65+, hospital beds per thousand, and prevalence of pre-existing conditions (ex. diabetes prevalence, cardiovascular death rate, etc.). Finally, we expect that strict COVID-19 policy has effectively slowed the transmission of the virus. 
+We hypothesize that stringency-index, GDP per capita, population density, and human development index will have a strong impact on cases per capita. We also hypothesize that deaths per case will be largely determined by GDP per capita, the number of citizens aged 65+, hospital beds per thousand, and prevalence of pre-existing conditions (ex. diabetes prevalence, cardiovascular death rate, etc.). Finally, we expect that strict COVID-19 policy has effectively slowed the transmission of the virus. 
 
-These hypotheses are based on prior experiences and research. There is evidence that a high stringency index, a composite score based on how strict a country's restrictions are, slows the spread of COVID-19 [1]. Cold climates, which are caused by varying latitudes, have been associated with faster viral spread of COVID-19 [2, NEED A SOURCE!!!!!]. We also know that patients with pre-existing conditions face a higher COVID-19 mortality rate [3, NEED A SOURCE!!!!!].  
+These hypotheses are based on prior experiences and research. There is evidence that a high stringency index, a composite score based on how strict a country's restrictions are, slows the spread of COVID-19 [1]. We also know that patients with pre-existing conditions face a higher COVID-19 mortality rate [2, NEED A SOURCE!!!!!].  
 
 
 ### Data Description
@@ -148,15 +146,39 @@ plot_country("Germany")
 As is clear in all the graphs of individual countries, a high stringency index is associated with a lower volatility in the transmission rate of COVID-19. In the graphs of the US, Russia, and Saudi Arabia, this hold particularly true. There is a massive spike in cases during mid-March, which was roughly around the beginning of the first wave, and stringency index rises sharply. After stringency index rises, cases fall to a much lower growth rate. In the case of Brazil, China, and Germany, the graphs are a bit different. There are still major spikes around mid-March with stringency indexes going high almost immediately after. However, the transmission rates don't seem to flatten out nearly as much as they do in the US, Russia, and Saudi Arabia. There is still a good amount of volatility.
 
 ### Regressions
-
+To assess which factors had the largest impact on determining a countries total cases per capita as well as test our hypothesis about total cases per capita, we will create a linear model to predict total cases per capita. We used the following linear model to try and predict total cases per capita based off of the demographics we hypothesized as well as a few additional variables. 
 ``` {r Cases Per Capita Regression}
 
-lm_cpc <- lm(total_cases_per_cap ~ latitude + median_si + human_development_index + continent + gdp_per_capita + handwashing_facilities + population_density, data = covid_final_date)
+lm_cpc <- lm(total_cases_per_cap ~ median_si + continent + gdp_per_capita + handwashing_facilities, data = covid_final_date)
 lm_cpc %>%
  tidy() %>%
   arrange(p.value)
+
 glance(lm_cpc) %>% 
   select(adj.r.squared, r.squared)
+
+# Augmented Linear Model
+m_aug <- augment(lm_cpc)
+
+# Independence
+ggplot(data = m_aug, 
+       aes(x = 1:87, 
+           y = .resid)) + 
+  geom_point() + 
+  labs(title = "Plot 1: Residuals in Order of the Dataset", 
+       x = "Index", y = "Residual")
+
+# Linearity and Equal Variance
+ggplot(m_aug, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point() + 
+  geom_hline(yintercept = 0, lwd = 2, col = "red", lty = 2) +
+  labs(title = "Plot 2: PR Plot", x = "Predicted New Cases", y = "Residuals")
+
+# Normality
+ggplot(m_aug, mapping = aes(sample = .resid)) +
+  stat_qq() + 
+  stat_qq_line() + 
+  labs(title = "Plot 3: QQ Plot")
 
 ```
 
