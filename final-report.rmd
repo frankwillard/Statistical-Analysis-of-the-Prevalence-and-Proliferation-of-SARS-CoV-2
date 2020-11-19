@@ -67,7 +67,8 @@ covid_final_date <- covid %>%
   group_by(location) %>%
   mutate(median_si = median(stringency_index),
          total_cases_per_cap = total_cases / population) %>%
-  filter(date == "2020-10-05" & !is.na(continent))
+  filter(date == "2020-10-05" & !is.na(continent)) %>% 
+  mutate(final_deaths_per_case = total_deaths/total_cases)
 
 ```
 
@@ -78,7 +79,7 @@ In order to visualize the relationship between stringency index and the total ca
 
 map_data <- covid_final_date %>%
   mutate(location = if_else(location == "United States", "USA", location)) %>%
-  summarize(location, median_si, total_cases_per_cap)
+  summarize(location, median_si, total_cases_per_cap,final_deaths_per_case)
 
 map <- map_data("world")
 covid_map <- left_join(map, map_data, by = c("region" = "location"))
@@ -152,6 +153,24 @@ plot_country("Germany")
 
 As is clear in all the graphs of individual countries, a high stringency index is associated with a lower volatility in the transmission rate of COVID-19. In the graphs of the US, Russia, and Saudi Arabia, this hold particularly true. There is a massive spike in cases during mid-March, which was roughly around the beginning of the first wave, and stringency index rises sharply. After stringency index rises, cases fall to a much lower growth rate. In the case of Brazil, China, and Germany, the graphs are a bit different. There are still major spikes around mid-March with stringency indexes going high almost immediately after. However, the transmission rates don't seem to flatten out nearly as much as they do in the US, Russia, and Saudi Arabia. There is still a good amount of volatility.
 
+
+
+HYPOTHESIS: DEATHS PER CASE
+```{r Deaths Per Case Map}
+
+ggplot(covid_map, mapping = aes(long, lat, group = group)) +
+  coord_fixed(1.3) +
+  geom_polygon(aes(fill = final_deaths_per_case), color = "white") +
+  scale_fill_gradient(low = "seagreen1", high = "tomato", 
+                      name = "Total Deaths per Case") +
+  labs(title = "Final Deaths Per Case per capita by country suggesting that
+       deaths per case does not vary much by country except Yemen", 
+       x = "Longitude", y = "Latitude")
+
+```
+
+
+
 ```{r Visualize Deaths Per Case}
 
 covid_deaths_case <- covid %>%
@@ -169,8 +188,6 @@ ggplot(data = covid_deaths_case, aes(x=date, y=avg_deaths_case)) +
        title = "Deaths Per Case Over Time")
 
 ```
-
-
 
 ```{r Aged Visualization}
 
