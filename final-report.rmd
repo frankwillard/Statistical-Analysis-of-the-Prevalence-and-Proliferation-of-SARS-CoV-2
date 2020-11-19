@@ -273,11 +273,27 @@ ggplot(data = covid_deaths_hdi, aes(x=date, y=avg_deaths_case,
   geom_line()+
   labs(x = "Date",
        y = "Deaths/Case",
-       title = "Mean Deaths Per Case Over Time",
+       title = "Median Deaths Per Case Over Time",
        subtitle = "Color by Human Development Index Category")
 
 
 ```
+In visualizing the line plot of deaths per case over time colored by human development categories, there are clear distinctions between the different categories, especially around May and June. Thus, we will test for independence between human development index category and deaths per case. We will do so using a chi-squared test at the $\alpha$ = 0.05 significance level.
+
+$H_0$: Human development index category and deaths per case are independent.
+
+$H_0$: Human development index category and deaths per case are NOT independent.
+
+
+```{r Chi Square Test HDI Columns}
+
+covid_hdic <- covid %>%
+  filter(!is.na(hdi_columns) & !is.na(deaths_per_case))
+
+chisq.test(table(covid_hdic$hdi_columns, covid_hdic$deaths_per_case))$p.value
+
+```
+
 
 
 ```{r Aged Visualization}
@@ -305,10 +321,28 @@ ggplot(data = covid_deaths_age, aes(x=date, y=avg_deaths_case,
   geom_line()+
   labs(x = "Date",
        y = "Deaths/Case",
-       title = "Mean Deaths Per Case Over Time",
+       title = "Median Deaths Per Case Over Time",
        subtitle = "Color by Aged 70+ Category")
 
 ```
+In visualizing the line plot of deaths per case over time colored by categories denoting the percentage of the country's population that is aged 70 or older, there are stark contrasts in the line throughout the entire duration of the pandemic, with higher percentages of populations aged 70 or older having higher median deaths per case. Thus, to test for statistical significance, we will perform a test for independence between aged category and deaths per case. We will do so using a chi-squared test at the $\alpha$ = 0.05 significance level.
+
+$H_0$: Human development index and deaths per case are independent.
+
+$H_0$: Human development index and deaths per case are NOT independent.
+
+
+```{r Chi Square Test Aged Columns}
+
+covid_aged <- covid %>%
+  filter(!is.na(aged_columns) & !is.na(deaths_per_case))
+
+chisq.test(table(covid_aged$aged_columns, covid_aged$deaths_per_case))$p.value
+
+```
+
+
+
 
 
 ```{r Deaths Per Case Multiple Linear Regression, warning = FALSE, message = FALSE, echo = FALSE}
