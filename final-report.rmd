@@ -151,7 +151,7 @@ plot_country <- function(x) {
   ggplot(data = loc_data, aes(x = date, y = growth_new_cases)) +
     geom_line() +
     labs(x = "Date",
-       y = "Rate of Spread of Covid-19") +
+       y = "Daily Factor by Which New COVID-19 Cases Increased") +
     geom_hline(yintercept = 1, color = "red")
 
 }
