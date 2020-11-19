@@ -14,23 +14,6 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = FALSE)
 library(tidyverse)
 
 covid <- read_csv("data/covid-data.csv")
-<<<<<<< HEAD
-
-covid <- covid %>%
-  mutate(new_cases_per_cap = (new_cases/population),
-         new_deaths_per_cap = (new_deaths/population),
-         total_cases_per_cap = (total_cases/population),
-         total_deaths_per_cap = (total_deaths/population))
-
-covid_final_date <- covid %>% 
-  mutate(stringency_index = if_else(is.na(stringency_index), 0, stringency_index)) %>%
-  group_by(location) %>%
-  mutate(median_si = median(stringency_index)) %>%
-  filter(date == "2020-10-05" & !is.na(continent))
-=======
-latitudes <- read_csv("data/latitudes.csv")
-
->>>>>>> c7945107f09bb5f5aceb7b0b97d23128459a4234
 
 ```
 
@@ -71,7 +54,6 @@ https://www.kaggle.com/paultimothymooney/latitude-and-longitude-for-every-countr
 ### Methodology
 ```{r Mutate Variables and Join}
 covid <- covid %>%
-  left_join(latitudes) %>%
   mutate(new_cases_per_cap = (new_cases/population),
          new_deaths_per_cap = (new_deaths/population),
          total_cases_per_cap = (total_cases/population),
@@ -253,7 +235,7 @@ m_aug <- augment(lm_cpc)
 
 # Independence
 ggplot(data = m_aug, 
-       aes(x = 1:87, 
+       aes(x = 1:88, 
            y = .resid)) + 
   geom_point() + 
   labs(title = "Plot 1: Residuals in Order of the Dataset", 
@@ -266,12 +248,28 @@ ggplot(m_aug, mapping = aes(x = .fitted, y = .resid)) +
   labs(title = "Plot 2: PR Plot", x = "Predicted New Cases", y = "Residuals")
 
 # Normality
-ggplot(m_aug, mapping = aes(sample = .resid)) +
-  stat_qq() + 
-  stat_qq_line() + 
-  labs(title = "Plot 3: QQ Plot")
+ggplot(m_aug, mapping = aes(x= .resid)) +
+  geom_histogram()
 
 ```
+
+### Chi-Squared
+Our visualizations and linear models suggested there might be some sort of relationship between total cases per capita and continent. In the visualization of total cases per capita on the world map, it appeared that continents seemed to have similar total cases per capita. In the linear model predicting total cases per capita, we observed that certain continent predictor weights were statistically significant. Thus, we will test for independence between total cases per capita and continent. We will do so using a chi-squared test at the $\alpha$ = 0.05 significance level.
+
+$H_0$: There is independence between continent and total cases per capita.
+
+$H_0$: There is NOT independence between continent and total cases per capita.
+
+``` {r Chi-Squared Continent and CPC}
+
+covid_tcpc <- covid %>%
+  filter(!is.na(total_cases_per_cap) & !is.na(continent))
+
+chisq.test(table(covid_tcpc$continent, covid_tcpc$total_cases_per_cap))
+
+```
+
+
 
 ### Results
 
