@@ -147,6 +147,36 @@ plot_country("Germany")
 
 As is clear in all the graphs of individual countries, a high stringency index is associated with a lower volatility in the transmission rate of COVID-19. In the graphs of the US, Russia, and Saudi Arabia, this hold particularly true. There is a massive spike in cases during mid-March, which was roughly around the beginning of the first wave, and stringency index rises sharply. After stringency index rises, cases fall to a much lower growth rate. In the case of Brazil, China, and Germany, the graphs are a bit different. There are still major spikes around mid-March with stringency indexes going high almost immediately after. However, the transmission rates don't seem to flatten out nearly as much as they do in the US, Russia, and Saudi Arabia. There is still a good amount of volatility.
 
+```{r Aged Visualization}
+
+covid <- covid %>% 
+  mutate(aged_columns = case_when(
+    aged_70_older >= 16 ~ "Very High",
+    aged_70_older < 16 & aged_70_older >= 12 ~ "High",
+    aged_70_older < 12 & aged_70_older >= 8 ~ "Medium",
+    aged_70_older < 8 & aged_70_older >= 4 ~ "Low",
+    aged_70_older < 4 & aged_70_older >= 0 ~ "Very Low"
+  ))
+
+covid_deaths_age <- covid %>%
+  group_by(aged_columns, date) %>%
+  filter(!is.na(deaths_per_case) & !is.na(aged_70_older)) %>%
+  mutate(avg_deaths_case = median(deaths_per_case))
+
+
+#Can Facet Wrap:   facet_wrap(hdi_columns~.)+
+
+#Make title more informative
+ggplot(data = covid_deaths_age, aes(x=date, y=avg_deaths_case, 
+                                    color = aged_columns)) +
+  geom_line()+
+  labs(x = "Date",
+       y = "Deaths/Case",
+       title = "Mean Deaths Per Case Over Time",
+       subtitle = "Color by Aged 70+ Category")
+
+```
+
 ### Regressions
 
 ``` {r Cases Per Capita Regression}
@@ -161,6 +191,9 @@ glance(lm_cpc) %>%
 ```
 
 ### Results
+
+
+
 
 ### Discussion
 
