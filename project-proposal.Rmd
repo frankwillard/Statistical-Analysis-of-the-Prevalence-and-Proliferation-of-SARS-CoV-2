@@ -129,6 +129,7 @@ covid1 <- covid %>%
 ``` 
 
 ``` {r adding-growth-factor}
+
 covid1$growth_new_cases <- 0
 
 j <- 0
@@ -143,7 +144,7 @@ for (i in 1:nrow(covid1)) {
   }
   
   if (j > 1) {
-    covid1$growth_new_cases[i] <- new_cases[i] / covid1$new_cases[i - 1]
+    covid1$growth_new_cases[i] <- covid1$new_cases[i] / covid1$new_cases[i - 1]
   }
 }
 
@@ -648,6 +649,7 @@ We hypothesize that deaths per case will be largely determined by the GDP per ca
 ```{r Visualize Deaths Per Case}
 
 covid_deaths_case <- covid %>%
+  mutate(deaths_per_case = total_deaths/total_cases) %>%
   group_by(date) %>%
   filter(!is.na(deaths_per_case)) %>%
   mutate(avg_deaths_case = mean(deaths_per_case),
