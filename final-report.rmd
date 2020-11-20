@@ -561,7 +561,7 @@ Thus, to further explore the impact of stringency index on the rate of transmiss
 
 In analyzing the line plots for countries stringency indexes and rate of transmission, we found much more conclusive results suggesting that a higher stringency index is associated with lower case growth rate. In all countries, we observed that the stringency index spiked in mid-March in a response to a spike in cases. Before countries locked down for SARS-CoV-2, they all experienced surges in growth rate. However, these countries all then rapidly increased their stringency indexes and found subsequent drops in case growth rates. These effects were present in all countries, especially in the United States, Russia, and Saudi Arabia.
 
-Ultimately, the comparative maps were limited in their storytelling ability due to the fact that we could not animate the visualization over time, but rather had to trust the median stringency index. Thus, it was harder to pinpoint the individual effect of a country's stringency index on transmission. However, the observed regional difference in cases per capita provided a great foundation for the rest of our research, leading us to further explore the relationship between continent and cases per capita in research question 2.
+Ultimately, the comparative maps were limited in their storytelling ability due to the fact that we could not animate the visualization over time (due to PDF), but rather had to trust the median stringency index. Thus, it was harder to pinpoint the individual effect of a country's stringency index on transmission. However, the observed regional difference in cases per capita provided a great foundation for the rest of our research, leading us to further explore the relationship between continent and cases per capita in research question 2.
 
 Meanwhile, the country plots illustrated the relationship between stringency index and daily growth rate of SARS-CoV-2, helping us determine its effectiveness in reducing its transmission. The visualizations corroborated a clear story among various countries that increasing a country's stringency index was associated with a reduction in case growth rate. 
 
@@ -569,6 +569,7 @@ Given the implications of our results, we suggest further investigation into the
 
 2) What country characteristics are most significant in determining a country's cases per capita? 
 
+<<<<<<< HEAD
 We were extremely interested to see which variables played a large role in determining cases per capita. We initially hypothesized that stringency index, GDP per capita, population density, and human development index would all be statistically significant in determining total cases per capita. We trained a linear model to test these hypotheses and concluded that GDP per capita and stringency index were both statistically significant in determining cases per capita, while population density and human development index were not.
 
 We expected the relevance of GDP per capita and stringency index. Intuitively, stricter policy should lead to a slower spread of SARS-CoV-2 and countries with a high GDP per capita were likely able to afford programs to help slow the spread. Population density was surprising to us since we figured that people living in closer proximity would be more likely to transmit the virus. We also expected human development index to be relevant since countries with a low HDI would likely have less access to PPE and safe places to quarantine.
@@ -584,35 +585,27 @@ All of this led us to realize that it's incredibly hard to accurately predict th
 
 
 
+=======
+>>>>>>> e3585b216802fc7520693d74de80b747b2ef047b
 
 
-### Hypothesis 1
 
-Maps:
+3) What country characteristics are most significant in determining a country's case fatality rate (deaths per case)? 
 
-Country plots:
+In analyzing the relationship between country characteristics and case fatality rate, first we performed exploratory data analysis to determine which countries had high case fatality rates and how case fatality rate changed over time.
 
-### Hypothesis 2
+In creating a map with final case fatality rate, there were no clear trends in countries or country characteristics observed in the visualization. This is likely due to two limitations. We were not able to animate the visualization over time (due to PDF), such that we are only getting a limited piece of the data. Additionally, Yemen is an outlier with such a high case fatality rate, that other countries seem to all be similar in case fatality rate, as the disparity between them and Yemen is greater than the variance in the data among other countries. While the map was not incredibly beneficial, observing Yemen having a very high case fatality rate helped us consider the type of country that may have higher case fatality rates.
 
-Regression:
+The visualization of median deaths per case over time starts relatively high due to lack of reporting (except for Asia where there was a spike), however, this decreases to approximately 0 from January to mid-March. In mid-March, we observe a spike in the deaths per cases through April, before a steady decline from May to October. This helps us understand the dynamic nature of case fatality rate, which spiked at a similar time to other case and death related variables, but is now experiencing a decline.
 
-Chi-Square Test:
+In trying to determine the most important predictors for deaths per case, we identified many different classes of variables for country characteristics that could affect the response, including pre-existing conditions, age, and healthcare/wealth indicators. Given the great number of potential variables, we could not perform an exhaustive data analysis and perform significance tests on all of them. Thus, we performed a multiple linear regression and exampled the statistical significance of the predictors. We then continued to remove variables that were shown as more insignificant, and kept them out of the model if the adjusted R^2 improved upon their removal (akin to backward stepwise regression but manual). Thus, we came to a regression that predicted approximately 50% of the variance in deaths per cases. The regression output suggested that human development index and the percentage of a country's population that is aged 70 or above are the most statistically significant predictors, however, neither variable had a P-value that demonstrated statistical significance at the  $\alpha$ = 0.05 level. Thus, we decided to further explore these variables through visualizations and chi square tests to determine if they individually showed a relationship with deaths per case (when not diluted by the model).
 
-### Hypothesis 3
- 
-Map:
+Based on a United Nations categorization, we categorized the human development index variable into categories ranging from very low to very high, before visualizing each category's median deaths per case over time. We found that countries with higher human development index had a substantially higher case fatality rate after June (with low peaking in June), but the categories varied less as time progressed. 
 
-Figure 1: 
+In seeing a relationship between human development index and deaths per case in the line plot, we decided to perform a chi square test to formally determine if there was a statistically significant relationship. The chi square test led to a rejection of the null hypothesis, suggesting that there is a statistically significant association. This was especially interesting given that the test was performed based on observations from the last week of data in the dataset, for which there was less variance in the dataset. 
 
-Figure 2 (HDI):
+Additionally, we categorized the percentage of those aged 70 or above by percentage and visualized their categories median's deaths per case over time. This line plot elucidated an incredibly clear relationship, in which deaths per cases were much higher for the duration of the pandemic for countries with 16 or more percent of their population aged 70+. This was backed up by countries with 12-16% of their population aged 70+ being less than the other, but still experiencing drastically higher case fatality rates than countries in the categories under 12%. We observed less variance in the lower categories, potentially suggesting that the relationship between aged 70+ and deaths per cases increases with age (potentially non-linear).
 
-Chi-Square Test (HDI): 
- 
-Figure 3 (Aged):
-
-Regression:
-
-Chi-Square Test (Aged): 
 
 ### Limitations
 
