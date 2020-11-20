@@ -630,15 +630,28 @@ Given that the data is time series, we would likely look into more techniques fo
 
 ### References
 
-[1] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7418951/#:~:text=Our%20model%20implies%20that%20social,at%2021%20days%20after%20implementation.
-[2] https://www.cdc.gov/coronavirus/2019-ncov/need-extra-precautions/people-with-medical-conditions.html#:~:text=Adults%20of%20any%20age%20with%20the%20following%20conditions%20are%20at,COPD%20(chronic%20obstructive%20pulmonary%20disease)
-[3] https://www.thelancet.com/journals/lanpub/article/PIIS2468-2667(20)30073-6/fulltext
-[4] https://www.ajmc.com/view/a-timeline-of-covid19-developments-in-2020
-[5] https://www.worldometers.info/coronavirus/
-[6] https://pubmed.ncbi.nlm.nih.gov/32321524/
-[7] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7507379/
-[8] https://ourworldindata.org/grapher/covid-stringency-index
-[9] https://ourworldindata.org/coronavirus-source-data
-[10] https://www.ecdc.europa.eu/en/covid-19/data-collection
-[11] https://pubmed.ncbi.nlm.nih.gov/10812799/
-[12] https://www.economist.com/graphic-detail/2020/11/16/why-rich-countries-are-so-vulnerable-to-covid-19
+APA Format: 
+
+[1] Siedner, M. J., Harling, G., Reynolds, Z., Gilbert, R. F., Haneuse, S., Venkataramani, A. S., & Tsai, A. C. (2020). Social distancing to slow the US COVID-19 epidemic: Longitudinal pretest-posttest comparison group study. PLoS medicine, 17(8), e1003244. https://doi.org/10.1371/journal.pmed.1003244
+
+[2] Coronavirus Disease 2019 (COVID-19). (2020). Retrieved 20 November 2020, from https://www.cdc.gov/coronavirus/2019-ncov/need-extra-precautions/people-with-medical-conditions.html#:~:text=Adults%20of%20any%20age%20with%20the%20following%20conditions%20are%20at,COPD%20(chronic%20obstructive%20pulmonary%20disease)
+
+[3] Prem, K., Liu, Y., Russell, T., Kucharski, A., Eggo, R., & Davies, N. et al. (2020). The effect of control strategies to reduce social mixing on outcomes of the COVID-19 epidemic in Wuhan, China: a modelling study. The Lancet Public Health, 5(5), e261-e270. doi: 10.1016/s2468-2667(20)30073-6
+
+[4] A Timeline of COVID-19 Developments in 2020. (2020). Retrieved 20 November 2020, from https://www.ajmc.com/view/a-timeline-of-covid19-developments-in-2020
+
+[5] Coronavirus Update (Live): 57,588,872 Cases and 1,371,206 Deaths from COVID-19 Virus Pandemic - Worldometer. (2020). Retrieved 20 November 2020, from https://www.worldometers.info/coronavirus/
+
+[6] Pachetti, M., Marini, B., Benedetti, F., Giudici, F., Mauro, E., Storici, P., Masciovecchio, C., Angeletti, S., Ciccozzi, M., Gallo, R. C., Zella, D., & Ippodrino, R. (2020). Emerging SARS-CoV-2 mutation hot spots include a novel RNA-dependent-RNA polymerase variant. Journal of translational medicine, 18(1), 179. https://doi.org/10.1186/s12967-020-02344-6
+
+[7] Dasic, B., Devic, Z., Denic, N., Zlatkovic, D., Ilic, I. D., Cao, Y., Jermsittiparsert, K., & Le, H. V. (2020). Human development index in a context of human development: Review on the western Balkans countries. Brain and Behavior, 10(9), e01755. https://doi.org/10.1002/brb3.1755
+
+[8] COVID-19: Government Response Stringency Index. (2020). Retrieved 20 November 2020, from https://ourworldindata.org/grapher/covid-stringency-index
+
+[9] Coronavirus Source Data. (2020). Retrieved 20 November 2020, from https://ourworldindata.org/coronavirus-source-data
+
+[10] How ECDC collects and processes COVID-19 data. (2020). Retrieved 20 November 2020, from https://www.ecdc.europa.eu/en/covid-19/data-collection
+
+[11] Anderson, G. F., & Hussey, P. S. (2000). Population aging: a comparison among industrialized countries. Health affairs (Project Hope), 19(3), 191–203. https://doi.org/10.1377/hlthaff.19.3.191
+
+[12] Why rich countries are so vulnerable to covid-19. (2020). Retrieved 20 November 2020, from https://www.economist.com/graphic-detail/2020/11/16/why-rich-countries-are-so-vulnerable-to-covid-19
