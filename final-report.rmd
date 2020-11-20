@@ -398,26 +398,21 @@ glance(m_main) %>%
 
 ```
 
+Deaths per case = -5.933385e-02 + -1.263897e-05 * (population_density) + 3.961726e-04 * (handwashing_facilities) + 3.120720e-03	* (diabetes_prevalence) + 5.551136e-03	* (life expectancy) + -1.461799e-04	* (cardiovasc_death_rate) -3.953100e-03	* (female_smokers) + 6.167923e-06 *	(gdp_per_capita) -4.079514e-01	* (human_development_index) -2.375371e-02	* aged_70_older
+
+The R^2 is 0.5080334 and adjusted R^2 is 0.1390585 Roughly 50.8% of the variability in deaths per case of a country can be explained by population density, handwashing facilities, diabetes prevalence, life expectancy, cardiovascular death rate, female smokers, GDP per capita, human development index and the percentage of the population that is aged 70 or older.
+
 In creating our regression, we found that the percentage of a country's population that is aged above 70, as well as human development index, to be the variables with the highest coefficients and most statistically significant P-values. Thus, we choose to explore them further in a line visualization, to see how they change over time. 
 
 First we will look at human development index. We will visualize deaths per case over time as we did before, however, we will have different lines denoting different human development indexes. We have categorized them into bins of "Very high", "High", "Medium", "Low", and "Very Low", based on the various thresholds used by the UN [7]. 
 
 
 ```{r Visualize HDI vs Deaths/Case Over Time, warning = FALSE, message = FALSE, echo = FALSE}
-
-#Could move this to exploratory data analysis
-
-#Categories created based on 
-# https://onlinelibrary.wiley.com/doi/full/10.1002/brb3.1755
-
   
 covid_deaths_hdi <- covid %>%
   group_by(hdi_columns, date) %>%
   filter(!is.na(deaths_per_case) & !is.na(human_development_index)) %>%
   mutate(avg_deaths_case = median(deaths_per_case))
-
-
-#Can Facet Wrap:   facet_wrap(hdi_columns~.)+
 
 #Make title more informative
 ggplot(data = covid_deaths_hdi, aes(x=date, y=avg_deaths_case, 
@@ -425,7 +420,10 @@ ggplot(data = covid_deaths_hdi, aes(x=date, y=avg_deaths_case,
   geom_line()+
   labs(x = "Date",
        y = "Deaths/Case",
-       title = "Median Deaths Per Case Over Time",
+       title = "Line Plot of Median Deaths Per Case Over Time, suggesting that
+       countries with a very high human development index had a substantially
+       higher case fatality rate after June but now categories do not 
+       vary much",
        subtitle = "Color by Human Development Index Category",
        color = "HDI Category")
 
@@ -496,11 +494,11 @@ Our test statistic was 83240, which has a chi-square distribution with 73212 deg
 
 covid <- covid %>% 
   mutate(aged_columns = case_when(
-    aged_70_older >= 16 ~ "Very High",
-    aged_70_older < 16 & aged_70_older >= 12 ~ "High",
-    aged_70_older < 12 & aged_70_older >= 8 ~ "Medium",
-    aged_70_older < 8 & aged_70_older >= 4 ~ "Low",
-    aged_70_older < 4 & aged_70_older >= 0 ~ "Very Low"
+    aged_70_older >= 16 ~ "16+%",
+    aged_70_older < 16 & aged_70_older >= 12 ~ "12-16%",
+    aged_70_older < 12 & aged_70_older >= 8 ~ "8-12%",
+    aged_70_older < 8 & aged_70_older >= 4 ~ "4-8%",
+    aged_70_older < 4 & aged_70_older >= 0 ~ "0-4%"
   ))
 
 covid_deaths_age <- covid %>%
@@ -508,16 +506,16 @@ covid_deaths_age <- covid %>%
   filter(!is.na(deaths_per_case) & !is.na(aged_70_older)) %>%
   mutate(avg_deaths_case = median(deaths_per_case))
 
-
-#Can Facet Wrap:   facet_wrap(hdi_columns~.)+
-
 #Make title more informative
 ggplot(data = covid_deaths_age, aes(x=date, y=avg_deaths_case, 
                                     color = aged_columns)) +
   geom_line()+
   labs(x = "Date",
        y = "Deaths/Case",
-       title = "Median Deaths Per Case Over Time",
+       title = "Line Plot of Median Deaths Per Case Over Time, suggesting that
+       countries with 16+% aged 70+ tend to have higher case fatality rates,
+       with 12-16% also well above other age categories (which don't vary
+       much)",
        subtitle = "Color by Aged 70+ Category",
        color = "Aged Category")
 
@@ -568,10 +566,19 @@ Our test statistic was 126458, which has a chi-square distribution with 99284 de
 
 ### Discussion
 
+
+
 ### Hypothesis 1
 
+Maps:
+
+Country plots:
 
 ### Hypothesis 2
+
+Regression:
+
+Chi-Square Test:
 
 ### Hypothesis 3
  
@@ -583,12 +590,11 @@ Figure 2 (HDI):
 
 Chi-Square Test (HDI): 
  
-
 Figure 3 (Aged):
 
+Regression:
+
 Chi-Square Test (Aged): 
-
-
 
 ### Limitations
 
@@ -605,14 +611,6 @@ Finally, our data is of a time series format, which we have less statistical exp
 Additionally, the regression model can not attribute causality, but only an association. While a predictor and response variable may share a linear relationship, this could potentially be due to a confounding variable, such that the predictor does not actually cause the response. For example, people being aged 70 or older having a higher negative coefficient and negative relationship with deaths per case in the regression could be because of another variable. More people being aged 70 could lead to more retired people and less people in the workforce and medical system, causing deaths per case to be higher. This is thus a limit of using a linear regression. 
 
 With our current regression, another limitation is variables can be collinear, leading to coefficients that do not accurately reflect the relationship between the variable and a model. When running a linear regression, two multicollinear variables may have correlation coefficients that differ but rather additively have their true effect, as linear regressions struggle to differentiate the effects of two multicollinear variables. This is why machine learning specialists often perform feature selection (via ridge and lasso regression) and principal components analysis, to remove predictors and a model with more consistency in its correlation coefficients.
-
-
-Talk more about diagnostic plots:
-* Heteroscedastic?
-* Normality
-
-Notes
-* Analyze maps
 
 ### References
 
