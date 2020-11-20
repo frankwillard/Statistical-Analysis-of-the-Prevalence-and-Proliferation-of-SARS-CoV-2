@@ -35,8 +35,6 @@ We selected a data set from "Our World in Data." Each observation in the data se
 
 “Our World In Data” uses data from the European Center for Disease Prevention and Control (ECDC), a world leader for SARS-CoV-2 data. The ECDC has a team of epidemiologists that works every day to screen up to 500 sources to get the latest figures. These sources include ministries of health (43%),  websites of public health institutes (9%),  websites of public health institutes (6%), World Health Organization (WHO) websites,  WHO situation reports (2%), and official dashboards and interactive maps from national and international institutions (10%). The EDEC also utilizes social media accounts maintained by national authorities, ministries of health, and official media outlets (30%). These social media sources are screened and validated by the other sources mentioned previously. The data is recorded daily, and we will be using the data set updated as of October 9, 2020 (10:30, London time).
 
-We used latitude data from the website "Kaggle" to supplement the SARS-CoV-2 data set. This data was collected from a Google data set and was merged with the "Our World in Data" SARS-CoV-2 data set to create one larger data set.   
-
 Here is a glimpse of our data set:
 
 ``` {r Glimpse}
@@ -552,6 +550,29 @@ Our test statistic was 264.18, which has a chi-square distribution with 16 degre
 
 
 ### Discussion
+
+Throughout the project, we tried to answer the following research questions:
+
+1) Is government policy effective in reducing the spread of SARS-CoV-2?
+
+Here, we sought to determine if there is a relationship between stringency index and cases per capita, as well as the daily growth rate of cases within a country. Through the world map, we could not deduce a relationship between stringency index and cases per capita. We do notice that Asia tends to have low cases per capita with high median stringency index, Africa tends to have low cases per capita with varying median stringency index, South America has high cases per capita and high median stringency index, and Europe has a lower median stringency index with higher cases per capita. Thus, Europe and Asia seem to support the conclusion that stringency index reduces cases per capita, however, there is uncertainty about the extent to the relationship given the other continents such as South America. 
+
+Thus, to further explore the impact of stringency index on the rate of transmission of SARS-CoV-2, we plotted the stringency index over time for various countries alongside the growth rate of cases over time. Given that cases per capita is increasing for virtually every country and is a reflection of the total cases as opposed to new cases, we found that growth rate is a more effective measure of transmission. Thus, we can see the immediate effect of governmental policy such as increasing stringency index when the growth rate changes afterward. 
+
+In analyzing the line plots for countries stringency indexes and rate of transmission, we found much more conclusive results suggesting that a higher stringency index is associated with lower case growth rate. In all countries, we observed that the stringency index spiked in mid-March in a response to a spike in cases. Before countries locked down for SARS-CoV-2, they all experienced surges in growth rate. However, these countries all then rapidly increased their stringency indexes and found subsequent drops in case growth rates. These effects were present in all countries, especially in the United States, Russia, and Saudi Arabia.
+
+Ultimately, the comparative maps were limited in their storytelling ability due to the fact that we could not animate the visualization over time, but rather had to trust the median stringency index. Thus, it was harder to pinpoint the individual effect of a country's stringency index on transmission. However, the observed regional difference in cases per capita provided a great foundation for the rest of our research, leading us to further explore the relationship between continent and cases per capita in research question 2.
+
+Meanwhile, the country plots illustrated the relationship between stringency index and daily growth rate of SARS-CoV-2, helping us determine its effectiveness in reducing its transmission. The visualizations corroborated a clear story among various countries that increasing a country's stringency index was associated with a reduction in case growth rate. 
+
+Given the implications of our results, we suggest further investigation into the matter of the effectiveness of increasing stringency index to reduce case growth rate through the use of proper hypothesis testing (via CLT or Bayesian).
+
+2) What country characteristics are most significant in determining a country's cases per capita? 
+
+3) What country characteristics are most significant in determining a country's case fatality rate (deaths per case)? 
+
+
+
 
 
 
