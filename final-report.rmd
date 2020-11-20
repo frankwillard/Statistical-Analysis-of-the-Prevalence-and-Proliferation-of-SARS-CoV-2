@@ -408,20 +408,11 @@ First we will look at human development index. We will visualize deaths per case
 
 
 ```{r Visualize HDI vs Deaths/Case Over Time, warning = FALSE, message = FALSE, echo = FALSE}
-
-#Could move this to exploratory data analysis
-
-#Categories created based on 
-# https://onlinelibrary.wiley.com/doi/full/10.1002/brb3.1755
-
   
 covid_deaths_hdi <- covid %>%
   group_by(hdi_columns, date) %>%
   filter(!is.na(deaths_per_case) & !is.na(human_development_index)) %>%
   mutate(avg_deaths_case = median(deaths_per_case))
-
-
-#Can Facet Wrap:   facet_wrap(hdi_columns~.)+
 
 #Make title more informative
 ggplot(data = covid_deaths_hdi, aes(x=date, y=avg_deaths_case, 
@@ -429,7 +420,10 @@ ggplot(data = covid_deaths_hdi, aes(x=date, y=avg_deaths_case,
   geom_line()+
   labs(x = "Date",
        y = "Deaths/Case",
-       title = "Median Deaths Per Case Over Time",
+       title = "Line Plot of Median Deaths Per Case Over Time, suggesting that
+       countries with a very high human development index had a substantially
+       higher case fatality rate after June but now categories do not 
+       vary much",
        subtitle = "Color by Human Development Index Category",
        color = "HDI Category")
 
@@ -460,11 +454,11 @@ Our test statistic was 83240, which has a chi-square distribution with 73212 deg
 
 covid <- covid %>% 
   mutate(aged_columns = case_when(
-    aged_70_older >= 16 ~ "Very High",
-    aged_70_older < 16 & aged_70_older >= 12 ~ "High",
-    aged_70_older < 12 & aged_70_older >= 8 ~ "Medium",
-    aged_70_older < 8 & aged_70_older >= 4 ~ "Low",
-    aged_70_older < 4 & aged_70_older >= 0 ~ "Very Low"
+    aged_70_older >= 16 ~ "16+%",
+    aged_70_older < 16 & aged_70_older >= 12 ~ "12-16%",
+    aged_70_older < 12 & aged_70_older >= 8 ~ "8-12%",
+    aged_70_older < 8 & aged_70_older >= 4 ~ "4-8%",
+    aged_70_older < 4 & aged_70_older >= 0 ~ "0-4%"
   ))
 
 covid_deaths_age <- covid %>%
@@ -472,16 +466,16 @@ covid_deaths_age <- covid %>%
   filter(!is.na(deaths_per_case) & !is.na(aged_70_older)) %>%
   mutate(avg_deaths_case = median(deaths_per_case))
 
-
-#Can Facet Wrap:   facet_wrap(hdi_columns~.)+
-
 #Make title more informative
 ggplot(data = covid_deaths_age, aes(x=date, y=avg_deaths_case, 
                                     color = aged_columns)) +
   geom_line()+
   labs(x = "Date",
        y = "Deaths/Case",
-       title = "Median Deaths Per Case Over Time",
+       title = "Line Plot of Median Deaths Per Case Over Time, suggesting that
+       countries with 16+% aged 70+ tend to have higher case fatality rates,
+       with 12-16% also well above other age categories (which don't vary
+       much)",
        subtitle = "Color by Aged 70+ Category",
        color = "Aged Category")
 
