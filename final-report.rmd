@@ -31,11 +31,11 @@ These hypotheses are based on prior experiences and research. There is evidence 
 
 ### Data Description
 
-We selected a data set from "Our World in Data." Each observation in the data set shows relevant SARS-CoV-2 data for a particular country on a given date. The SARS-CoV-2 data in the data set includes total deaths, total cases, new deaths, new cases, total cases per million, total deaths per million, total tests, new tests, total tests per thousand, positive rate, as well as telling country numbers such as stringency index (composite measure of government strictness policy) and hospital beds per thousand. Additionally, the data set includes country characteristics including population density, median age, GDP per capita, diabetes prevalence, life expectancy, and extreme poverty rate. While the previous variables are quantitative, the data set also includes categorical variables when it comes to geography such as the country and continent. 
+We selected a dataset from "Our World in Data." Each observation in the dataset shows relevant SARS-CoV-2 data for a particular country on a given date including total deaths, total cases, new deaths, new cases, total cases per million, total deaths per million, total tests, new tests, total tests per thousand, positive rate, stringency index (composite measure of government strictness policy), and hospital beds per thousand. Additionally, the dataset includes the country characteristics of population density, median age, GDP per capita, diabetes prevalence, life expectancy, and extreme poverty rate. While the previous variables are quantitative, the dataset also includes categorical variables when it comes to geography such as the country and continent. 
 
-“Our World In Data” uses data from the European Center for Disease Prevention and Control (ECDC), a world leader for SARS-CoV-2 data. The ECDC has a team of epidemiologists that works every day to screen up to 500 sources to get the latest figures. These sources include ministries of health (43%),  websites of public health institutes (9%),  websites of public health institutes (6%), World Health Organization (WHO) websites,  WHO situation reports (2%), and official dashboards and interactive maps from national and international institutions (10%). The EDEC also utilizes social media accounts maintained by national authorities, ministries of health, and official media outlets (30%). These social media sources are screened and validated by the other sources mentioned previously. The data is recorded daily, and we will be using the data set updated as of October 9, 2020 (10:30, London time).
+“Our World In Data” uses data from the European Center for Disease Prevention and Control (ECDC), a world leader for SARS-CoV-2 data. The ECDC has a team of epidemiologists that work every day to screen up to 500 sources to get the latest figures. These sources include ministries of health (43%),  websites of public health institutes (9%),  websites of public health institutes (6%), World Health Organization (WHO) websites,  WHO situation reports (2%), and official dashboards and interactive maps from national and international institutions (10%). The ECDC also utilizes social media accounts maintained by national authorities, ministries of health, and official media outlets (30%). These social media sources are screened and validated by the other sources mentioned previously. The data is recorded daily, and we will be using the dataset updated as of October 9, 2020 (10:30, London time).
 
-Here is a glimpse of our data set:
+### Glimpse of the Dataset
 
 ``` {r Glimpse}
 
@@ -51,21 +51,17 @@ Our graphs will consist of both line plots and world maps. The world maps will s
 
 Our line plots will be used to visualize relationships between two continuous variables. We would like to visualize our response variable over time, looking at deaths per case as the pandemic progresses. We can visualize the change in deaths per case over time when color is based on a categorical variable, allowing us to see not only the relationship between the variable and the response (deaths per case), but also how the relationship changes over time.
 
-Our regressions will be simple linear models with predictor variables that we hypothesized. We do not plan on including interaction variables in our models. We plan on adjusting our models to try and improve $R^2$ to a level we are satisfied with while also keeping them simple. This is due to the fact that simpler models are more interpretable, less overfit, and can reduce collinearity among the variables. This will help us model the relationship between various country characteristics including age, population-related statistics (density, total), pre-existing conditions (cardiovascular death rate, diabetes prevalence), and wealth/quality of public health system (GDP per capita, life expectancy, hospital beds per thousand, human development index), and see how these relate with total cases per capita and deaths per cases. 
+Our regressions will be simple linear models with the predictor variables that we hypothesized. We do not plan on including interaction variables in our models. We plan on adjusting our models to try and improve $R^2$ to a level we are satisfied with while also keeping them simple. This is due to the fact that simpler models are more interpretable, less overfit, and can reduce collinearity among the variables. This will help us model the relationship between various country characteristics including age, population-related statistics (density, total), pre-existing conditions (cardiovascular death rate, diabetes prevalence), and wealth/quality of public health system (GDP per capita, life expectancy, hospital beds per thousand, human development index), and see how these relate with total cases per capita and deaths per cases. 
 
 In making our regression for deaths per cases (aka case fatality rate), we choose to use deaths per cases using all deaths and cases accrued up until our cutoff date (October 5), as this provides a more stable variable to predict that represents a country's response overall. Deaths per cases were essentially 0 for many countries for so long due to a lack of cases (and lack of reporting for many countries), such that to model deaths per cases and determine relevant variables, we must model it later in the pandemic.
 
-For our data analysis, we will look at stringency index, which is a composite variable based on nine other categories that determines how "strict" a country's SARS-CoV-2 prevention policies are, with 100 being the most strict and 0 meaning they have no SARS-CoV-2 related policies. These ordinal measurements of government responses include school closures, workplace closures, canceling of public events, restriction on gatherings, stay at home events, internal travel restrictions, international travel restrictions, and face covering policies [8]. Thus, it is able to provide us a comparative variable as to what the extent and severity a government's COVID response was. This will help us to analyze the relationship between country's government COVID response and the growth rate of SARS-CoV-2.
-
-Additionally, we seek to find valuable predictors as to a country's total cases per capita and deaths per cases. Given the sheer number of variables, we can try hypothesis tests and bayesian paradigms on all of them, and thus we use a multiple linear regression to get an idea of the variables that have more statistically significant relationships with our response variable (deaths per case and cases per capita). 
-
-We can then extract these variables, and then test to confirm a relationship between these variables and the response.
+For our data analysis, we will look deeply at stringency index, which is a composite variable based on nine other categories that determines how "strict" a country's SARS-CoV-2 prevention policies are, with 100 being the most strict and 0 meaning they have no SARS-CoV-2 related policies. These ordinal measurements of government responses include school closures, workplace closures, canceling of public events, restriction on gatherings, stay at home events, internal travel restrictions, international travel restrictions, and face covering policies [8]. Thus, it is able to provide us a comparative variable as to what the extent and severity a government's COVID response was. This will help us to analyze the relationship between country's government COVID response and the growth rate of SARS-CoV-2.
 
 With deaths per cases, we categorize our significant variables into categories before visualizing them on an aforementioned line plot, to observe how the relationship with the response variable by analyzing the difference between the lines for each category. Additionally, in plotting against time, we can see how that relationship between predictors and response changes over time. 
 
-Furthermore, we can test for a statistically significant relationship between a predictor and the response. This is done through a chi square test for independence, which determines if there is a statistically significant relationship or association between two categorical variables by calculating the distance between the observed response variable and expected response variable if the two variables are independent, and then squaring that difference (so its summation is positive regardless of if observed is greater than or less than expected), scaling it (based on expected value), and summing it for all observations. It is similar to a hypothesis test in that you see how likely our data (or more extreme) is likely to occur given that the null hypothesis (of independence) is true, providing us with a P-value to reject or fail to reject our null hypothesis. 
+Furthermore, we can test for a statistically significant relationship between a predictor and the response. This is performed on our categorical variables via a chi square test for independence. 
 
-To do this, we categorize our predicted and response variables to meet the conditions for a chi square test for independence, creating bins that denote the extent of the magnitude of a country's predictor or respondent (cases per capita and deaths per case). In trying to make our statistical analysis unbiased, we try to make these choices through non-arbitrary measures, such as seeing how the agencies or who report the statistics or other reputable sources generally categorize them. In performing a chi square test for independence, this will allow us to assess which variables are statistically significant with deaths per case and cases per capita, helping us answer our research question. 
+To do this, we categorize our predicted and response variables to meet the conditions for a chi square test for independence, creating bins that denote the extent of the magnitude of a country's predictor or respondent (cases per capita and deaths per case). These bins are based on which quantile a particular data point falls into. 
 
 Given that the data is time series and the dynamic nature of variables such as cases per capita or deaths per cases, we chose to perform chi square tests for independence using only the last week of data. This is because we categorized these variables based on percentile, however, the variables change so much that a high deaths per case in February is incredibly different from another month. In only using the last week, we know that our categories for our response variables are actually applicable to the data (something categorized as high will actually be high) for the duration used in the chi square test, reducing potential human bias.
 
@@ -94,7 +90,8 @@ covid_final_date <- covid %>%
   mutate(median_si = median(stringency_index),
          total_cases_per_cap = total_cases / population) %>%
   filter(date == "2020-10-05" & !is.na(continent)) %>% 
-  mutate(final_deaths_per_case = total_deaths/total_cases)
+  mutate(final_deaths_per_case = total_deaths/total_cases) %>%
+  ungroup()
 
 ```
 
@@ -138,7 +135,7 @@ ggplot(covid_map, mapping = aes(long, lat, group = group)) +
 
 From these world maps alone, it is difficult to determine if a high stringency index is associated with a low total cases per capita. There does not seem to be any pattern of high stringency index countries ending up with low total cases per capita. In fact, it appears from the visual alone that total cases per capita is mostly associated with continent. South America looks to have the highest stringency indices, but also the highest total cases per capita. From these two visualizations, it's hard to asses any relationship between stringency index and total cases per capita.
 
-It also is useful to see how stringency index impacts the growth of cases over time. To visualize this, we will plot several countries that have both relatively high and low total cases per capita. The growth of cases will be represented by the factor for which the new cases changed from the previous day.
+It also is useful to see how stringency index impacts the growth of cases over time. To visualize this, we will plot several countries that have both relatively high and low total cases per capita. The growth of cases will be represented by a factor for which the new cases changed from the previous day (new cases today / new cases yesterday).
 
 ``` {r Modifying the Data for Individual Plotting}
 
@@ -175,21 +172,19 @@ plot_country <- function(x) {
   ggplot(data = loc_data, aes(x = date, y = growth_new_cases)) +
     geom_line() +
     labs(x = "Date",
-       y = "Daily Factor by Which New SARS-CoV-2 Cases Increased") +
+       y = "New Cases Growth") +
     geom_hline(yintercept = 1, color = "red")
 
 }
 
 plot_country("United States")
-plot_country("Russia")
 plot_country("Saudi Arabia")
 plot_country("Brazil")
-plot_country("China")
 plot_country("Germany")
 
 ```
 
-From the graphs of individual countries, it appears that a high stringency index is associated with a lower volatility in the transmission rate of SARS-CoV-2. In the graphs of the US, Russia, and Saudi Arabia, this hold particularly true.  In the case of Brazil, China, and Germany, the graphs are a bit different. The transmission rates don't seem to flatten out nearly as much as they do in the US, Russia, and Saudi Arabia. There is still a good amount of volatility even after the mid-March spike.
+From the graphs of individual countries, it appears that a high stringency index is associated with a lower volatility in the transmission rate of SARS-CoV-2. In the graphs of the US and Saudi Arabia this holds particularly true.  In the case of Brazil and Germany the graphs are a bit different. The transmission rates don't seem to flatten out nearly as much as they do in the US and Saudi Arabia. There is still a good amount of volatility even after the mid-March spike.
 
 For all countries there is a massive spike in cases during mid-March. This can be explained by the fact that cases were exploding during those few weeks globally. It was also around the same exact time that the World Health Organization declared SARS-CoV-2 a global pandemic because they were “deeply concerned by the alarming levels of spread and severity of the outbreak" and "the alarming levels of inaction” [4].
 
@@ -235,27 +230,6 @@ lm_cpc %>%
 
 glance(lm_cpc) %>% 
   select(adj.r.squared, r.squared)
-
-# Augmented Linear Model
-m_aug <- augment(lm_cpc)
-
-# Independence
-ggplot(data = m_aug, 
-       aes(x = 1:174, 
-           y = .resid)) + 
-  geom_point() + 
-  labs(title = "Plot 1: Residuals in Order of the Dataset", 
-       x = "Index", y = "Residual")
-
-# Linearity and Equal Variance
-ggplot(m_aug, mapping = aes(x = .fitted, y = .resid)) +
-  geom_point() + 
-  geom_hline(yintercept = 0, lwd = 2, col = "red", lty = 2) +
-  labs(title = "Plot 2: PR Plot", x = "Predicted New Cases", y = "Residuals")
-
-# Normality
-ggplot(m_aug, mapping = aes(x= .resid)) +
-  geom_histogram()
 
 ```
 
@@ -553,13 +527,13 @@ Our test statistic was 264.18, which has a chi-square distribution with 16 degre
 
 Throughout the project, we tried to answer the following research questions:
 
-1) Is government policy effective in reducing the spread of SARS-CoV-2?
+### 1) Is government policy effective in reducing the spread of SARS-CoV-2?
 
 Here, we sought to determine if there is a relationship between stringency index and cases per capita, as well as the daily growth rate of cases within a country. Through the world map, we could not deduce a relationship between stringency index and cases per capita. We do notice that Asia tends to have low cases per capita with high median stringency index, Africa tends to have low cases per capita with varying median stringency index, South America has high cases per capita and high median stringency index, and Europe has a lower median stringency index with higher cases per capita. Thus, Europe and Asia seem to support the conclusion that stringency index reduces cases per capita, however, there is uncertainty about the extent to the relationship given the other continents such as South America. 
 
 Thus, to further explore the impact of stringency index on the rate of transmission of SARS-CoV-2, we plotted the stringency index over time for various countries alongside the growth rate of cases over time. Given that cases per capita is increasing for virtually every country and is a reflection of the total cases as opposed to new cases, we found that growth rate is a more effective measure of transmission. Thus, we can see the immediate effect of governmental policy such as increasing stringency index when the growth rate changes afterward. 
 
-In analyzing the line plots for countries stringency indexes and rate of transmission, we found much more conclusive results suggesting that a higher stringency index is associated with lower case growth rate. In all countries, we observed that the stringency index spiked in mid-March in a response to a spike in cases. Before countries locked down for SARS-CoV-2, they all experienced surges in growth rate. However, these countries all then rapidly increased their stringency indexes and found subsequent drops in case growth rates. These effects were present in all countries, especially in the United States, Russia, and Saudi Arabia.
+In analyzing the line plots for countries stringency indexes and rate of transmission, we found much more conclusive results suggesting that a higher stringency index is associated with lower case growth rate. In all countries, we observed that the stringency index spiked in mid-March in a response to a spike in cases. Before countries locked down for SARS-CoV-2, they all experienced surges in growth rate. However, these countries all then rapidly increased their stringency indexes and found subsequent drops in case growth rates. These effects were present in all countries, especially in the United States and Saudi Arabia.
 
 Ultimately, the comparative maps were limited in their storytelling ability due to the fact that we could not animate the visualization over time (due to PDF), but rather had to trust the median stringency index. Thus, it was harder to pinpoint the individual effect of a country's stringency index on transmission. However, the observed regional difference in cases per capita provided a great foundation for the rest of our research, leading us to further explore the relationship between continent and cases per capita in research question 2.
 
@@ -567,7 +541,7 @@ Meanwhile, the country plots illustrated the relationship between stringency ind
 
 Given the implications of our results, we suggest further investigation into the matter of the effectiveness of increasing stringency index to reduce case growth rate through the use of proper hypothesis testing (via CLT or Bayesian).
 
-2) What country characteristics are most significant in determining a country's cases per capita? 
+### 2) What country characteristics are most significant in determining a country's cases per capita? 
 
 We were extremely interested to see which variables played a large role in determining cases per capita. We initially hypothesized that stringency index, GDP per capita, population density, and human development index would all be statistically significant in determining total cases per capita. We trained a linear model to test these hypotheses and concluded that GDP per capita and stringency index were both statistically significant in determining cases per capita, while population density and human development index were not.
 
@@ -579,8 +553,7 @@ This led us to perform a chi squared test on continents versus cases per capita.
 
 All of this led us to realize that it's incredibly hard to accurately predict the spread of SARS-CoV-2. There are too many factors that impact the rate of spread for are models to capture in a reasonable manner. This was reflected in our relatively low adjusted $R^2$ of 0.309. If we wanted to further analyze which variables have a large impact on cases per capita, we might need to get more outside data and spend a lot more time thinking through which predictors to include. Still, we were satisfied to conclude that GDP per capita and stringency index were significant in determining some of the variability of cases per capita.
 
-3) What country characteristics are most significant in determining a country's case fatality rate (deaths per case)? 
-
+### 3) What country characteristics are most significant in determining a country's case fatality rate (deaths per case)? 
 In analyzing the relationship between country characteristics and case fatality rate, first we performed exploratory data analysis to determine which countries had high case fatality rates and how case fatality rate changed over time.
 
 In creating a map with final case fatality rate, there were no clear trends in countries or country characteristics observed in the visualization. This is likely due to two limitations. We were not able to animate the visualization over time (due to PDF), such that we are only getting a limited piece of the data. Additionally, Yemen is an outlier with such a high case fatality rate, that other countries seem to all be similar in case fatality rate, as the disparity between them and Yemen is greater than the variance in the data among other countries. While the map was not incredibly beneficial, observing Yemen having a very high case fatality rate helped us consider the type of country that may have higher case fatality rates.
@@ -602,7 +575,6 @@ Ultimately, in finding these associations, we can not make affirmative statement
 In observing these associations, we encourage further inquiry into the relationship between these variables and deaths per case. Ultimately, the multiple linear regression only accounted for 50% of the variance in case fatality rate, such that even more significant factors may not be in the dataset. Thus, we would like to not only encourage investigation of our variables, but potentially explore datasets with more potential predictors to help better explain and predict a country's case fatality rate. 
 
 ### Limitations
-
 When it comes to our dataset and statistical analysis, there are many limitations to consider. In the dataset, there was missingness in the data, as many countries did not report testing, cases, positive rate, or deaths at different points especially early on, as well as data on country data  such as percentage of male smokers and female smokers, cardiovascular death rate, extreme poverty rate, handwashing facilities, hospital beds per thousand, and human development index. This led to countries potentially being under or over-represented in the data based on whether or not their data was public and added to this dataset. These are key factors in the governmental policy, viral transmission, and death rate of countries that we seek to explore, such that this missingness reduces the reliability of our statistical analysis. 
 
 Additionally, SARS-CoV-2 data reporting and testing varies significantly by country, such that countries that lack comprehensive testing programs skew our analysis by reporting less cases than there are. Given that we are seeking to determine factors that affect cases per capita and deaths per case, knowledge of the true cases within each country is crucial to coming to this understanding. The disparity in the level of testing as well as reporting for cases and deaths among different countries adds bias to the model that we can not truly pinpoint and address without knowing the true numbers for these countries.
@@ -617,8 +589,7 @@ Additionally, the regression model can not attribute causality, but only an asso
 
 With our current regression, another limitation is variables can be collinear, leading to coefficients that do not accurately reflect the relationship between the variable and a model. When running a linear regression, two multicollinear variables may have correlation coefficients that differ but rather additively have their true effect, as linear regressions struggle to differentiate the effects of two multicollinear variables. This is why machine learning specialists often perform feature selection (via ridge and lasso regression) and principal components analysis, to remove predictors and a model with more consistency in its correlation coefficients.
 
-###Improvements
-
+### Improvements
 Given our many limitations, we would likely conduct our statistical analysis very differently were we to restart now. First, we would likely use an updated version of the dataset that includes more data after October, as it would provide new and relevant data with less missingness for us to evaluate and help analyze our research questions. Additionally, we would likely search for other datasets with other variables and country characteristics and join it with our own, to have more potential factors that account for variance in case fatality rate and cases per capita. These potential variables could include more direct quality of healthcare variables including ventilator and mask stock, whether there is universal healthcare, as well as more potential health indicators such as obesity. Ultimately, age and human development index seemed to be the most significant factors in our case fatality rate. Given that countries with a higher age tend to have higher life expectancy and likely healthcare, we believe this could have been a confounding variable for human development index. Given that higher human development index initially suggested a higher case fatality rate, however, human development index indicates a country's wealth, healthcare system, etc, it would originally seem as if these countries are best equipped to handle the pandemic. Thus, we could further investigate these variables by adding new variables, seeing what is most significant, and controlling for different variables. 
 
 Additionally, we could further explain research question one by looking at the data that led to the composite score for stringency index, and try to identify if any of the nine indicators have a particularly strong association with a lower case growth rate. This would allow us to make less broad statements about making government policy "stricter", and rather show which specific governmental policies (e.g. mask mandates, banning international travel, banning domestic travel) have stronger associations with reducing case growth rate. Perhaps certain policies may have a relationship, while others may have no association. If we were to restart now, we would certainly explore this possibility.
