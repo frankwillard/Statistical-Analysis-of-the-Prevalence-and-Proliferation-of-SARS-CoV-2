@@ -606,6 +606,11 @@ In seeing a relationship between human development index and deaths per case in 
 
 Additionally, we categorized the percentage of those aged 70 or above by percentage and visualized their categories median's deaths per case over time. This line plot elucidated an incredibly clear relationship, in which deaths per cases were much higher for the duration of the pandemic for countries with 16 or more percent of their population aged 70+. This was backed up by countries with 12-16% of their population aged 70+ being less than the other, but still experiencing drastically higher case fatality rates than countries in the categories under 12%. We observed less variance in the lower categories, potentially suggesting that the relationship between aged 70+ and deaths per cases increases with age (potentially non-linear).
 
+To determine whether the seemingly clear relationship between aged 70 and older and deaths per case in the line plot, we decided to perform a chi square test to formally determine if there was a statistically significant relationship. The chi square test led to a rejection of the null hypothesis, suggesting that there is a statistically significant association. 
+
+Ultimately, in finding these associations, we can not make affirmative statements on causation (due to the possibility of confounding), however, our statistical analysis has convincing evidence to suggest associations between percentage of population aged 70 and older and human development index on case fatality rate. 
+
+In observing these associations, we encourage further inquiry into the relationship between these variables and deaths per case. Ultimately, the multiple linear regression only accounted for 50% of the variance in case fatality rate, such that even more significant factors may not be in the dataset. Thus, we would like to not only encourage investigation of our variables, but potentially explore datasets with more potential predictors to help better explain and predict a country's case fatality rate. 
 
 ### Limitations
 
