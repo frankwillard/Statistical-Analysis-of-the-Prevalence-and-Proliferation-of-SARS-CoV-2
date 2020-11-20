@@ -271,7 +271,16 @@ Our model also has an adjusted $R^2$ of 0.3088684. In the context of our researc
 Our model also shows that the continent of South America is statsitically significant in determining total cases per capita, also hinting at some association between continent and total cases per capita.
 
 ### Extra Analysis: Total Cases per Capita vs. Continent
-Our visualizations and linear models suggest there might be some sort of relationship between total cases per capita and continent. In the visualization of total cases per capita on the world map, it appeared that continents seemed to have similar total cases per capita. In the linear model predicting total cases per capita, we observed that certain continent predictor weights were statistically significant. Thus, we will test for independence between total cases per capita and continent. We will do so using a chi-squared test at the $\alpha$ = 0.05 significance level.
+Our visualizations and linear models suggest there might be some sort of relationship between total cases per capita and continent. In the visualization of total cases per capita on the world map, it appeared that continents seemed to have similar total cases per capita. In the linear model predicting total cases per capita, we observed that certain continent predictor weights were statistically significant. Thus, we will test for independence between total cases per capita and continent. 
+
+This will require the creation of a categorical variable to describe total cases per capita. This new categorical variable will be based on the following key:
+
+Percentile   Categorization
+90th - 100th: Very High
+70th - 90th: High
+30th - 70th: Average
+10th - 30th: low
+0th - 10th: Very low
 
 $H_0$: There is independence between continent and total cases per capita.
 
@@ -281,14 +290,41 @@ $\alpha = 0.05$
 
 ``` {r Chi-Squared Continent and CPC}
 
-covid_tcpc <- covid %>%
-  filter(!is.na(total_cases_per_cap) & !is.na(continent))
+# Cases per Cap categorical guide:
+# 90th+ percentile: Very High
+# 70th+: High
+# 30th+: Average
+# 10th+: low
+# 0th+: Very low
 
-chisq.test(table(covid_tcpc$continent, covid_tcpc$total_cases_per_cap))
+cases_per_cap = c(rep(NA, nrow(covid_final_date)))
+for (i in 1:nrow(covid_final_date)) {
+  cases_per_cap[i] = covid_final_date$total_cases_per_cap[i]
+}
+
+perc90 <- quantile(cases_per_cap, 0.9)
+perc70 <- quantile(cases_per_cap, 0.7)
+perc30 <- quantile(cases_per_cap, 0.3)
+perc10 <- quantile(cases_per_cap, 0.1)
+
+covid_tcpc <- covid_final_date %>%
+  filter(!is.na(total_cases_per_cap) & !is.na(continent)) %>%
+  ungroup() %>%
+  mutate(tcpc_cat = case_when(
+    total_cases_per_cap >= perc90 ~ "Very High",
+    total_cases_per_cap >= perc70 ~ "High",
+    total_cases_per_cap >= perc30 ~ "Average",
+    total_cases_per_cap >= perc10 ~ "Low",
+    total_cases_per_cap >= 0 ~ "Very Low"
+  )) %>%
+  select(location, continent, total_cases_per_cap, tcpc_cat)
+  
+
+chisq.test(table(covid_tcpc$continent, covid_tcpc$tcpc_cat))
 
 ```
 
-After running a $\chi^2$ test with a test statisitc of 227767 and 159400 degrees of freedom, we calculated a p value of 2.2e-16, which is less than our $\alpha$ = 0.05 significance level. Thus we reject the null hypothesis. There is sufficient evidence to suggest that continents are not independent from total cases per capita.
+After running a $\chi^2$ test with a test statisitc of 84.511 and 20 degrees of freedom, we calculated a p value of 6.645e-10, which is less than our $\alpha$ = 0.05 significance level. Thus we reject the null hypothesis. There is sufficient evidence to suggest that continents are not independent from total cases per capita.
 
 ### Hypothesis 3: Which Demographics and Characteristics Impact Deaths per Case the Most?
 
