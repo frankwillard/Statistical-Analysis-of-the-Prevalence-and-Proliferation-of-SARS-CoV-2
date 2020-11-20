@@ -471,11 +471,15 @@ covid_hdic <- covid_final_week %>%
   )) %>%
   select(location, hdi_columns, dpc_cat)
 
-chisq.test(table(covid_hdic$hdi_columns, covid_hdic$dpc_cat))
+chisq_hdi <- chisq.test(table(covid_hdic$hdi_columns, covid_hdic$dpc_cat))
+
+chisq_hdi
+
+chisq_hdi$p.value
 
 ```
 
-Our test statistic was 83240, which has a chi-square distribution with 73212 degree of freedom under $H_0$. This correlates with a P-value approximately equal to 2.487605e-139 which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that human development index category and deaths per case are not independent.
+Our test statistic was 110.58, which has a chi-square distribution with 12 degree of freedom under $H_0$. This correlates with a P-value = 4.588415e-18 approximately equal to 0, which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that human development index category and deaths per case are not independent.
 
  
 
@@ -531,11 +535,15 @@ covid_dpc <- covid_final_week %>%
   )) %>%
   select(location, aged_columns, dpc_cat)
 
-chisq.test(table(covid_dpc$aged_columns, covid_dpc$dpc_cat))$p.value
+chisq_aged <- chisq.test(table(covid_dpc$aged_columns, covid_dpc$dpc_cat))
+
+chisq_aged
+
+chisq_aged$p.value
 
 ```
 
-Our test statistic was 126458, which has a chi-square distribution with 99284 degrees of freedom under $H_0$. This correlates with a P-value approximately equal to 0, which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that aged category and deaths per case are not independent.
+Our test statistic was 264.18, which has a chi-square distribution with 16 degrees of freedom under $H_0$. This correlates with a P-value = 6.328478e-47 approximately equal to 0, which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that aged category and the total deaths per case in the final week are not independent.
 
 
 
