@@ -364,7 +364,7 @@ ggplot(data = covid_deaths_case, aes(x=date, y=avg_deaths_case)) +
   labs(x = "Date",
        y = "Deaths/Case",
        title = "Line Plot of Deaths Per Case Over Time, showing a spike in
-       April and May before a slow decline from June to October)
+       April and May before a slow decline from June to October")
 
 ```
 
