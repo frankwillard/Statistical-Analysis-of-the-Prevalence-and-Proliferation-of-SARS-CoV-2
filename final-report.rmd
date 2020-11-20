@@ -446,29 +446,15 @@ $H_0$: Human development index category and deaths per case are NOT independent.
 # 10th+: low
 # 0th+: Very low
 
-deaths = c(rep(NA, nrow(covid)))
-
-covid_final_month <- covid %>%
-  filter(date > "2020-09-05")
-
-for (i in 1:nrow(covid_final_month)) {
-  day <- covid_final_month$date[i]
-  covid_temp <- filter
+deaths = c(rep(NA, nrow(covid_final_date)))
+for (i in 1:nrow(covid_final_date)) {
   deaths[i] = covid_final_date$deaths_per_case[i]
-  perc90 <- quantile(covid$deaths_per_case[i], 0.9)
-  perc70 <- quantile(covid$deaths_per_case[i], 0.7)
-  perc30 <- quantile(covid$deaths_per_case[i], 0.3)
-  perc10 <- quantile(covid$deaths_per_case[i], 0.1)
-  covid$dpc_cat[i] <- case_when(
-    covid$deaths_per_case[i] >= perc90 ~ "Very High",
-    covid$deaths_per_case[i] >= perc70 ~ "High",
-    covid$deaths_per_case[i] >= perc30 ~ "Average",
-    covid$deaths_per_case[i] >= perc10 ~ "Low",
-    covid$deaths_per_case[i] >= 0 ~ "Very Low"
-  )
 }
 
-
+perc90 <- quantile(deaths, 0.9)
+perc70 <- quantile(deaths, 0.7)
+perc30 <- quantile(deaths, 0.3)
+perc10 <- quantile(deaths, 0.1)
 
 covid_hdic <- covid_final_date %>%
   filter(!is.na(hdi_columns) & !is.na(deaths_per_case)) %>%
@@ -530,20 +516,10 @@ $H_0$: Human development index and deaths per case are NOT independent.
 
 ```{r Chi Square Test Aged Columns}
 
-deaths = c(rep(NA, nrow(covid_final_date)))
-for (i in 1:nrow(covid_final_date)) {
-  deaths[i] = covid_final_date$deaths_per_case[i]
-}
+covid_final_week <- covid %>%
+  filter(date > "2020-09-28")
 
-perc90 <- quantile(deaths, 0.9)
-perc70 <- quantile(deaths, 0.7)
-perc30 <- quantile(deaths, 0.3)
-perc10 <- quantile(deaths, 0.1)
-
-covid_final_date <- covid %>%
-  filter(date == "2020-10-05")
-
-covid_dpc <- covid_final_date %>%
+covid_dpc <- covid_final_week %>%
   filter(!is.na(deaths_per_case) & !is.na(aged_columns)) %>%
   ungroup() %>%
   mutate(dpc_cat = case_when(
@@ -555,7 +531,7 @@ covid_dpc <- covid_final_date %>%
   )) %>%
   select(location, aged_columns, dpc_cat)
 
-chisq.test(table(covid_aged$aged_columns, covid_aged$dpc_cat))
+chisq.test(table(covid_dpc$aged_columns, covid_dpc$dpc_cat))$p.value
 
 ```
 
