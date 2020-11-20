@@ -569,7 +569,6 @@ Given the implications of our results, we suggest further investigation into the
 
 2) What country characteristics are most significant in determining a country's cases per capita? 
 
-<<<<<<< HEAD
 We were extremely interested to see which variables played a large role in determining cases per capita. We initially hypothesized that stringency index, GDP per capita, population density, and human development index would all be statistically significant in determining total cases per capita. We trained a linear model to test these hypotheses and concluded that GDP per capita and stringency index were both statistically significant in determining cases per capita, while population density and human development index were not.
 
 We expected the relevance of GDP per capita and stringency index. Intuitively, stricter policy should lead to a slower spread of SARS-CoV-2 and countries with a high GDP per capita were likely able to afford programs to help slow the spread. Population density was surprising to us since we figured that people living in closer proximity would be more likely to transmit the virus. We also expected human development index to be relevant since countries with a low HDI would likely have less access to PPE and safe places to quarantine.
@@ -579,16 +578,6 @@ We also included continent as a predictor in our model even though it wasn't hyp
 This led us to perform a chi squared test on continents versus cases per capita. We were able to conclude continents and cases per capita are NOT independent. This find was fascinating but led us to consider some limitations. We recognized that the statistical significance of continent was likely a result of other variables that were continent specific but not captured in the dataset. This would explain why South America in particular was statistically significant in determing cases per capita while the rest of the continents were not.
 
 All of this led us to realize that it's incredibly hard to accurately predict the spread of SARS-CoV-2. There are too many factors that impact the rate of spread for are models to capture in a reasonable manner. This was reflected in our relatively low adjusted $R^2$ of 0.309. If we wanted to further analyze which variables have a large impact on cases per capita, we might need to get more outside data and spend a lot more time thinking through which predictors to include. Still, we were satisfied to conclude that GDP per capita and stringency index were significant in determining some of the variability of cases per capita.
-
-3) What country characteristics are most significant in determining a country's case fatality rate (deaths per case)? 
-
-
-
-
-=======
->>>>>>> e3585b216802fc7520693d74de80b747b2ef047b
-
-
 
 3) What country characteristics are most significant in determining a country's case fatality rate (deaths per case)? 
 
