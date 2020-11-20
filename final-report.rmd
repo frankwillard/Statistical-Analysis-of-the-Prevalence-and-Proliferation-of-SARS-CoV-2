@@ -67,8 +67,9 @@ With deaths per cases, we categorize our significant variables into categories b
 
 Furthermore, we can test for a statistically significant relationship between a predictor and the response. This is done through a chi square test for independence, which determines if there is a statistically significant relationship or association between two categorical variables by calculating the distance between the observed response variable and expected response variable if the two variables are independent, and then squaring that difference (so its summation is positive regardless of if observed is greater than or less than expected), scaling it (based on expected value), and summing it for all observations. It is similar to a hypothesis test in that you see how likely our data (or more extreme) is likely to occur given that the null hypothesis (of independence) is true, providing us with a P-value to reject or fail to reject our null hypothesis. 
 
-To do this, we categorize our predicted and response variables to meet the conditions for a chi square test for independence, creating bins that denote the extent of the magnitude of a country's predictor or respondent (cases per capita and deaths per case). In trying to make our statistical analyis unbiased, we try to make these choices through unarbitrary measures, such as seeing how the agencies or who report the statistics or other reputable sources generally categorize them. In performing a chi square test for independence, this will allow us to assess which variables are statistically significant with deaths per case and cases per capita, helping us answer our research question. 
+To do this, we categorize our predicted and response variables to meet the conditions for a chi square test for independence, creating bins that denote the extent of the magnitude of a country's predictor or respondent (cases per capita and deaths per case). In trying to make our statistical analysis unbiased, we try to make these choices through non-arbitrary measures, such as seeing how the agencies or who report the statistics or other reputable sources generally categorize them. In performing a chi square test for independence, this will allow us to assess which variables are statistically significant with deaths per case and cases per capita, helping us answer our research question. 
 
+Given that the data is time series and the dynamic nature of variables such as cases per capita or deaths per cases, we chose to perform chi square tests for independence using only the last week of data. This is because we categorized these variables based on percentile, however, the variables change so much that a high deaths per case in February is incredibly different from another month. In only using the last week, we know that our categories for our response variables are actually applicable to the data (something categorized as high will actually be high) for the duration used in the chi square test, reducing potential human bias.
 
 
 ```{r Mutate Variables and Join}
@@ -266,9 +267,9 @@ After creating the linear model, we see that stringency index and GDP per capita
 
 As for the coefficients of population density and human development index, both have a p value greater than our significance level of 0.05. Therefore, we fail to reject the null hypothesis. There is not enough evidence to suggest that population density has any relationship to total cases per capita nor that human development index has any relationship to total cases per capita.
 
-Our model also has an adjusted $R^2$ of 0.3088684. In the context of our research, this means that 30.9% of the variability in total cases per capita can be explained by the model which includes the stringency index, GDP per capita, population density, human development index, and continents.
+The R^2 is 0.3448232 and adjusted R^2 is 0.3088684. Roughly 34.8% of the variability in total cases per capita can be explained by the model which includes the stringency index, GDP per capita, population density, human development index, and continents.
 
-Our model also shows that the continent of South America is statsitically significant in determining total cases per capita, also hinting at some association between continent and total cases per capita.
+Our model also shows that the continent of South America is statistically significant in determining total cases per capita, also hinting at some association between continent and total cases per capita.
 
 ### Extra Analysis: Total Cases per Capita vs. Continent
 Our visualizations and linear models suggest there might be some sort of relationship between total cases per capita and continent. In the visualization of total cases per capita on the world map, it appeared that continents seemed to have similar total cases per capita. In the linear model predicting total cases per capita, we observed that certain continent predictor weights were statistically significant. Thus, we will test for independence between total cases per capita and continent. 
@@ -404,7 +405,7 @@ The R^2 is 0.5080334 and adjusted R^2 is 0.1390585 Roughly 50.8% of the variabil
 
 In creating our regression, we found that the percentage of a country's population that is aged above 70, as well as human development index, to be the variables with the highest coefficients and most statistically significant P-values. Thus, we choose to explore them further in a line visualization, to see how they change over time. 
 
-First we will look at human development index. We will visualize deaths per case over time as we did before, however, we will have different lines denoting different human development indexes. We have categorized them into bins of "Very high", "High", "Medium", "Low", and "Very Low", based on the various thresholds used by the UN [7]. 
+First we will look at human development index. We will visualize deaths per case over time as we did before, however, we will have different lines denoting different human development index categories. We have categorized them into bins of "Very high", "High", "Medium", "Low", and "Very Low", based on the various thresholds used by the UN [7]. 
 
 
 ```{r Visualize HDI vs Deaths/Case Over Time, warning = FALSE, message = FALSE, echo = FALSE}
@@ -481,6 +482,7 @@ chisq_hdi$p.value
 
 Our test statistic was 110.58, which has a chi-square distribution with 12 degree of freedom under $H_0$. This correlates with a P-value = 4.588415e-18 approximately equal to 0, which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that human development index category and deaths per case are not independent.
 
+Next we will look at the relationship between percentage of population aged 70+ and deaths per case. We will visualize deaths per case over time as we did before, however, we will have different lines denoting different aged 70+ percentage categories. We have categorized them into bins of 4% intervals (e.g 0-4,4-8,8-12,12-16,16+), based on data from a comparative aging population study [11].
  
 
 ```{r Aged Visualization}
@@ -611,3 +613,4 @@ With our current regression, another limitation is variables can be collinear, l
 [8] https://ourworldindata.org/grapher/covid-stringency-index
 [9] https://ourworldindata.org/coronavirus-source-data
 [10] https://www.ecdc.europa.eu/en/covid-19/data-collection
+[11] https://pubmed.ncbi.nlm.nih.gov/10812799/
