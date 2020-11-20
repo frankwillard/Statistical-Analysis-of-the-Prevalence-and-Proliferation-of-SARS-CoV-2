@@ -456,7 +456,10 @@ perc70 <- quantile(deaths, 0.7)
 perc30 <- quantile(deaths, 0.3)
 perc10 <- quantile(deaths, 0.1)
 
-covid_hdic <- covid_final_date %>%
+covid_final_week <- covid %>%
+  filter(date > "2020-09-28")
+
+covid_hdic <- covid_final_week %>%
   filter(!is.na(hdi_columns) & !is.na(deaths_per_case)) %>%
   ungroup() %>%
   mutate(dpc_cat = case_when(
@@ -472,7 +475,7 @@ chisq.test(table(covid_hdic$hdi_columns, covid_hdic$dpc_cat))
 
 ```
 
-Our test statistic was 10.221, which has a chi-square distribution with 12 degree of freedom under $H_0$. This correlates with a P-value approximately equal to 0.5966 which is greater than $\alpha$ = 0.05, such that we fail to reject the null hypothesis. There is not sufficient evidence to suggest that human development index category and deaths per case are not independent.
+Our test statistic was 83240, which has a chi-square distribution with 73212 degree of freedom under $H_0$. This correlates with a P-value approximately equal to 2.487605e-139 which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that human development index category and deaths per case are not independent.
 
  
 
@@ -516,9 +519,6 @@ $H_0$: Human development index and deaths per case are NOT independent.
 
 ```{r Chi Square Test Aged Columns}
 
-covid_final_week <- covid %>%
-  filter(date > "2020-09-28")
-
 covid_dpc <- covid_final_week %>%
   filter(!is.na(deaths_per_case) & !is.na(aged_columns)) %>%
   ungroup() %>%
@@ -531,15 +531,13 @@ covid_dpc <- covid_final_week %>%
   )) %>%
   select(location, aged_columns, dpc_cat)
 
-chisq_aged <- chisq.test(table(covid_dpc$aged_columns, covid_dpc$dpc_cat))
-
-chisq_aged
-
-chisq_aged$p.value
+chisq.test(table(covid_dpc$aged_columns, covid_dpc$dpc_cat))$p.value
 
 ```
 
-Our test statistic was 264.18, which has a chi-square distribution with 16 degrees of freedom under $H_0$. This correlates with a P-value = 6.328478e-47, which is  approximately equal to 0, which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that aged category and deaths per case are not independent.
+Our test statistic was 126458, which has a chi-square distribution with 99284 degrees of freedom under $H_0$. This correlates with a P-value approximately equal to 0, which is less than $\alpha$ = 0.05, such that we reject the null hypothesis. There is sufficient evidence to suggest that aged category and deaths per case are not independent.
+
+
 
 
 ### Discussion
