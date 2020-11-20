@@ -523,6 +523,9 @@ $H_0$: Human development index and deaths per case are NOT independent.
 
 ```{r Chi Square Test Aged Columns}
 
+covid_final_week <- covid %>%
+  filter(date > "2020-09-28")
+
 covid_dpc <- covid_final_week %>%
   filter(!is.na(deaths_per_case) & !is.na(aged_columns)) %>%
   ungroup() %>%
